@@ -223,35 +223,37 @@ export function MensajesSection() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold text-gray-800">Mensajes</h1>
-        <p className="text-gray-600 text-lg">Comparte tus pensamientos, deseos y sentimientos más profundos.</p>
+      <div className="text-center space-y-3">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Mensajes</h1>
+        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          Comparte tus pensamientos, deseos y sentimientos más profundos.
+        </p>
       </div>
 
       {/* Estadísticas y Acciones */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap gap-4">
-          <div className="stats-card rounded-lg p-4">
-            <div className="text-2xl font-bold text-pink-600">{totalMessages}</div>
-            <div className="text-sm text-gray-600">Mensajes totales</div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex overflow-x-auto gap-3 pb-2 px-4 sm:px-0 sm:flex-wrap sm:overflow-visible scroll-horizontal w-full sm:w-auto">
+          <div className="stats-card bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl p-4 flex-shrink-0 sm:flex-shrink min-w-[140px]">
+            <div className="text-2xl sm:text-3xl font-bold text-pink-600">{totalMessages}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Mensajes totales</div>
           </div>
-          <div className="stats-card rounded-lg p-4">
-            <div className="text-2xl font-bold text-blue-600">{unreadMessages}</div>
-            <div className="text-sm text-gray-600">Sin leer</div>
+          <div className="stats-card bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl p-4 flex-shrink-0 sm:flex-shrink min-w-[140px]">
+            <div className="text-2xl sm:text-3xl font-bold text-blue-600">{unreadMessages}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Sin leer</div>
           </div>
-          <div className="stats-card rounded-lg p-4">
-            <div className="text-2xl font-bold text-green-600">{readMessages}</div>
-            <div className="text-sm text-gray-600">Leídos</div>
+          <div className="stats-card bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl p-4 flex-shrink-0 sm:flex-shrink min-w-[140px]">
+            <div className="text-2xl sm:text-3xl font-bold text-green-600">{readMessages}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Leídos</div>
           </div>
-          <div className="stats-card rounded-lg p-4">
-            <div className="text-2xl font-bold text-purple-600">{favoriteMessages}</div>
-            <div className="text-sm text-gray-600">Favoritos</div>
+          <div className="stats-card bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl p-4 flex-shrink-0 sm:flex-shrink min-w-[140px]">
+            <div className="text-2xl sm:text-3xl font-bold text-purple-600">{favoriteMessages}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Favoritos</div>
           </div>
         </div>
-        <div className="flex gap-3">
-          <Button onClick={() => setIsWriteModalOpen(true)} className="bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-200">
+        <div className="flex gap-3 w-full sm:w-auto justify-center sm:justify-end">
+          <Button onClick={() => setIsWriteModalOpen(true)} className="bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-full">
             <Edit3 className="h-4 w-4 mr-2" />
             Escribir Mensaje
           </Button>
@@ -261,15 +263,31 @@ export function MensajesSection() {
       {/* Búsqueda y Filtros */}
       <div className="space-y-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input placeholder="Buscar en mensajes..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 border-gray-300 focus:border-pink-500 focus:ring-pink-500" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input 
+            placeholder="Buscar en mensajes..." 
+            value={searchQuery} 
+            onChange={(e) => setSearchQuery(e.target.value)} 
+            className="pl-12 pr-4 py-3 border-gray-200 dark:border-gray-700 focus:border-pink-500 focus:ring-pink-500 text-sm sm:text-base rounded-xl" 
+          />
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Badge variant={selectedCategory === '' ? 'default' : 'secondary'} className="category-badge hover:bg-pink-100" onClick={() => setSelectedCategory('')}>Todos</Badge>
+        <div className="flex overflow-x-auto gap-2 pb-2 px-4 sm:px-0 sm:flex-wrap sm:overflow-visible scroll-horizontal">
+          <Badge 
+            variant={selectedCategory === '' ? 'default' : 'secondary'} 
+            className="category-badge hover:bg-pink-100 flex-shrink-0 sm:flex-shrink px-3 py-2 rounded-full text-sm" 
+            onClick={() => setSelectedCategory('')}
+          >
+            Todos
+          </Badge>
           {categories.map((category) => {
             const Icon = category.icon
             return (
-              <Badge key={category.name} variant={selectedCategory === category.name ? 'default' : 'secondary'} className={`category-badge ${category.color}`} onClick={() => setSelectedCategory(category.name)}>
+              <Badge 
+                key={category.name} 
+                variant={selectedCategory === category.name ? 'default' : 'secondary'} 
+                className={`category-badge ${category.color} flex-shrink-0 sm:flex-shrink px-3 py-2 rounded-full text-sm`} 
+                onClick={() => setSelectedCategory(category.name)}
+              >
                 <Icon className="h-3 w-3 mr-1" />
                 {category.name}
               </Badge>
@@ -279,51 +297,51 @@ export function MensajesSection() {
       </div>
 
       {/* Mensajes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {filteredMessages.map((message, index) => {
           const category = categories.find(c => c.name === message.category)
           const Icon = category?.icon || Heart
           const rotationClass = index === 0 ? 'rotate-1' : index === 1 ? 'rotate-2' : 'rotate-3'
           return (
-            <Card key={message.id} className={`message-card ${rotationClass} ${!message.isRead ? 'ring-2 ring-pink-200' : ''}`} onClick={() => markAsRead(message.id)}>
-              <CardContent className="p-6">
+            <Card key={message.id} className={`message-card ${rotationClass} ${!message.isRead ? 'ring-2 ring-pink-200' : ''} bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300`} onClick={() => markAsRead(message.id)}>
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex justify-between items-start mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-gray-800 mb-1">{message.title}</h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-base sm:text-lg text-gray-900 dark:text-white mb-1 truncate">{message.title}</h3>
+                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                       <Calendar className="h-3 w-3" />
                       {message.date}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); toggleFavorite(message.id) }} className={`p-1 h-auto transition-all duration-200 ${message.isFavorite ? 'text-red-500 hover:text-red-600' : 'text-gray-400 hover:text-red-500'}`}>
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); toggleFavorite(message.id) }} className={`h-10 w-10 p-0 rounded-full transition-all duration-200 ${message.isFavorite ? 'text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-900/20' : 'text-gray-400 hover:text-red-500 hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
                       <Heart className={`h-4 w-4 ${message.isFavorite ? 'fill-current' : ''}`} />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); openEditModal(message) }} className="p-1 h-auto text-blue-500 hover:text-blue-600 transition-all duration-200">
+                    <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); openEditModal(message) }} className="h-10 w-10 p-0 rounded-full text-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200">
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); deleteMessage(message.id) }} className="p-1 h-auto text-red-500 hover:text-red-600 transition-all duration-200">
+                    <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); deleteMessage(message.id) }} className="h-10 w-10 p-0 rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-                <p className="text-gray-600 text-sm line-clamp-4 mb-3 leading-relaxed">{message.content}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-4 mb-3 leading-relaxed">{message.content}</p>
                 {message.images && message.images.length > 0 && (
                   <div className="mb-3">
-                    <div className="flex gap-2 overflow-x-auto">
+                    <div className="flex gap-2 overflow-x-auto pb-2">
                       {message.images.map((imageUrl, idx) => (
                         <img 
                           key={idx}
                           src={imageUrl} 
                           alt={`Imagen ${idx + 1}`}
-                          className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                          className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border border-gray-200 dark:border-gray-700 flex-shrink-0"
                         />
                       ))}
                     </div>
                   </div>
                 )}
                 <div className="flex items-center justify-between">
-                  <Badge className={`${category?.color} transition-all duration-200 hover:scale-105`}>
+                  <Badge className={`${category?.color} transition-all duration-200 hover:scale-105 text-xs sm:text-sm px-2 py-1 rounded-full`}>
                     <Icon className="h-3 w-3 mr-1" />
                     {message.category}
                   </Badge>
@@ -337,28 +355,28 @@ export function MensajesSection() {
 
       {/* Modal para escribir mensaje */}
       {isWriteModalOpen && (
-        <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
-          <div className="modal-content bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-2xl">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800">Escribir Nuevo Mensaje</h3>
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4">
+          <div className="modal-content bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Escribir Nuevo Mensaje</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Título</label>
-                <Input value={newMessage.title} onChange={(e) => setNewMessage(prev => ({ ...prev, title: e.target.value }))} placeholder="Título del mensaje" className="border-gray-300 focus:border-pink-500 focus:ring-pink-500" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título</label>
+                <Input value={newMessage.title} onChange={(e) => setNewMessage(prev => ({ ...prev, title: e.target.value }))} placeholder="Título del mensaje" className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
-                <select value={newMessage.category} onChange={(e) => setNewMessage(prev => ({ ...prev, category: e.target.value }))} className="w-full p-2 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoría</label>
+                <select value={newMessage.category} onChange={(e) => setNewMessage(prev => ({ ...prev, category: e.target.value }))} className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:border-pink-500 focus:ring-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                   {categories.map(category => (<option key={category.name} value={category.name}>{category.name}</option>))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mensaje</label>
-                <textarea value={newMessage.content} onChange={(e) => setNewMessage(prev => ({ ...prev, content: e.target.value }))} placeholder="Escribe tu mensaje aquí..." rows={4} className="w-full p-2 border border-gray-300 rounded-md resize-none focus:border-pink-500 focus:ring-pink-500" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mensaje</label>
+                <textarea value={newMessage.content} onChange={(e) => setNewMessage(prev => ({ ...prev, content: e.target.value }))} placeholder="Escribe tu mensaje aquí..." rows={4} className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl resize-none focus:border-pink-500 focus:ring-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Fotos (opcional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fotos (opcional)</label>
                 <div 
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-pink-400 transition-colors"
+                  className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 sm:p-6 text-center hover:border-pink-400 transition-colors bg-gray-50 dark:bg-gray-700/50"
                   onDrop={(e) => handleDrop(e, setNewImages)}
                   onDragOver={handleDragOver}
                 >
@@ -371,28 +389,28 @@ export function MensajesSection() {
                     id="file-upload-new"
                   />
                   <label htmlFor="file-upload-new" className="cursor-pointer">
-                    <div className="text-gray-600">
-                      <div className="text-lg mb-2">📷</div>
-                      <div className="font-medium">Haz clic para seleccionar fotos</div>
-                      <div className="text-sm">o arrastra las imágenes aquí</div>
-                      <div className="text-xs text-gray-500 mt-1">JPG, PNG, WebP, GIF (máx 5MB cada una)</div>
+                    <div className="text-gray-600 dark:text-gray-300">
+                      <div className="text-2xl mb-3">📷</div>
+                      <div className="font-medium text-base">Haz clic para seleccionar fotos</div>
+                      <div className="text-sm mt-1">o arrastra las imágenes aquí</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">JPG, PNG, WebP, GIF (máx 5MB cada una)</div>
                     </div>
                   </label>
                 </div>
                 {newImages.length > 0 && (
                   <div className="mt-3">
-                    <div className="text-sm font-medium text-gray-700 mb-2">Imágenes seleccionadas ({newImages.length}):</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Imágenes seleccionadas ({newImages.length}):</div>
                     <div className="flex flex-wrap gap-2">
                       {newImages.map((file, idx) => (
                         <div key={idx} className="relative">
                           <img 
                             src={URL.createObjectURL(file)} 
                             alt={`Preview ${idx + 1}`}
-                            className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                            className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border border-gray-200 dark:border-gray-600"
                           />
                           <button
                             onClick={() => setNewImages(prev => prev.filter((_, i) => i !== idx))}
-                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
                           >
                             ×
                           </button>
@@ -404,8 +422,8 @@ export function MensajesSection() {
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <Button onClick={() => setIsWriteModalOpen(false)} variant="outline" className="flex-1 border-gray-300 hover:bg-gray-50">Cancelar</Button>
-              <Button onClick={addNewMessage} disabled={saving} className="flex-1 bg-pink-500 hover:bg-pink-600 shadow-lg hover:shadow-xl transition-all duration-200">{saving ? 'Guardando...' : 'Guardar'}</Button>
+              <Button onClick={() => setIsWriteModalOpen(false)} variant="outline" className="flex-1 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl">Cancelar</Button>
+              <Button onClick={addNewMessage} disabled={saving} className="flex-1 bg-pink-500 hover:bg-pink-600 shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl">{saving ? 'Guardando...' : 'Guardar'}</Button>
             </div>
           </div>
         </div>
@@ -413,36 +431,36 @@ export function MensajesSection() {
 
       {/* Modal para editar mensaje */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
-          <div className="modal-content bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-2xl">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800">Editar Mensaje</h3>
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4">
+          <div className="modal-content bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Editar Mensaje</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Título</label>
-                <Input value={newMessage.title} onChange={(e) => setNewMessage(prev => ({ ...prev, title: e.target.value }))} placeholder="Título del mensaje" className="border-gray-300 focus:border-pink-500 focus:ring-pink-500" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título</label>
+                <Input value={newMessage.title} onChange={(e) => setNewMessage(prev => ({ ...prev, title: e.target.value }))} placeholder="Título del mensaje" className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
-                <select value={newMessage.category} onChange={(e) => setNewMessage(prev => ({ ...prev, category: e.target.value }))} className="w-full p-2 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoría</label>
+                <select value={newMessage.category} onChange={(e) => setNewMessage(prev => ({ ...prev, category: e.target.value }))} className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:border-pink-500 focus:ring-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                   {categories.map(category => (<option key={category.name} value={category.name}>{category.name}</option>))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mensaje</label>
-                <textarea value={newMessage.content} onChange={(e) => setNewMessage(prev => ({ ...prev, content: e.target.value }))} placeholder="Escribe tu mensaje aquí..." rows={4} className="w-full p-2 border border-gray-300 rounded-md resize-none focus:border-pink-500 focus:ring-pink-500" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mensaje</label>
+                <textarea value={newMessage.content} onChange={(e) => setNewMessage(prev => ({ ...prev, content: e.target.value }))} placeholder="Escribe tu mensaje aquí..." rows={4} className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl resize-none focus:border-pink-500 focus:ring-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Fotos (opcional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fotos (opcional)</label>
                 {editingMessage?.images && editingMessage.images.length > 0 && (
                   <div className="mb-3">
-                    <div className="text-sm font-medium text-gray-700 mb-2">Imágenes actuales:</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Imágenes actuales:</div>
                     <div className="flex flex-wrap gap-2">
                       {editingMessage.images.map((imageUrl, idx) => (
                         <div key={idx} className="relative">
                           <img 
                             src={imageUrl} 
                             alt={`Imagen actual ${idx + 1}`}
-                            className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                            className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border border-gray-200 dark:border-gray-600"
                           />
                         </div>
                       ))}
@@ -450,7 +468,7 @@ export function MensajesSection() {
                   </div>
                 )}
                 <div 
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-pink-400 transition-colors"
+                  className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 sm:p-6 text-center hover:border-pink-400 transition-colors bg-gray-50 dark:bg-gray-700/50"
                   onDrop={(e) => handleDrop(e, setNewImages)}
                   onDragOver={handleDragOver}
                 >
@@ -463,28 +481,28 @@ export function MensajesSection() {
                     id="file-upload-edit"
                   />
                   <label htmlFor="file-upload-edit" className="cursor-pointer">
-                    <div className="text-gray-600">
-                      <div className="text-lg mb-2">📷</div>
-                      <div className="font-medium">Haz clic para agregar más fotos</div>
-                      <div className="text-sm">o arrastra las imágenes aquí</div>
-                      <div className="text-xs text-gray-500 mt-1">JPG, PNG, WebP, GIF (máx 5MB cada una)</div>
+                    <div className="text-gray-600 dark:text-gray-300">
+                      <div className="text-2xl mb-3">📷</div>
+                      <div className="font-medium text-base">Haz clic para agregar más fotos</div>
+                      <div className="text-sm mt-1">o arrastra las imágenes aquí</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">JPG, PNG, WebP, GIF (máx 5MB cada una)</div>
                     </div>
                   </label>
                 </div>
                 {newImages.length > 0 && (
                   <div className="mt-3">
-                    <div className="text-sm font-medium text-gray-700 mb-2">Nuevas imágenes ({newImages.length}):</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nuevas imágenes ({newImages.length}):</div>
                     <div className="flex flex-wrap gap-2">
                       {newImages.map((file, idx) => (
                         <div key={idx} className="relative">
                           <img 
                             src={URL.createObjectURL(file)} 
                             alt={`Preview ${idx + 1}`}
-                            className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                            className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border border-gray-200 dark:border-gray-600"
                           />
                           <button
                             onClick={() => setNewImages(prev => prev.filter((_, i) => i !== idx))}
-                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
                           >
                             ×
                           </button>
@@ -496,8 +514,8 @@ export function MensajesSection() {
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <Button onClick={() => { setIsEditModalOpen(false); setEditingMessage(null); setNewMessage({ title: '', content: '', category: 'Amor' }); setNewImages([]) }} variant="outline" className="flex-1 border-gray-300 hover:bg-gray-50">Cancelar</Button>
-              <Button onClick={saveEditedMessage} disabled={saving} className="flex-1 bg-pink-500 hover:bg-pink-600 shadow-lg hover:shadow-xl transition-all duration-200">{saving ? 'Guardando...' : 'Guardar Cambios'}</Button>
+              <Button onClick={() => { setIsEditModalOpen(false); setEditingMessage(null); setNewMessage({ title: '', content: '', category: 'Amor' }); setNewImages([]) }} variant="outline" className="flex-1 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl">Cancelar</Button>
+              <Button onClick={saveEditedMessage} disabled={saving} className="flex-1 bg-pink-500 hover:bg-pink-600 shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl">{saving ? 'Guardando...' : 'Guardar Cambios'}</Button>
             </div>
           </div>
         </div>
