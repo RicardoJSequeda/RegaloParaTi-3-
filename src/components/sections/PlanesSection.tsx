@@ -549,37 +549,39 @@ export function PlanesSection() {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="w-full min-h-screen p-0 sm:p-4 lg:p-6 space-y-4 sm:space-y-6 lg:space-y-8 overflow-x-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Nuestros Planes</h1>
-          <p className="text-gray-600 dark:text-gray-400">Organiza y gestiona tus planes especiales</p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-3 px-4 sm:px-0">
+        <div className="text-center sm:text-left space-y-3 sm:space-y-3 w-full sm:w-auto">
+          <h1 className="text-[clamp(1.8rem,6vw,2.5rem)] font-bold text-gray-900 dark:text-white leading-tight">Nuestros Planes</h1>
+          <p className="text-[clamp(1rem,3.5vw,1.1rem)] text-gray-600 dark:text-gray-300 max-w-full sm:max-w-2xl mx-auto sm:mx-0">
+            Organiza y gestiona tus planes especiales
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-1">
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-1.5 w-full sm:w-auto justify-center">
             <Button
               variant={viewMode === 'list' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('list')}
-              className={viewMode === 'list' ? 'bg-pink-600 hover:bg-pink-700' : ''}
+              className={`${viewMode === 'list' ? 'bg-pink-600 hover:bg-pink-700' : ''} text-[clamp(0.85rem,2.5vw,0.9rem)] px-3 sm:px-3 py-2 sm:py-2`}
             >
-              <Grid3X3 className="h-4 w-4 mr-2" />
+              <Grid3X3 className="h-4 w-4 sm:h-4 sm:w-4 mr-2 sm:mr-2" />
               Lista
             </Button>
             <Button
               variant={viewMode === 'calendar' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('calendar')}
-              className={viewMode === 'calendar' ? 'bg-pink-600 hover:bg-pink-700' : ''}
+              className={`${viewMode === 'calendar' ? 'bg-pink-600 hover:bg-pink-700' : ''} text-[clamp(0.85rem,2.5vw,0.9rem)] px-3 sm:px-3 py-2 sm:py-2`}
             >
-              <CalendarDays className="h-4 w-4 mr-2" />
+              <CalendarDays className="h-4 w-4 sm:h-4 sm:w-4 mr-2 sm:mr-2" />
               Calendario
             </Button>
           </div>
-          <div className="flex gap-2">
-            <Button onClick={() => setShowCreateModal(true)} className="bg-pink-600 hover:bg-pink-700">
-              <Plus className="h-4 w-4 mr-2" />
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button onClick={() => setShowCreateModal(true)} className="bg-pink-600 hover:bg-pink-700 w-full sm:w-auto text-[clamp(0.85rem,2.5vw,0.9rem)] px-4 sm:px-4 py-2.5 sm:py-2.5">
+              <Plus className="h-4 w-4 sm:h-4 sm:w-4 mr-2 sm:mr-2" />
               Nuevo Plan
             </Button>
           </div>
@@ -587,110 +589,110 @@ export function PlanesSection() {
       </div>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
-        <Card className="stats-card">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
+      <div className="overflow-x-auto pb-2 px-4 sm:px-0">
+        <div className="flex gap-4 sm:gap-4 min-w-max">
+          <Card className="stats-card min-w-[110px] sm:min-w-[160px]">
+            <CardContent className="p-4 sm:p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[clamp(0.8rem,2.5vw,0.8rem)] text-gray-600 dark:text-gray-400">Total</p>
+                  <p className="text-[clamp(1.6rem,4.5vw,2rem)] font-bold text-gray-900 dark:text-white">{stats.total}</p>
+                </div>
+                <Calendar className="h-7 w-7 sm:h-8 sm:w-8 text-pink-500" />
               </div>
-              <Calendar className="h-8 w-8 text-pink-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="stats-card">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Pendientes</p>
-                <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="stats-card min-w-[110px] sm:min-w-[160px]">
+            <CardContent className="p-4 sm:p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[clamp(0.8rem,2.5vw,0.8rem)] text-gray-600 dark:text-gray-400">Pendientes</p>
+                  <p className="text-[clamp(1.6rem,4.5vw,2rem)] font-bold text-yellow-600">{stats.pending}</p>
+                </div>
+                <Clock className="h-7 w-7 sm:h-8 sm:w-8 text-yellow-500" />
               </div>
-              <Clock className="h-8 w-8 text-yellow-500" />
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Card className="stats-card">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">En Progreso</p>
-                <p className="text-2xl font-bold text-blue-600">{stats.inProgress}</p>
+          <Card className="stats-card min-w-[110px] sm:min-w-[160px]">
+            <CardContent className="p-4 sm:p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[clamp(0.8rem,2.5vw,0.8rem)] text-gray-600 dark:text-gray-400">En Progreso</p>
+                  <p className="text-[clamp(1.6rem,4.5vw,2rem)] font-bold text-blue-600">{stats.inProgress}</p>
+                </div>
+                <PlayCircle className="h-7 w-7 sm:h-8 sm:w-8 text-blue-500" />
               </div>
-              <PlayCircle className="h-8 w-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Card className="stats-card">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Completados</p>
-                <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
+          <Card className="stats-card min-w-[110px] sm:min-w-[160px]">
+            <CardContent className="p-4 sm:p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[clamp(0.8rem,2.5vw,0.8rem)] text-gray-600 dark:text-gray-400">Completados</p>
+                  <p className="text-[clamp(1.6rem,4.5vw,2rem)] font-bold text-green-600">{stats.completed}</p>
+                </div>
+                <CheckCircle className="h-7 w-7 sm:h-8 sm:w-8 text-green-500" />
               </div>
-              <CheckCircle className="h-8 w-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Card className="stats-card">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Cancelados</p>
-                <p className="text-2xl font-bold text-red-600">{stats.cancelled}</p>
+          <Card className="stats-card min-w-[110px] sm:min-w-[160px]">
+            <CardContent className="p-4 sm:p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[clamp(0.8rem,2.5vw,0.8rem)] text-gray-600 dark:text-gray-400">Cancelados</p>
+                  <p className="text-[clamp(1.6rem,4.5vw,2rem)] font-bold text-red-600">{stats.cancelled}</p>
+                </div>
+                <XCircle className="h-7 w-7 sm:h-8 sm:w-8 text-red-500" />
               </div>
-              <XCircle className="h-8 w-8 text-red-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Progress and Achievements */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 px-4 sm:px-0">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Progreso General</h3>
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+              <h3 className="text-[clamp(1.1rem,3vw,1.1rem)] font-semibold text-gray-900 dark:text-white">Progreso General</h3>
+              <span className="text-[clamp(0.9rem,2.5vw,0.9rem)] text-gray-600 dark:text-gray-400">
                 {getProgressPercentage()}% completado
               </span>
             </div>
             <div className="h-3">
-  <Progress value={getProgressPercentage()} />
-</div>
+              <Progress value={getProgressPercentage()} />
+            </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Logros</h3>
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+              <h3 className="text-[clamp(1.1rem,3vw,1.1rem)] font-semibold text-gray-900 dark:text-white">Logros</h3>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowAchievementsModal(true)}
-                className="text-pink-600 border-pink-600 hover:bg-pink-50"
+                className="text-pink-600 border-pink-600 hover:bg-pink-50 text-[clamp(0.9rem,2.5vw,0.9rem)] px-3 sm:px-3 py-2 sm:py-2"
               >
-                <Trophy className="h-4 w-4 mr-2" />
+                <Trophy className="h-4 w-4 sm:h-4 sm:w-4 mr-2 sm:mr-2" />
                 Ver Todos
               </Button>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center space-x-2">
-                <Trophy className="h-6 w-6 text-yellow-500" />
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+                <Trophy className="h-6 w-6 sm:h-6 sm:w-6 text-yellow-500" />
+                <span className="text-[clamp(0.9rem,2.5vw,0.9rem)] text-gray-600 dark:text-gray-400">
                   {getUnlockedAchievements().length} de {achievements.length} desbloqueados
                 </span>
               </div>
-              <div className="h-3 w-24">
-  <Progress value={getAchievementProgress()} />
-</div>
+              <div className="h-3 w-24 sm:w-24">
+                <Progress value={getAchievementProgress()} />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -744,8 +746,8 @@ export function PlanesSection() {
       )}
 
       {/* Filters */}
-      <Card>
-        <CardContent className="p-6">
+      <Card className="mx-4 sm:mx-0">
+        <CardContent className="p-5 sm:p-6">
           <div className="space-y-4">
             {/* Search */}
             <div className="relative">
@@ -754,21 +756,21 @@ export function PlanesSection() {
                 placeholder="Buscar planes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 text-[clamp(0.95rem,2.5vw,1rem)] py-3 sm:py-3"
               />
             </div>
 
             {/* Filter Options */}
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {/* Status Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-[clamp(0.95rem,2.5vw,1rem)] font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Estado
                 </label>
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-3 py-3 sm:py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 text-[clamp(0.95rem,2.5vw,1rem)]"
                 >
                   <option value="todos">Todos los estados</option>
                   {statuses.map(status => (
@@ -786,17 +788,27 @@ export function PlanesSection() {
       {/* Content based on view mode */}
       {viewMode === 'list' ? (
         /* Plans Tabs */
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="todos">Todos ({filteredPlans.length})</TabsTrigger>
-            <TabsTrigger value="pendiente">Pendientes ({getPlansByStatus('pendiente').length})</TabsTrigger>
-            <TabsTrigger value="en_progreso">En Progreso ({getPlansByStatus('en_progreso').length})</TabsTrigger>
-            <TabsTrigger value="completado">Completados ({getPlansByStatus('completado').length})</TabsTrigger>
-            <TabsTrigger value="cancelado">Cancelados ({getPlansByStatus('cancelado').length})</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="px-4 sm:px-0">
+          <TabsList className="grid w-full grid-cols-5 gap-2 sm:gap-2">
+            <TabsTrigger value="todos" className="text-[clamp(0.75rem,2.5vw,0.8rem)] px-2 sm:px-3 py-2.5 sm:py-2.5">
+              Todos ({filteredPlans.length})
+            </TabsTrigger>
+            <TabsTrigger value="pendiente" className="text-[clamp(0.75rem,2.5vw,0.8rem)] px-2 sm:px-3 py-2.5 sm:py-2.5">
+              Pendientes ({getPlansByStatus('pendiente').length})
+            </TabsTrigger>
+            <TabsTrigger value="en_progreso" className="text-[clamp(0.75rem,2.5vw,0.8rem)] px-2 sm:px-3 py-2.5 sm:py-2.5">
+              En Progreso ({getPlansByStatus('en_progreso').length})
+            </TabsTrigger>
+            <TabsTrigger value="completado" className="text-[clamp(0.75rem,2.5vw,0.8rem)] px-2 sm:px-3 py-2.5 sm:py-2.5">
+              Completados ({getPlansByStatus('completado').length})
+            </TabsTrigger>
+            <TabsTrigger value="cancelado" className="text-[clamp(0.75rem,2.5vw,0.8rem)] px-2 sm:px-3 py-2.5 sm:py-2.5">
+              Cancelados ({getPlansByStatus('cancelado').length})
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="todos" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-0">
               {filteredPlans.map(plan => (
                 <PlanCard
                   key={plan.id}
@@ -813,7 +825,7 @@ export function PlanesSection() {
 
           {['pendiente', 'en_progreso', 'completado', 'cancelado'].map(status => (
             <TabsContent key={status} value={status} className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-0">
                 {getPlansByStatus(status).map(plan => (
                   <PlanCard
                     key={plan.id}
@@ -1294,9 +1306,9 @@ function PlanCard({
   const StatusIcon = getStatusIcon(plan.status)
 
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-200">
+    <Card className="hover:shadow-lg transition-shadow duration-200 w-full">
       {plan.image && (
-        <div className="relative h-48 overflow-hidden rounded-t-lg">
+        <div className="relative h-40 sm:h-48 overflow-hidden rounded-t-lg">
           <img
             src={plan.image}
             alt={plan.title}
@@ -1305,13 +1317,13 @@ function PlanCard({
         </div>
       )}
       
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 p-3 sm:p-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
+            <CardTitle className="text-[clamp(1rem,2.5vw,1.1rem)] font-semibold text-gray-900 dark:text-white line-clamp-2">
               {plan.title}
             </CardTitle>
-            <CardDescription className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">
+            <CardDescription className="text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400 line-clamp-2 mt-2">
               {plan.description}
             </CardDescription>
           </div>
@@ -1321,38 +1333,38 @@ function PlanCard({
               variant="ghost"
               size="sm"
               onClick={onEdit}
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 sm:h-9 sm:w-9 p-0"
             >
-              <Edit className="h-4 w-4" />
+              <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={onDelete}
-              className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+              className="h-8 w-8 sm:h-9 sm:w-9 p-0 text-red-500 hover:text-red-700"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 p-3 sm:p-6 pt-0">
         {/* Status */}
         <div className="flex items-center justify-end">
-          <Badge className={getStatusColor(plan.status)}>
-            <StatusIcon className="h-3 w-3 mr-1" />
+          <Badge className={`${getStatusColor(plan.status)} text-[clamp(0.7rem,2vw,0.8rem)] px-2 sm:px-3 py-1 sm:py-1.5`}>
+            <StatusIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
             {statuses.find(s => s.value === plan.status)?.label}
           </Badge>
         </div>
 
         {/* Date and Time */}
-        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-          <Calendar className="h-4 w-4 mr-2" />
+        <div className="flex items-center text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400">
+          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
           <span>{new Date(plan.date).toLocaleDateString('es-ES')}</span>
           {plan.time && (
             <>
-              <Clock className="h-4 w-4 mr-2 ml-4" />
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5 mr-2 ml-4" />
               <span>{plan.time}</span>
             </>
           )}
@@ -1360,20 +1372,18 @@ function PlanCard({
 
         {/* Location */}
         {plan.location && (
-          <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-            <MapPin className="h-4 w-4 mr-2" />
+          <div className="flex items-center text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400">
+            <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
             <span className="line-clamp-1">{plan.location}</span>
           </div>
         )}
 
-
-
         {/* Tags */}
         {plan.tags && plan.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-2">
             {plan.tags.map(tag => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                <Tag className="h-3 w-3 mr-1" />
+              <Badge key={tag} variant="outline" className="text-[clamp(0.7rem,2vw,0.8rem)] px-2 sm:px-3 py-1 sm:py-1.5">
+                <Tag className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                 {tag}
               </Badge>
             ))}
@@ -1381,23 +1391,23 @@ function PlanCard({
         )}
 
         {/* Status Actions */}
-        <div className="flex gap-2 pt-2">
+        <div className="flex flex-col sm:flex-row gap-2 pt-3">
           {plan.status === 'pendiente' && (
             <>
               <Button
                 size="sm"
                 onClick={() => onStatusChange('en_progreso')}
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
               >
-                <PlayCircle className="h-4 w-4 mr-1" />
+                <PlayCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
                 Iniciar
               </Button>
               <Button
                 size="sm"
                 onClick={() => onStatusChange('completado')}
-                className="flex-1 bg-green-600 hover:bg-green-700"
+                className="flex-1 bg-green-600 hover:bg-green-700 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
               >
-                <CheckCircle className="h-4 w-4 mr-1" />
+                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
                 Completar
               </Button>
             </>
@@ -1408,18 +1418,18 @@ function PlanCard({
               <Button
                 size="sm"
                 onClick={() => onStatusChange('completado')}
-                className="flex-1 bg-green-600 hover:bg-green-700"
+                className="flex-1 bg-green-600 hover:bg-green-700 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
               >
-                <CheckCircle className="h-4 w-4 mr-1" />
+                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
                 Completar
               </Button>
               <Button
                 size="sm"
                 onClick={() => onStatusChange('pendiente')}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
               >
-                <Clock className="h-4 w-4 mr-1" />
+                <Clock className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
                 Pausar
               </Button>
             </>
@@ -1430,9 +1440,9 @@ function PlanCard({
               size="sm"
               onClick={() => onStatusChange('cancelado')}
               variant="outline"
-              className="text-red-600 border-red-600 hover:bg-red-50"
+              className="text-red-600 border-red-600 hover:bg-red-50 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
             >
-              <XCircle className="h-4 w-4 mr-1" />
+              <XCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
               Cancelar
             </Button>
           )}
@@ -1442,9 +1452,9 @@ function PlanCard({
               size="sm"
               onClick={() => onStatusChange('en_progreso')}
               variant="outline"
-              className="flex-1"
+              className="flex-1 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
             >
-              <PlayCircle className="h-4 w-4 mr-1" />
+              <PlayCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
               Reabrir
             </Button>
           )}
@@ -1453,9 +1463,9 @@ function PlanCard({
             <Button
               size="sm"
               onClick={() => onStatusChange('pendiente')}
-              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
             >
-              <Clock className="h-4 w-4 mr-1" />
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
               Reactivar
             </Button>
           )}
