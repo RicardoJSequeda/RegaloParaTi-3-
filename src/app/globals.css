@@ -1,0 +1,286 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Mejoras específicas para móvil */
+@layer components {
+  /* Text shadows para mejor legibilidad en imágenes */
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  }
+  
+  .text-shadow-md {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+  
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+  }
+  
+  /* Mejoras para contraste en móvil */
+  .mobile-text {
+    @apply text-gray-900 dark:text-white;
+  }
+  
+  .mobile-card {
+    @apply bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl;
+  }
+  
+  .mobile-counter {
+    @apply gap-4 sm:gap-6;
+  }
+  
+  .mobile-counter-item {
+    @apply space-y-2;
+  }
+  
+  .mobile-media {
+    @apply rounded-2xl;
+  }
+  
+  .mobile-carousel-control {
+    @apply bg-white/90 hover:bg-white shadow-lg border-0 rounded-full transition-all duration-300;
+  }
+  
+  .mobile-touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  /* Mejoras para el carrusel */
+  .carousel-item {
+    @apply group;
+  }
+  
+  .carousel-image-overlay {
+    @apply bg-gradient-to-t from-black/60 via-black/20 to-transparent;
+  }
+  
+  .carousel-description {
+    @apply p-6;
+  }
+  
+  .carousel-title {
+    @apply text-xl sm:text-2xl mb-3;
+  }
+  
+  .carousel-subtitle {
+    @apply text-base sm:text-lg mb-3 leading-relaxed;
+  }
+  
+  .carousel-long-description {
+    @apply text-sm sm:text-base mb-4 leading-relaxed;
+  }
+  
+  .carousel-badge {
+    @apply bg-white/20 text-white border-white/30 text-sm px-3 py-1;
+  }
+  
+  /* Mejoras para el botón hamburger */
+  .hamburger-button {
+    @apply fixed top-4 left-4 z-50 h-12 w-12 sm:h-14 sm:w-14 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-gray-200 dark:border-gray-700 shadow-xl rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl;
+  }
+  
+  /* Mejoras para espaciado en móvil */
+  .mobile-spacing {
+    @apply space-y-8 sm:space-y-10;
+  }
+  
+  .mobile-padding {
+    @apply p-4 sm:p-6;
+  }
+  
+  /* Mejoras para títulos en móvil */
+  .mobile-title {
+    @apply text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white;
+  }
+  
+  .mobile-subtitle {
+    @apply text-base sm:text-lg text-gray-600 dark:text-gray-300;
+  }
+  
+  /* Mejoras para contadores */
+  .counter-number {
+    @apply text-3xl sm:text-4xl font-bold text-pink-500 leading-none;
+  }
+  
+  .counter-label {
+    @apply text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide;
+  }
+  
+  /* Mejoras para badges */
+  .mobile-badge {
+    @apply bg-white/20 text-white border-white/30 text-sm px-3 py-1;
+  }
+  
+  /* Mejoras para citas */
+  .mobile-quote {
+    @apply text-lg sm:text-xl italic text-pink-600 dark:text-pink-400 font-medium leading-relaxed max-w-3xl mx-auto;
+  }
+  
+  /* Mejoras para párrafos */
+  .mobile-paragraph {
+    @apply text-base sm:text-lg leading-relaxed text-gray-700 dark:text-gray-300 max-w-4xl mx-auto;
+  }
+}
+
+/* Animaciones suaves */
+@layer utilities {
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .hover-lift {
+    @apply transition-all duration-300 hover:scale-105 hover:shadow-xl;
+  }
+  
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2;
+  }
+  
+  /* Estilos específicos para la página de recuerdos */
+  .timeline-container {
+    @apply relative;
+  }
+  
+  .timeline-line {
+    @apply bg-gradient-to-b from-pink-500 to-purple-500;
+  }
+  
+  .timeline-dot {
+    @apply bg-pink-500 border-4 border-white shadow-lg;
+  }
+  
+  .timeline-card {
+    @apply bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl;
+  }
+  
+  .timeline-image {
+    @apply transition-transform duration-500;
+  }
+  
+  .timeline-overlay {
+    @apply bg-black/20;
+  }
+  
+  .timeline-controls {
+    @apply bg-white/90 hover:bg-white text-gray-700 hover:text-gray-900;
+  }
+  
+  .timeline-date-badge {
+    @apply bg-white/90 backdrop-blur-sm;
+  }
+  
+  .timeline-card-content {
+    @apply bg-white dark:bg-gray-800;
+  }
+  
+  .timeline-title {
+    @apply text-gray-900 dark:text-white;
+  }
+  
+  .timeline-tags {
+    @apply flex-wrap;
+  }
+  
+  .timeline-tag {
+    @apply bg-pink-100 text-pink-700 border-pink-200;
+  }
+  
+  .timeline-empty {
+    @apply bg-white dark:bg-gray-800 shadow-lg;
+  }
+  
+  .timeline-empty-icon {
+    @apply bg-pink-100 dark:bg-pink-900/20;
+  }
+  
+  /* Scroll horizontal personalizado */
+  .scroll-horizontal {
+    scrollbar-width: thin;
+    scrollbar-color: #ec4899 #f3f4f6;
+  }
+  
+  .scroll-horizontal::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .scroll-horizontal::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 3px;
+  }
+  
+  .scroll-horizontal::-webkit-scrollbar-thumb {
+    background: #ec4899;
+    border-radius: 3px;
+  }
+  
+  .scroll-horizontal::-webkit-scrollbar-thumb:hover {
+    background: #db2777;
+  }
+}
