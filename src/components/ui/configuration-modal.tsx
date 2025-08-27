@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Heart, Bell, ClipboardCheck, Activity, CalendarDays, Gift, Sparkles, MapPin, Star, Plus, ChefHat, Film, Target, Star as StarIcon } from 'lucide-react'
 import { getBrowserClient } from '@/lib/supabase/browser-client'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNotifications } from '@/hooks/useNotifications'
 
 //
 
@@ -17,6 +18,7 @@ interface ConfigurationModalProps {
 
 export default function ConfigurationModal({ open, onOpenChange }: ConfigurationModalProps) {
   const supabase = getBrowserClient()
+  const { sendNotification, requestPermission, permission, isSupported } = useNotifications()
   const [loading, setLoading] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
@@ -44,6 +46,12 @@ export default function ConfigurationModal({ open, onOpenChange }: Configuration
       const raw = localStorage.getItem('surpriseNotifState')
       if (raw) setNotifState(JSON.parse(raw))
     } catch {}
+    
+    // Solicitar permisos de notificación cuando se abra el modal
+    if (open && isSupported && permission === 'default') {
+      requestPermission()
+    }
+    
     if (!open) return
     const load = async () => {
       try {
@@ -563,6 +571,22 @@ export default function ConfigurationModal({ open, onOpenChange }: Configuration
         
         setNotifications(notif)
         setLastUpdated(new Date())
+        
+        // Enviar notificaciones del navegador para las nuevas notificaciones
+        if (isSupported && permission === 'granted') {
+          notif.forEach((notification: any) => {
+            // Solo enviar notificaciones del navegador para notificaciones de alta prioridad
+            if (notification.priority === 'high' || notification.kind === 'surprise_unlockable') {
+              sendNotification({
+                title: notification.title,
+                body: notification.desc || 'Tienes una notificación importante',
+                icon: '/favicon.ico',
+                tag: notification.id,
+                requireInteraction: notification.priority === 'high'
+              })
+            }
+          })
+        }
       } finally {
         setLoading(false)
       }
@@ -576,15 +600,51 @@ export default function ConfigurationModal({ open, onOpenChange }: Configuration
     // Suscripciones en tiempo real
     const channel = supabase
       .channel('notifications_panel_changes')
-             .on('postgres_changes', { event: '*', schema: 'public', table: 'surprises' }, () => load())
+             .on('postgres_changes', { event: '*', schema: 'public', table: 'surprises' }, () => {
+               load()
+               // Enviar notificación del navegador para sorpresas nuevas
+               if (isSupported && permission === 'granted') {
+                 sendNotification({
+                   title: '¡Nueva sorpresa disponible!',
+                   body: 'Se ha agregado una nueva sorpresa a tu lista',
+                   icon: '/favicon.ico',
+                   tag: 'new_surprise',
+                   requireInteraction: false
+                 })
+               }
+             })
        .on('postgres_changes', { event: '*', schema: 'public', table: 'pet_tasks' }, () => load())
        .on('postgres_changes', { event: '*', schema: 'public', table: 'pet_health_records' }, () => load())
        .on('postgres_changes', { event: '*', schema: 'public', table: 'plans' }, () => load())
        .on('postgres_changes', { event: '*', schema: 'public', table: 'places' }, () => load())
-       .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => load())
+       .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => {
+         load()
+         // Enviar notificación del navegador para mensajes nuevos
+         if (isSupported && permission === 'granted') {
+           sendNotification({
+             title: '¡Nuevo mensaje!',
+             body: 'Tienes un nuevo mensaje esperando ser leído',
+             icon: '/favicon.ico',
+             tag: 'new_message',
+             requireInteraction: false
+           })
+         }
+       })
        .on('postgres_changes', { event: '*', schema: 'public', table: 'recipes' }, () => load())
        .on('postgres_changes', { event: '*', schema: 'public', table: 'movies' }, () => load())
-       .on('postgres_changes', { event: '*', schema: 'public', table: 'goals' }, () => load())
+       .on('postgres_changes', { event: '*', schema: 'public', table: 'goals' }, () => {
+         load()
+         // Enviar notificación del navegador para metas con fechas límite próximas
+         if (isSupported && permission === 'granted') {
+           sendNotification({
+             title: '¡Meta próxima a vencer!',
+             body: 'Tienes una meta con fecha límite próxima',
+             icon: '/favicon.ico',
+             tag: 'goal_deadline',
+             requireInteraction: true
+           })
+         }
+       })
        .on('postgres_changes', { event: '*', schema: 'public', table: 'dreams' }, () => load())
       .subscribe()
 
@@ -648,6 +708,20 @@ export default function ConfigurationModal({ open, onOpenChange }: Configuration
     // Marcar como vista temporalmente (se volverá a mostrar en 10 minutos si aún aplica)
     const snoozeUntil = new Date(Date.now() + 10 * 60 * 1000).toISOString() // 10 minutos
     persistNotifState({ ...notifState, [id]: { status: 'snoozed', snoozeUntil } })
+    
+    // Enviar notificación del navegador confirmando la acción
+    if (isSupported && permission === 'granted') {
+      const notification = notifications.find(n => n.id === id)
+      if (notification) {
+        sendNotification({
+          title: 'Notificación marcada como vista',
+          body: `"${notification.title}" se ocultará por 10 minutos`,
+          icon: '/favicon.ico',
+          tag: `seen_${id}`,
+          requireInteraction: false
+        })
+      }
+    }
   }
 
   const markAsPermanentlySeen = (id: string) => {
@@ -867,20 +941,50 @@ export default function ConfigurationModal({ open, onOpenChange }: Configuration
                 <DialogDescription className="text-pink-100">Todo lo que necesitas saber en un vistazo</DialogDescription>
               </div>
             </div>
-            <AnimatePresence>
-              {hasAlerts && (
-                <motion.span 
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white/20 backdrop-blur-sm text-white shadow-lg"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.3 }}
+            <div className="flex items-center gap-2">
+              <AnimatePresence>
+                {hasAlerts && (
+                  <motion.span 
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white/20 backdrop-blur-sm text-white shadow-lg"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Bell className="h-4 w-4" />
+                    <span className="hidden sm:inline">Tienes pendientes</span>
+                  </motion.span>
+                )}
+              </AnimatePresence>
+              
+              {/* Botón para permisos de notificación */}
+              {isSupported && permission !== 'granted' && (
+                <motion.button
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-300"
+                  onClick={requestPermission}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title="Activar notificaciones del navegador"
                 >
                   <Bell className="h-4 w-4" />
-                  <span className="hidden sm:inline">Tienes pendientes</span>
+                  <span className="hidden sm:inline">Activar</span>
+                </motion.button>
+              )}
+              
+              {/* Indicador de notificaciones activas */}
+              {isSupported && permission === 'granted' && (
+                <motion.span 
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium bg-green-500/20 backdrop-blur-sm text-green-100 shadow-lg"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  title="Notificaciones del navegador activas"
+                >
+                  <Bell className="h-4 w-4" />
+                  <span className="hidden sm:inline">Activas</span>
                 </motion.span>
               )}
-            </AnimatePresence>
+            </div>
           </motion.div>
         </DialogHeader>
 
