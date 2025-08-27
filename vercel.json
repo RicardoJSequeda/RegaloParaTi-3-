@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "src/app/page.tsx": {
+      "maxDuration": 30
+    }
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_DISABLE_SSG": "true"
+    }
+  }
+}
