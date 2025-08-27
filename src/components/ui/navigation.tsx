@@ -160,9 +160,9 @@ export function Navigation({
             <Button
               variant="outline"
               size="icon"
-              className="fixed top-3 left-3 z-50 h-10 w-10 sm:h-12 sm:w-12 bg-background/80 backdrop-blur-sm border-border shadow-lg"
+              className="fixed top-4 left-4 z-50 h-12 w-12 sm:h-14 sm:w-14 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-gray-200 dark:border-gray-700 shadow-xl rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl"
             >
-              <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-80 p-0 sm:w-96">
