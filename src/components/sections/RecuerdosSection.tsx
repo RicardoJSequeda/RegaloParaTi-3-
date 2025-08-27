@@ -688,30 +688,33 @@ export function RecuerdosSection() {
   return (
     <>
       <motion.div 
-        className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8"
+        className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Header */}
-        <motion.div className="space-y-2 text-center" variants={itemVariants}>
-          <h1 className="text-3xl font-bold tracking-tight">Recuerdos</h1>
+        <motion.div className="space-y-3 text-center" variants={itemVariants}>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Recuerdos</h1>
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Revive los momentos más especiales de nuestra historia juntos
+          </p>
         </motion.div>
 
         {/* Sección "¿Sabías que...?" */}
         <motion.div variants={itemVariants} className="max-w-4xl mx-auto">
-          <Card className="bg-gradient-to-r from-pink-50 to-purple-50 border-pink-200">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="text-4xl text-pink-500 font-bold">?</div>
-                <div className="flex-1 space-y-3">
-                  <h3 className="text-xl font-bold text-pink-700">¿Sabías que...?</h3>
-                  <p className="text-gray-700 leading-relaxed">
+          <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden">
+            <CardContent className="p-6 sm:p-8">
+              <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+                <div className="text-4xl sm:text-5xl text-pink-500 font-bold flex-shrink-0">?</div>
+                <div className="flex-1 space-y-4">
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">¿Sabías que...?</h3>
+                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base sm:text-lg max-w-3xl">
                     {curiosities.length > 0 ? curiosities[currentCuriosityIndex]?.text : 'No hay curiosidades disponibles'}
                   </p>
                   <Button 
                     onClick={showNextCuriosity}
-                    className="bg-pink-500 hover:bg-pink-600 text-white"
+                    className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105"
                     disabled={curiosities.length === 0}
                   >
                     Mostrar siguiente curiosidad
@@ -733,15 +736,15 @@ export function RecuerdosSection() {
               {filteredMilestones.length} de {milestones.length} hitos especiales
             </p>
             
-            {/* Filtros mejorados */}
-            <div className="flex flex-wrap justify-center gap-3">
+            {/* Filtros mejorados con scroll horizontal en móvil */}
+            <div className="flex overflow-x-auto gap-3 pb-2 px-4 sm:px-0 sm:flex-wrap sm:justify-center sm:overflow-visible scroll-horizontal">
               {["Todos", "Aniversario", "Viajes", "Eventos", "Otros"].map((filter) => (
                 <Button
                   key={filter}
                   variant={selectedFilter === filter ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedFilter(filter)}
-                  className={`text-sm px-4 py-2 rounded-full ${
+                  className={`text-sm px-4 py-2 rounded-full flex-shrink-0 sm:flex-shrink ${
                     selectedFilter === filter 
                       ? "bg-pink-500 hover:bg-pink-600 text-white shadow-lg" 
                       : "border-2 border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400"
@@ -761,7 +764,7 @@ export function RecuerdosSection() {
             {/* Línea central mejorada */}
             <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-1 timeline-line transform -translate-x-1/2"></div>
             
-            <div className="space-y-8 md:space-y-12">
+            <div className="space-y-12 sm:space-y-16 md:space-y-20">
               {filteredMilestones.length === 0 ? (
                 <motion.div 
                   className="text-center py-16 timeline-empty rounded-3xl"
@@ -812,7 +815,7 @@ export function RecuerdosSection() {
                         <div className="w-3/10 hidden md:block"></div>
                       ) : null}
                       
-                      <div className={`relative w-full md:w-2/5 ${isLeft ? 'md:ml-6' : 'md:mr-6'}`}>
+                      <div className={`relative w-full max-w-[90%] mx-auto md:w-2/5 ${isLeft ? 'md:ml-6' : 'md:mr-6'}`}>
                         {/* Punto de la línea de tiempo */}
                         <motion.div 
                           className={`absolute ${isLeft ? '-left-10' : '-right-10'} top-8 hidden md:block`}
@@ -823,7 +826,7 @@ export function RecuerdosSection() {
                         </motion.div>
 
                         {/* Número en móvil */}
-                        <div className="md:hidden mb-4 text-center">
+                        <div className="md:hidden mb-6 text-center">
                           <div className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg mx-auto shadow-lg">
                             {String(index + 1).padStart(2, '0')}
                           </div>
@@ -835,14 +838,14 @@ export function RecuerdosSection() {
                           whileHover={{ scale: 1.02 }}
                           transition={{ duration: 0.3 }}
                         >
-                          <div className="timeline-card rounded-2xl overflow-hidden">
+                          <div className="timeline-card rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
                             {/* Imagen del hito */}
                             <div className="relative">
-                              <div className="w-full h-56 overflow-hidden">
+                              <div className="w-full h-48 sm:h-56 overflow-hidden">
                                 <img
                                   src={milestone.image_url || 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=600&h=400&fit=crop&crop=center'}
                                   alt={milestone.title}
-                                  className="w-full h-full object-cover timeline-image"
+                                  className="w-full h-full object-cover timeline-image rounded-t-2xl"
                                 />
                               </div>
                               
@@ -972,7 +975,7 @@ export function RecuerdosSection() {
             </div>
           )}
           
-          {/* Mapa con altura mejorada */}
+          {/* Mapa con altura mejorada para móvil */}
           <div className="relative max-w-5xl mx-auto">
             <LeafletMap 
               places={showMapResults ? searchResults.map(place => ({
@@ -984,7 +987,7 @@ export function RecuerdosSection() {
                 type: place.type,
                 visited: place.status === 'visitado'
               })) : mapPlaces} 
-              className="h-[300px] sm:h-[400px] md:h-[500px] w-full rounded-lg border" 
+              className="h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] w-full rounded-2xl border-0 shadow-lg" 
               onAddPlace={handleAddPlaceFromMap}
             />
           </div>
@@ -994,17 +997,17 @@ export function RecuerdosSection() {
         <motion.div className="space-y-4 max-w-5xl mx-auto" variants={itemVariants}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h2 className="text-xl sm:text-2xl font-bold text-pink-700">Lista de Lugares Guardados</h2>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex overflow-x-auto gap-2 pb-2 px-4 sm:px-0 sm:flex-wrap sm:overflow-visible scroll-horizontal">
               {["Todos", "Visitados", "Pendientes", "Eventos"].map((filter) => (
                 <Button
                   key={filter}
                   variant={selectedPlaceFilter === filter ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedPlaceFilter(filter)}
-                  className={`text-xs sm:text-sm ${
+                  className={`text-xs sm:text-sm flex-shrink-0 sm:flex-shrink px-3 py-2 rounded-full ${
                     selectedPlaceFilter === filter 
-                      ? "bg-pink-500 hover:bg-pink-600" 
-                      : "border-pink-300 text-pink-600 hover:bg-pink-50"
+                      ? "bg-pink-500 hover:bg-pink-600 text-white shadow-lg" 
+                      : "border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400"
                   }`}
                 >
                   {filter}
@@ -1014,18 +1017,18 @@ export function RecuerdosSection() {
           </div>
           
           {/* Buscador mejorado */}
-          <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-lg p-4 max-w-4xl mx-auto">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl p-4 sm:p-6 max-w-4xl mx-auto">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-pink-400" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-pink-400" />
                 <Input
                   placeholder="Buscar lugares... (ej: Montería, restaurante)"
-                  className="pl-10 border-pink-300 focus:border-pink-500 focus:ring-pink-500 text-sm"
+                  className="pl-12 pr-4 py-3 border-gray-200 dark:border-gray-700 focus:border-pink-500 focus:ring-pink-500 text-sm sm:text-base rounded-xl"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 {isSearching && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-pink-500"></div>
                   </div>
                 )}
@@ -1038,23 +1041,23 @@ export function RecuerdosSection() {
                   setSearchResults([])
                   setSearchTerm('')
                 }}
-                className="border-pink-300 text-pink-600 hover:bg-pink-50 text-xs sm:text-sm"
+                className="border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm px-4 py-3 rounded-xl"
               >
-                <X className="h-4 w-4 mr-1" />
+                <X className="h-4 w-4 mr-2" />
                 Limpiar
               </Button>
             </div>
             {searchTerm && (
-              <div className="mt-2 text-xs sm:text-sm text-pink-600">
-                <Search className="h-3 w-3 inline mr-1" />
+              <div className="mt-3 text-sm text-pink-600 dark:text-pink-400">
+                <Search className="h-4 w-4 inline mr-2" />
                 Buscando: "{searchTerm}"
               </div>
             )}
           </div>
 
-          {/* Lista de lugares */}
+          {/* Lista de lugares con grid responsive */}
           <motion.div 
-            className="space-y-3 max-w-4xl mx-auto"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 max-w-6xl mx-auto"
             variants={containerVariants}
           >
             {/* Información de búsqueda */}
@@ -1076,9 +1079,10 @@ export function RecuerdosSection() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
+                className="w-full"
               >
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-4">
+                <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer bg-white dark:bg-gray-800 border-0 rounded-2xl overflow-hidden">
+                  <CardContent className="p-4 sm:p-6">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                       {/* Imagen del lugar */}
                       {place.image_url && (
@@ -1086,21 +1090,21 @@ export function RecuerdosSection() {
                           <img 
                             src={place.image_url} 
                             alt={place.name}
-                            className="w-16 h-16 object-cover rounded-lg border"
+                            className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl border shadow-sm"
                           />
                         </div>
                       )}
                       
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-base sm:text-lg truncate">{place.name}</h3>
-                        <p className="text-xs sm:text-sm text-gray-600">{place.visit_date || 'Próximamente'}</p>
-                        <p className="text-xs sm:text-sm text-gray-500 truncate">{place.address}</p>
+                        <h3 className="font-bold text-lg sm:text-xl text-gray-900 dark:text-white truncate mb-1">{place.name}</h3>
+                        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-1">{place.visit_date || 'Próximamente'}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{place.address}</p>
                       </div>
                       
-                      <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                      <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                         <Badge 
                           variant="secondary" 
-                          className={`text-xs ${
+                          className={`text-sm px-3 py-1 rounded-full ${
                             place.status === 'visitado' 
                               ? "bg-green-100 text-green-800 border-green-200" 
                               : "bg-yellow-100 text-yellow-800 border-yellow-200"
@@ -1108,11 +1112,11 @@ export function RecuerdosSection() {
                         >
                           {place.status === 'visitado' ? 'Visitado' : 'Pendiente'}
                         </Badge>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-2">
                           <Button 
                             size="sm" 
                             variant="ghost" 
-                            className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-gray-100"
+                            className="h-10 w-10 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all duration-300"
                             onClick={() => handleEditPlace(place)}
                           >
                             <Edit className="h-4 w-4" />
@@ -1120,12 +1124,12 @@ export function RecuerdosSection() {
                           <Button 
                             size="sm" 
                             variant="ghost" 
-                            className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-red-100 hover:text-red-600"
+                            className="h-10 w-10 p-0 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20 rounded-full transition-all duration-300"
                             onClick={() => handleDeletePlace(place)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
-                          <ChevronRight className="h-4 w-4 text-gray-400" />
+                          <ChevronRight className="h-5 w-5 text-gray-400" />
                         </div>
                       </div>
                     </div>
