@@ -401,86 +401,86 @@ export function DiarioSection() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="w-full min-h-screen p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6 lg:space-y-8 overflow-x-hidden">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold text-gray-800 flex items-center justify-center gap-3">
-          <BookOpen className="h-10 w-10 text-pink-500" />
+      <div className="text-center space-y-2 sm:space-y-3 px-2">
+        <h1 className="text-[clamp(1.5rem,5vw,2.5rem)] font-bold text-gray-900 dark:text-white flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+          <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 text-pink-500" />
           Nuestro Diario de Amor
         </h1>
-        <p className="text-gray-600 text-lg">
+        <p className="text-[clamp(0.9rem,3vw,1.1rem)] text-gray-600 dark:text-gray-300 max-w-full sm:max-w-2xl mx-auto px-2">
           Documenta los momentos más especiales de tu relación
         </p>
       </div>
 
       {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-pink-50 to-rose-50 border-pink-200">
-          <CardContent className="p-4">
+      <div className="flex overflow-x-auto gap-2 sm:gap-3 pb-2 px-3 sm:px-4 lg:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-4 scroll-horizontal">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-pink-600 font-medium">Total Entradas</p>
-                <p className="text-2xl font-bold text-pink-700">{stats.totalEntries}</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-pink-600 dark:text-pink-400 font-medium">Total Entradas</p>
+                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-pink-700 dark:text-pink-300">{stats.totalEntries}</p>
               </div>
-              <BookOpen className="h-8 w-8 text-pink-500" />
+              <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-pink-500" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-          <CardContent className="p-4">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-blue-600 font-medium">Total Palabras</p>
-                <p className="text-2xl font-bold text-blue-700">{stats.totalWords}</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-blue-600 dark:text-blue-400 font-medium">Total Palabras</p>
+                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-blue-700 dark:text-blue-300">{stats.totalWords}</p>
               </div>
-              <Quote className="h-8 w-8 text-blue-500" />
+              <Quote className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-          <CardContent className="p-4">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-green-600 font-medium">Promedio</p>
-                <p className="text-2xl font-bold text-green-700">{stats.averageWords} palabras</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-green-600 dark:text-green-400 font-medium">Promedio</p>
+                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-green-700 dark:text-green-300">{stats.averageWords} palabras</p>
               </div>
-              <Star className="h-8 w-8 text-green-500" />
+              <Star className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200">
-          <CardContent className="p-4">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-yellow-600 font-medium">Favoritos</p>
-                <p className="text-2xl font-bold text-yellow-700">{stats.favoriteEntries}</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-yellow-600 dark:text-yellow-400 font-medium">Favoritos</p>
+                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-yellow-700 dark:text-yellow-300">{stats.favoriteEntries}</p>
               </div>
-              <Heart className="h-8 w-8 text-yellow-500" />
+              <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Controles */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex-1 flex flex-col sm:flex-row gap-3">
+      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden mx-3 sm:mx-0">
+        <CardContent className="p-3 sm:p-4 lg:p-6">
+          <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 items-center justify-between">
+            <div className="flex-1 flex flex-col sm:flex-row gap-2 sm:gap-3">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Buscar en el diario..."
-                  className="pl-10"
+                  className="pl-10 border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
               
               <Select value={selectedMood} onValueChange={setSelectedMood}>
-                <SelectTrigger className="w-full sm:w-40">
+                <SelectTrigger className="w-full sm:w-40 border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -494,7 +494,7 @@ export function DiarioSection() {
               </Select>
 
               <Select value={selectedAuthor} onValueChange={setSelectedAuthor}>
-                <SelectTrigger className="w-full sm:w-40">
+                <SelectTrigger className="w-full sm:w-40 border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -508,7 +508,7 @@ export function DiarioSection() {
 
             <Button
               onClick={openAddModal}
-              className="bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+              className="bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-4 sm:px-6 py-2 sm:py-3 rounded-full w-full sm:w-auto text-sm sm:text-base"
             >
               <Plus className="h-4 w-4 mr-2" />
               Nueva Entrada
@@ -519,14 +519,14 @@ export function DiarioSection() {
 
       {/* Lista de Entradas */}
       {loading ? (
-        <div className="flex justify-center items-center py-12">
-          <div className="flex items-center gap-3">
-            <Loader2 className="h-8 w-8 animate-spin text-pink-500" />
-            <span className="text-lg text-gray-600">Cargando entradas del diario...</span>
+        <div className="flex justify-center items-center py-8 sm:py-12">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-pink-500" />
+            <span className="text-[clamp(0.9rem,3vw,1.1rem)] text-gray-600 dark:text-gray-400">Cargando entradas del diario...</span>
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4 px-3 sm:px-0">
           {filteredEntries.map((entry) => (
           <motion.div
             key={entry.id}
@@ -534,24 +534,24 @@ export function DiarioSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${
-              entry.isFavorite ? 'ring-2 ring-pink-200 bg-pink-50' : ''
+            <Card className={`hover:shadow-lg transition-all duration-200 cursor-pointer bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden ${
+              entry.isFavorite ? 'ring-2 ring-pink-200 bg-pink-50 dark:bg-pink-900/20' : ''
             } ${entry.isPrivate ? 'border-l-4 border-l-purple-400' : ''}`}>
-              <CardContent className="p-6">
-                <div className="space-y-4">
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                <div className="space-y-3 sm:space-y-4">
                   {/* Header */}
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-xl font-semibold text-gray-800">{entry.title}</h3>
+                        <h3 className="text-[clamp(1rem,3vw,1.3rem)] font-semibold text-gray-900 dark:text-white">{entry.title}</h3>
                         {entry.isPrivate && (
-                          <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                          <Badge className="bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-700">
                             <Lock className="h-3 w-3 mr-1" />
                             Privado
                           </Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-[clamp(0.8rem,2vw,0.9rem)] text-gray-500 dark:text-gray-400">
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
                           {formatDate(entry.date)}
@@ -572,49 +572,49 @@ export function DiarioSection() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0"
+                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 rounded-full"
                         onClick={(e) => {
                           e.stopPropagation()
                           toggleFavorite(entry.id)
                         }}
                       >
-                        <Heart className={`h-4 w-4 ${entry.isFavorite ? 'fill-current text-red-500' : 'text-gray-400'}`} />
+                        <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${entry.isFavorite ? 'fill-current text-red-500' : 'text-gray-400'}`} />
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0"
+                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 rounded-full"
                         onClick={(e) => {
                           e.stopPropagation()
                           openEditModal(entry)
                         }}
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0"
+                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 rounded-full"
                         onClick={(e) => {
                           e.stopPropagation()
                           openDeleteModal(entry)
                         }}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
                     </div>
                   </div>
 
                   {/* Estado de ánimo y clima */}
-                  <div className="flex items-center gap-3">
-                    <Badge className={getMoodColor(entry.mood)}>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+                    <Badge className={`${getMoodColor(entry.mood)} text-[clamp(0.7rem,1.8vw,0.8rem)]`}>
                       {getMoodIcon(entry.mood)} {moods.find(m => m.value === entry.mood)?.label}
                     </Badge>
-                    <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                    <Badge className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700 text-[clamp(0.7rem,1.8vw,0.8rem)]">
                       {getWeatherIcon(entry.weather)} {weathers.find(w => w.value === entry.weather)?.label}
                     </Badge>
                     {entry.location && (
-                      <div className="flex items-center gap-1 text-sm text-gray-500">
+                      <div className="flex items-center gap-1 text-[clamp(0.7rem,1.8vw,0.8rem)] text-gray-500 dark:text-gray-400">
                         <MapPin className="h-4 w-4" />
                         {entry.location}
                       </div>
@@ -622,8 +622,8 @@ export function DiarioSection() {
                   </div>
 
                   {/* Contenido */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-gray-700 leading-relaxed line-clamp-3">
+                  <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-3 text-[clamp(0.8rem,2vw,0.9rem)]">
                       {entry.content}
                     </p>
                   </div>
@@ -632,7 +632,7 @@ export function DiarioSection() {
                   {entry.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {entry.tags.map(tag => (
-                        <Badge key={tag} variant="outline" className="text-xs">
+                        <Badge key={tag} variant="outline" className="text-[clamp(0.6rem,1.5vw,0.7rem)] border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">
                           {tag}
                         </Badge>
                       ))}
@@ -641,7 +641,7 @@ export function DiarioSection() {
 
                   {/* Imágenes */}
                   {entry.images && entry.images.length > 0 && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                       {entry.images.slice(0, 4).map((image, index) => (
                         <AspectRatio key={index} ratio={1} className="rounded-lg overflow-hidden">
                           <img 
@@ -652,8 +652,8 @@ export function DiarioSection() {
                         </AspectRatio>
                       ))}
                       {entry.images.length > 4 && (
-                        <div className="flex items-center justify-center bg-gray-100 rounded-lg">
-                          <span className="text-sm text-gray-500">+{entry.images.length - 4}</span>
+                        <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg">
+                          <span className="text-[clamp(0.7rem,1.8vw,0.8rem)] text-gray-500 dark:text-gray-400">+{entry.images.length - 4}</span>
                         </div>
                       )}
                     </div>
@@ -671,13 +671,13 @@ export function DiarioSection() {
         setShowAddModal(false)
         setShowEditModal(false)
       }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 border-0 rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-[clamp(1.2rem,3vw,1.5rem)]">
               <BookOpen className="h-5 w-5 text-pink-500" />
               {showEditModal ? 'Editar Entrada' : 'Nueva Entrada del Diario'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[clamp(0.9rem,2.5vw,1rem)]">
               Comparte tus pensamientos y sentimientos más profundos
             </DialogDescription>
           </DialogHeader>
@@ -686,24 +686,26 @@ export function DiarioSection() {
             {/* Información básica */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Título *
                 </label>
                 <Input
                   value={entryForm.title}
                   onChange={(e) => setEntryForm(prev => ({ ...prev, title: e.target.value }))}
                   placeholder="¿Qué título le pondrías a este momento?"
+                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Fecha
                 </label>
                 <Input
                   type="date"
                   value={entryForm.date}
                   onChange={(e) => setEntryForm(prev => ({ ...prev, date: e.target.value }))}
+                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
                 />
               </div>
             </div>
@@ -711,11 +713,11 @@ export function DiarioSection() {
             {/* Estado de ánimo y clima */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   ¿Cómo te sientes?
                 </label>
                 <Select value={entryForm.mood} onValueChange={(value: DiaryEntryType['mood']) => setEntryForm(prev => ({ ...prev, mood: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -729,11 +731,11 @@ export function DiarioSection() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Clima
                 </label>
                 <Select value={entryForm.weather} onValueChange={(value: DiaryEntryType['weather']) => setEntryForm(prev => ({ ...prev, weather: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -747,20 +749,21 @@ export function DiarioSection() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Ubicación
                 </label>
                 <Input
                   value={entryForm.location}
                   onChange={(e) => setEntryForm(prev => ({ ...prev, location: e.target.value }))}
                   placeholder="¿Dónde estás?"
+                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
                 />
               </div>
             </div>
 
             {/* Contenido */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Tu historia *
               </label>
               <textarea
@@ -768,9 +771,9 @@ export function DiarioSection() {
                 onChange={(e) => setEntryForm(prev => ({ ...prev, content: e.target.value }))}
                 placeholder="Escribe desde el corazón... ¿Qué pasó hoy? ¿Cómo te sientes? ¿Qué pensaste?"
                 rows={8}
-                className="w-full p-3 border border-gray-300 rounded-md resize-none focus:border-pink-500 focus:ring-pink-500"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl resize-none focus:border-pink-500 focus:ring-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
-              <div className="text-right text-sm text-gray-500 mt-1">
+              <div className="text-right text-[clamp(0.8rem,2vw,0.9rem)] text-gray-500 dark:text-gray-400 mt-1">
                 {entryForm.content.split(/\s+/).filter(word => word.length > 0).length} palabras
               </div>
             </div>
@@ -778,11 +781,11 @@ export function DiarioSection() {
             {/* Configuración */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Autor
                 </label>
                 <Select value={entryForm.author} onValueChange={(value: DiaryEntryType['author']) => setEntryForm(prev => ({ ...prev, author: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -799,9 +802,9 @@ export function DiarioSection() {
                   id="isPrivate"
                   checked={entryForm.isPrivate}
                   onChange={(e) => setEntryForm(prev => ({ ...prev, isPrivate: e.target.checked }))}
-                  className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+                  className="rounded border-gray-300 dark:border-gray-600 text-pink-600 focus:ring-pink-500"
                 />
-                <label htmlFor="isPrivate" className="text-sm font-medium text-gray-700">
+                <label htmlFor="isPrivate" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Entrada privada
                 </label>
               </div>
@@ -809,7 +812,7 @@ export function DiarioSection() {
 
             {/* Tags */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Etiquetas
               </label>
               <div className="space-y-3">
@@ -818,7 +821,7 @@ export function DiarioSection() {
                     <Badge
                       key={tag}
                       variant={entryForm.tags.includes(tag) ? "default" : "outline"}
-                      className={`cursor-pointer ${entryForm.tags.includes(tag) ? 'bg-pink-100 text-pink-800 border-pink-200' : ''}`}
+                      className={`cursor-pointer text-[clamp(0.7rem,1.8vw,0.8rem)] ${entryForm.tags.includes(tag) ? 'bg-pink-100 text-pink-800 border-pink-200 dark:bg-pink-900/20 dark:text-pink-300 dark:border-pink-700' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'}`}
                       onClick={() => handleTagToggle(tag)}
                     >
                       {tag}
@@ -834,7 +837,7 @@ export function DiarioSection() {
                         e.currentTarget.value = ''
                       }
                     }}
-                    className="flex-1"
+                    className="flex-1 border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
                   />
                 </div>
               </div>
@@ -842,10 +845,10 @@ export function DiarioSection() {
 
             {/* Imágenes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Imágenes (Opcional)
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-pink-400 transition-colors">
+              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-3 sm:p-4 text-center hover:border-pink-400 transition-colors">
                 <input
                   type="file"
                   accept="image/*"
@@ -855,13 +858,13 @@ export function DiarioSection() {
                   id="diary-images"
                 />
                 <label htmlFor="diary-images" className="cursor-pointer">
-                  <Camera className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Haz clic para agregar imágenes</p>
+                  <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400">Haz clic para agregar imágenes</p>
                 </label>
               </div>
               
               {entryForm.images.length > 0 && (
-                <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                   {entryForm.images.map((image, index) => (
                     <div key={index} className="relative">
                       <AspectRatio ratio={1} className="rounded-lg overflow-hidden">
@@ -874,10 +877,10 @@ export function DiarioSection() {
                       <Button
                         size="sm"
                         variant="destructive"
-                        className="absolute top-1 right-1 h-6 w-6 p-0"
+                        className="absolute top-1 right-1 h-5 w-5 sm:h-6 sm:w-6 p-0 rounded-full"
                         onClick={() => removeImage(index)}
                       >
-                        <X className="h-3 w-3" />
+                        <X className="h-3 w-3 sm:h-3 sm:w-3" />
                       </Button>
                     </div>
                   ))}
@@ -914,13 +917,13 @@ export function DiarioSection() {
 
       {/* Modal de Confirmación de Eliminación */}
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <DialogContent>
+        <DialogContent className="bg-white dark:bg-gray-800 border-0 rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-[clamp(1.2rem,3vw,1.5rem)]">
               <Trash2 className="h-5 w-5 text-red-500" />
               Eliminar Entrada
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[clamp(0.9rem,2.5vw,1rem)]">
               ¿Estás seguro de que quieres eliminar "{selectedEntry?.title}"? Esta acción no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
