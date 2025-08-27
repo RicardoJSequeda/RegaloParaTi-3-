@@ -430,100 +430,98 @@ export function RecetasSection() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="w-full min-h-screen p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6 lg:space-y-8 overflow-x-hidden">
        {/* Notificación */}
        {notification && (
-         <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg flex items-center gap-3 transition-all duration-300 ${
+         <div className={`fixed top-4 right-4 z-50 p-3 sm:p-4 rounded-lg shadow-lg flex items-center gap-2 sm:gap-3 transition-all duration-300 ${
            notification.type === 'success' 
              ? 'bg-green-100 border border-green-300 text-green-800' 
              : 'bg-red-100 border border-red-300 text-red-800'
          }`}>
            {notification.type === 'success' ? (
-             <CheckCircle2 className="h-5 w-5 text-green-600" />
+             <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
            ) : (
-             <XCircle className="h-5 w-5 text-red-600" />
+             <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600" />
            )}
-           <span className="font-medium">{notification.message}</span>
+           <span className="font-medium text-[clamp(0.8rem,2vw,0.9rem)]">{notification.message}</span>
            <button
              onClick={() => setNotification(null)}
              className="ml-2 text-gray-500 hover:text-gray-700"
            >
-             <X className="h-4 w-4" />
+             <X className="h-3 w-3 sm:h-4 sm:w-4" />
            </button>
          </div>
        )}
 
       {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold text-gray-800 flex items-center justify-center gap-3">
-          <ChefHat className="h-10 w-10 text-pink-500" />
+      <div className="text-center space-y-2 sm:space-y-3 px-2">
+        <h1 className="text-[clamp(1.5rem,5vw,2.5rem)] font-bold text-gray-900 dark:text-white flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+          <ChefHat className="h-8 w-8 sm:h-10 sm:w-10 text-pink-500" />
           Nuestras Recetas de Amor
         </h1>
-        <p className="text-gray-600 text-lg">
+        <p className="text-[clamp(0.9rem,3vw,1.1rem)] text-gray-600 dark:text-gray-300 max-w-full sm:max-w-2xl mx-auto px-2">
           Comparte y guarda tus recetas favoritas para cocinar juntos
         </p>
       </div>
 
       {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-pink-50 to-rose-50 border-pink-200">
-          <CardContent className="p-4">
+      <div className="flex overflow-x-auto gap-2 sm:gap-3 pb-2 px-3 sm:px-4 lg:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-4 scroll-horizontal">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-pink-600 font-medium">Total Recetas</p>
-                <p className="text-2xl font-bold text-pink-700">{stats.totalRecipes}</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-pink-600 dark:text-pink-400 font-medium">Total Recetas</p>
+                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-pink-700 dark:text-pink-300">{stats.totalRecipes}</p>
               </div>
-              <ChefHat className="h-8 w-8 text-pink-500" />
+              <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-pink-500" />
             </div>
           </CardContent>
         </Card>
 
-
-
-        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-          <CardContent className="p-4">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-green-600 font-medium">Promedio</p>
-                 <p className="text-2xl font-bold text-green-700">
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-green-600 dark:text-green-400 font-medium">Promedio</p>
+                 <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-green-700 dark:text-green-300">
                    {stats.averageRating > 0 ? `${stats.averageRating.toFixed(1)} ⭐` : 'Sin calificaciones'}
                  </p>
               </div>
-              <Star className="h-8 w-8 text-green-500" />
+              <Star className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200">
-          <CardContent className="p-4">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-yellow-600 font-medium">Favoritas</p>
-                <p className="text-2xl font-bold text-yellow-700">{stats.favoriteRecipes}</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-yellow-600 dark:text-yellow-400 font-medium">Favoritas</p>
+                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-yellow-700 dark:text-yellow-300">{stats.favoriteRecipes}</p>
               </div>
-              <Heart className="h-8 w-8 text-yellow-500" />
+              <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Controles */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex-1 flex flex-col sm:flex-row gap-3">
+      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden mx-3 sm:mx-0">
+        <CardContent className="p-3 sm:p-4 lg:p-6">
+          <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 items-center justify-between">
+            <div className="flex-1 flex flex-col sm:flex-row gap-2 sm:gap-3">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Buscar recetas..."
-                  className="pl-10"
+                  className="pl-10 border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
               
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full sm:w-40">
+                <SelectTrigger className="w-full sm:w-40 border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -535,13 +533,11 @@ export function RecetasSection() {
                   ))}
                 </SelectContent>
               </Select>
-
-
             </div>
 
             <Button
               onClick={openAddModal}
-              className="bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+              className="bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-4 sm:px-6 py-2 sm:py-3 rounded-full w-full sm:w-auto text-sm sm:text-base"
             >
               <Plus className="h-4 w-4 mr-2" />
               Nueva Receta
@@ -551,7 +547,7 @@ export function RecetasSection() {
       </Card>
 
       {/* Lista de Recetas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 px-3 sm:px-0">
         {filteredRecipes.map((recipe) => (
           <motion.div
             key={recipe.id}
@@ -560,13 +556,13 @@ export function RecetasSection() {
             transition={{ duration: 0.3 }}
           >
             <Card 
-              className={`hover:shadow-lg transition-all duration-200 cursor-pointer group ${
-              recipe.isFavorite ? 'ring-2 ring-pink-200 bg-pink-50' : ''
+              className={`hover:shadow-lg transition-all duration-200 cursor-pointer group bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden ${
+              recipe.isFavorite ? 'ring-2 ring-pink-200 bg-pink-50 dark:bg-pink-900/20' : ''
               }`}
               onClick={() => openInstructionsModal(recipe)}
             >
-              <CardContent className="p-4">
-                <div className="space-y-3">
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                <div className="space-y-2 sm:space-y-3">
                   {/* Imagen */}
                   <div className="relative">
                     {recipe.images && recipe.images.length > 0 ? (
@@ -578,14 +574,14 @@ export function RecetasSection() {
                         />
                       </AspectRatio>
                     ) : (
-                      <div className="w-full h-32 bg-gradient-to-br from-orange-100 to-red-100 rounded-lg flex items-center justify-center">
-                        <Utensils className="h-12 w-12 text-orange-400" />
+                      <div className="w-full h-24 sm:h-32 bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg flex items-center justify-center">
+                        <Utensils className="h-8 w-8 sm:h-12 sm:w-12 text-orange-400" />
                       </div>
                     )}
                     
                     {/* Badges */}
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
-                      <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs">
+                      <Badge className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700 text-[clamp(0.6rem,1.5vw,0.7rem)]">
                         {getCategoryIcon(recipe.category)} {categories.find(c => c.value === recipe.category)?.label}
                       </Badge>
                     </div>
@@ -595,35 +591,35 @@ export function RecetasSection() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 bg-white/80 hover:bg-white"
+                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 rounded-full"
                         onClick={(e) => {
                           e.stopPropagation()
                           toggleFavorite(recipe.id)
                         }}
                       >
-                        <Heart className={`h-4 w-4 ${recipe.isFavorite ? 'fill-current text-red-500' : 'text-gray-400'}`} />
+                        <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${recipe.isFavorite ? 'fill-current text-red-500' : 'text-gray-400'}`} />
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 bg-white/80 hover:bg-white"
+                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 rounded-full"
                         onClick={(e) => {
                           e.stopPropagation()
                           openEditModal(recipe)
                         }}
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 bg-white/80 hover:bg-white"
+                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 rounded-full"
                         onClick={(e) => {
                           e.stopPropagation()
                           openDeleteModal(recipe)
                         }}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
                     </div>
                   </div>
@@ -631,18 +627,18 @@ export function RecetasSection() {
                   {/* Información */}
                   <div className="space-y-2">
                     <div className="flex items-start justify-between">
-                      <h3 className="font-semibold text-gray-800 line-clamp-2">{recipe.title}</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 text-[clamp(0.9rem,2.5vw,1rem)]">{recipe.title}</h3>
                       {recipe.rating && (
                         <div className="flex items-center gap-1">
                           <Star className="h-3 w-3 fill-current text-yellow-400" />
-                          <span className="text-xs text-gray-500">{recipe.rating}</span>
+                          <span className="text-[clamp(0.7rem,1.8vw,0.8rem)] text-gray-500 dark:text-gray-400">{recipe.rating}</span>
                         </div>
                       )}
                     </div>
                     
-                    <p className="text-sm text-gray-600 line-clamp-2">{recipe.description}</p>
+                    <p className="text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400 line-clamp-2">{recipe.description}</p>
                     
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                    <div className="flex items-center gap-4 text-[clamp(0.7rem,1.8vw,0.8rem)] text-gray-500 dark:text-gray-400">
                       <div className="flex items-center gap-1">
                         <Users className="h-3 w-3" />
                         <span>{recipe.servings} porciones</span>
@@ -653,12 +649,12 @@ export function RecetasSection() {
                     {recipe.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {recipe.tags.slice(0, 3).map(tag => (
-                          <Badge key={tag} variant="outline" className="text-xs">
+                          <Badge key={tag} variant="outline" className="text-[clamp(0.6rem,1.5vw,0.7rem)] border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">
                             {tag}
                           </Badge>
                         ))}
                         {recipe.tags.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-[clamp(0.6rem,1.5vw,0.7rem)] border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">
                             +{recipe.tags.length - 3}
                           </Badge>
                         )}
@@ -667,7 +663,7 @@ export function RecetasSection() {
 
                     {/* Indicador de instrucciones */}
                     <div className="flex items-center justify-center pt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <div className="flex items-center gap-1 text-xs text-pink-500 bg-pink-50 px-2 py-1 rounded-full border border-pink-200">
+                      <div className="flex items-center gap-1 text-[clamp(0.7rem,1.8vw,0.8rem)] text-pink-500 bg-pink-50 dark:bg-pink-900/20 px-2 py-1 rounded-full border border-pink-200 dark:border-pink-700">
                         <BookOpen className="h-3 w-3" />
                         <span>Haz clic para ver instrucciones</span>
                       </div>
@@ -685,13 +681,13 @@ export function RecetasSection() {
         setShowAddModal(false)
         setShowEditModal(false)
       }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 border-0 rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-[clamp(1.2rem,3vw,1.5rem)]">
               <ChefHat className="h-5 w-5 text-pink-500" />
               {showEditModal ? 'Editar Receta' : 'Nueva Receta'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[clamp(0.9rem,2.5vw,1rem)]">
               Comparte tu receta especial con todos los detalles
             </DialogDescription>
           </DialogHeader>
@@ -700,13 +696,14 @@ export function RecetasSection() {
             {/* Información básica */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Nombre de la Receta *
                 </label>
                 <Input
                   value={recipeForm.title}
                   onChange={(e) => setRecipeForm(prev => ({ ...prev, title: e.target.value }))}
                   placeholder="Ej: Pasta Carbonara Romántica"
+                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
                 />
               </div>
 
@@ -714,7 +711,7 @@ export function RecetasSection() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Descripción *
               </label>
               <textarea
@@ -722,17 +719,17 @@ export function RecetasSection() {
                 onChange={(e) => setRecipeForm(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Describe tu receta..."
                 rows={3}
-                className="w-full p-3 border border-gray-300 rounded-md resize-none focus:border-pink-500 focus:ring-pink-500"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl resize-none focus:border-pink-500 focus:ring-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
 
             {/* Categoría */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Categoría
               </label>
               <Select value={recipeForm.category} onValueChange={(value: Recipe['category']) => setRecipeForm(prev => ({ ...prev, category: value }))}>
-                <SelectTrigger>
+                <SelectTrigger className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -747,7 +744,7 @@ export function RecetasSection() {
 
             {/* Porciones */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Porciones
               </label>
               <Input
@@ -755,6 +752,7 @@ export function RecetasSection() {
                 value={recipeForm.servings}
                 onChange={(e) => setRecipeForm(prev => ({ ...prev, servings: parseInt(e.target.value) || 1 }))}
                 min="1"
+                className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
               />
             </div>
 
@@ -839,7 +837,7 @@ export function RecetasSection() {
 
             {/* Tags */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Etiquetas
               </label>
               <div className="flex flex-wrap gap-2">
@@ -847,7 +845,7 @@ export function RecetasSection() {
                   <Badge
                     key={tag}
                     variant={recipeForm.tags.includes(tag) ? "default" : "outline"}
-                    className={`cursor-pointer ${recipeForm.tags.includes(tag) ? 'bg-pink-100 text-pink-800 border-pink-200' : ''}`}
+                    className={`cursor-pointer text-[clamp(0.7rem,1.8vw,0.8rem)] ${recipeForm.tags.includes(tag) ? 'bg-pink-100 text-pink-800 border-pink-200 dark:bg-pink-900/20 dark:text-pink-300 dark:border-pink-700' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'}`}
                     onClick={() => handleTagToggle(tag)}
                   >
                     {tag}
@@ -858,10 +856,10 @@ export function RecetasSection() {
 
             {/* Imágenes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Imágenes (Opcional)
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-pink-400 transition-colors">
+              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-3 sm:p-4 text-center hover:border-pink-400 transition-colors">
                 <input
                   type="file"
                   accept="image/*"
@@ -871,13 +869,13 @@ export function RecetasSection() {
                   id="recipe-images"
                 />
                 <label htmlFor="recipe-images" className="cursor-pointer">
-                  <Camera className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Haz clic para agregar imágenes</p>
+                  <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400">Haz clic para agregar imágenes</p>
                 </label>
               </div>
               
               {recipeForm.images.length > 0 && (
-                <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                   {recipeForm.images.map((image, index) => (
                     <div key={index} className="relative">
                       <AspectRatio ratio={1} className="rounded-lg overflow-hidden">
@@ -890,10 +888,10 @@ export function RecetasSection() {
                       <Button
                         size="sm"
                         variant="destructive"
-                        className="absolute top-1 right-1 h-6 w-6 p-0"
+                        className="absolute top-1 right-1 h-5 w-5 sm:h-6 sm:w-6 p-0 rounded-full"
                         onClick={() => removeImage(index)}
                       >
-                        <X className="h-3 w-3" />
+                        <X className="h-3 w-3 sm:h-3 sm:w-3" />
                       </Button>
                     </div>
                   ))}
@@ -935,13 +933,13 @@ export function RecetasSection() {
 
       {/* Modal de Confirmación de Eliminación */}
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <DialogContent>
+        <DialogContent className="bg-white dark:bg-gray-800 border-0 rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-[clamp(1.2rem,3vw,1.5rem)]">
               <Trash2 className="h-5 w-5 text-red-500" />
               Eliminar Receta
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[clamp(0.9rem,2.5vw,1rem)]">
               ¿Estás seguro de que quieres eliminar "{selectedRecipe?.title}"? Esta acción no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
@@ -966,40 +964,40 @@ export function RecetasSection() {
 
       {/* Modal de Instrucciones */}
       <Dialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 border-0 rounded-2xl">
           {selectedRecipe && (
             <>
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-2xl">
+                <DialogTitle className="flex items-center gap-2 text-[clamp(1.3rem,4vw,1.8rem)]">
                   <BookOpen className="h-6 w-6 text-pink-500" />
                   {selectedRecipe.title}
                 </DialogTitle>
-                <DialogDescription className="text-lg">
+                <DialogDescription className="text-[clamp(1rem,3vw,1.2rem)]">
                   {selectedRecipe.description}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-6">
                 {/* Información de la receta */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gradient-to-r from-pink-50 to-rose-50 rounded-lg">
-                                     <div className="flex items-center gap-2">
-                     <Clock className="h-5 w-5 text-pink-500" />
-                     <div>
-                       <p className="text-sm text-gray-600">Preparación</p>
-                       <p className="font-semibold">{formatTime((selectedRecipe as any).prepTime || (selectedRecipe as any).prep_time || 0)}</p>
-                     </div>
-                   </div>
-                   <div className="flex items-center gap-2">
-                     <Flame className="h-5 w-5 text-orange-500" />
-                     <div>
-                       <p className="text-sm text-gray-600">Cocción</p>
-                       <p className="font-semibold">{formatTime((selectedRecipe as any).cookTime || (selectedRecipe as any).cook_time || 0)}</p>
-                     </div>
-                   </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-to-r from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20 rounded-xl">
                   <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-blue-500" />
+                    <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-pink-500" />
                     <div>
-                      <p className="text-sm text-gray-600">Porciones</p>
+                      <p className="text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400">Preparación</p>
+                      <p className="font-semibold text-[clamp(0.9rem,2.5vw,1rem)]">{formatTime((selectedRecipe as any).prepTime || (selectedRecipe as any).prep_time || 0)}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Flame className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />
+                    <div>
+                      <p className="text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400">Cocción</p>
+                      <p className="font-semibold text-[clamp(0.9rem,2.5vw,1rem)]">{formatTime((selectedRecipe as any).cookTime || (selectedRecipe as any).cook_time || 0)}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+                    <div>
+                      <p className="text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400">Porciones</p>
                       <p className="font-semibold">{selectedRecipe.servings}</p>
                     </div>
                   </div>
