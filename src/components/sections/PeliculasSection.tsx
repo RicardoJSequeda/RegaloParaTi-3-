@@ -403,7 +403,7 @@ export function PeliculasSection() {
 
   const MovieCard = ({ movie }: { movie: Movie }) => (
     <div className="relative group cursor-pointer" onClick={() => openViewModal(movie)}>
-      <Card className="movie-card overflow-hidden h-[380px] hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02] border-0 bg-gradient-to-br from-gray-900 to-gray-800">
+      <Card className="movie-card overflow-hidden h-[500px] sm:h-[450px] lg:h-[500px] hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02] border-0 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl">
         <CardContent className="p-0 h-full">
           <div className="movie-card-content relative h-full">
             {/* Background Image with Enhanced Overlay */}
@@ -414,14 +414,14 @@ export function PeliculasSection() {
                   alt={movie.title}
                   className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/10" />
               </div>
             ) : (
               <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
                 <div className="text-center text-gray-400">
-                  <Film className="h-16 w-16 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Sin imagen</p>
+                  <Film className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-2 opacity-50" />
+                  <p className="text-xs sm:text-sm">Sin imagen</p>
                 </div>
               </div>
             )}
@@ -429,7 +429,7 @@ export function PeliculasSection() {
             {/* Top Section - Enhanced Status and Actions */}
             <div className="absolute top-4 left-4 right-4 z-20 flex items-start justify-between">
               {/* Enhanced Status Badge */}
-              <Badge className={`text-xs font-semibold px-3 py-1.5 shadow-lg backdrop-blur-sm border-0 ${
+              <Badge className={`text-[clamp(0.6rem,1.5vw,0.7rem)] font-semibold px-2 sm:px-3 py-1 sm:py-1.5 shadow-lg backdrop-blur-sm border border-black/20 ${
                 movie.status === 'visto' ? 'bg-emerald-500/90 text-white shadow-emerald-500/30' :
                 movie.status === 'en_progreso' ? 'bg-blue-500/90 text-white shadow-blue-500/30' :
                 movie.status === 'pendiente' ? 'bg-amber-500/90 text-white shadow-amber-500/30' : 
@@ -444,21 +444,21 @@ export function PeliculasSection() {
               <Button 
                 size="sm" 
                 variant="ghost" 
-                className="h-9 w-9 p-0 text-white rounded-full hover:bg-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-110"
+                className="h-8 w-8 sm:h-10 sm:w-10 p-0 text-white rounded-full hover:bg-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-110"
                 onClick={(e) => {
                   e.stopPropagation()
                   toggleFavorite(movie.id)
                 }}
               >
-                <Heart className={`h-4 w-4 transition-all duration-300 ${movie.isFavorite ? 'fill-current text-red-500 scale-110' : 'hover:scale-110'}`} />
+                <Heart className={`h-4 w-4 sm:h-5 sm:w-5 transition-all duration-300 ${movie.isFavorite ? 'fill-current text-red-500 scale-110' : 'hover:scale-110'}`} />
               </Button>
             </div>
 
             {/* Enhanced Series Progress Indicator - Moved to bottom */}
             {movie.type === 'serie' && movie.season && movie.episode && (
-              <div className="absolute bottom-16 left-4 z-10">
+              <div className="absolute bottom-28 left-4 z-10">
                 <div className="text-center">
-                  <div className="text-white text-xs px-2 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/30 shadow-lg">
+                  <div className="text-white text-[clamp(0.6rem,1.5vw,0.7rem)] px-2 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/30 shadow-lg">
                     <div className="font-semibold tracking-wide">S{movie.season} • E{movie.episode}</div>
                   </div>
                 </div>
@@ -466,40 +466,40 @@ export function PeliculasSection() {
             )}
 
             {/* Bottom Section - Enhanced Content Info */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-20">
+            <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-5 text-white z-20">
                              {/* Enhanced Title */}
-               <div className="mb-3">
-                 <h3 className="movie-title text-xl font-bold line-clamp-2 mb-2 leading-tight text-shadow-lg">
+               <div className="mb-4">
+                 <h3 className="movie-title text-[clamp(1.1rem,2.5vw,1.3rem)] font-bold line-clamp-2 mb-4 leading-tight text-shadow-lg">
                    {movie.title}
                  </h3>
                </div>
                
                {/* Enhanced Description */}
               {movie.description && movie.description.trim() !== '' ? (
-                <p className="movie-description text-sm text-gray-100 line-clamp-2 mb-3 leading-relaxed text-shadow-md font-medium">
+                <p className="movie-description text-[clamp(0.9rem,2vw,1rem)] text-gray-100 line-clamp-3 mb-5 leading-relaxed text-shadow-md font-medium">
                   {movie.description}
                 </p>
               ) : (
-                <p className="movie-description text-sm text-gray-300 line-clamp-2 mb-3 leading-relaxed text-shadow-md font-medium italic">
+                <p className="movie-description text-[clamp(0.9rem,2vw,1rem)] text-gray-300 line-clamp-3 mb-5 leading-relaxed text-shadow-md font-medium italic">
                   Sin descripción disponible
                 </p>
               )}
 
               {/* Enhanced Action Bar - Better Organized */}
-              <div className="space-y-2">
+              <div className="space-y-4">
                 {/* Primary Action Buttons */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   {/* Enhanced Watch Button */}
                   {movie.watchLink && (
                     <Button 
                       size="sm" 
-                      className="bg-red-600 hover:bg-red-700 text-white font-medium px-3 py-2 shadow-lg hover:shadow-red-500/30 transition-all duration-300 hover:scale-105 min-w-[110px] font-semibold"
+                      className="bg-red-600 hover:bg-red-700 text-white font-medium px-3 sm:px-4 py-2 sm:py-2.5 shadow-lg hover:shadow-red-500/30 transition-all duration-300 hover:scale-105 min-w-[110px] sm:min-w-[120px] font-semibold text-[clamp(0.75rem,1.8vw,0.85rem)]"
                       onClick={(e) => {
                         e.stopPropagation()
                         window.open(movie.watchLink, '_blank')
                       }}
                     >
-                      <Play className="h-4 w-4 mr-2" />
+                      <Play className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                       Ver Ahora
                     </Button>
                   )}
@@ -508,7 +508,7 @@ export function PeliculasSection() {
                   {movie.status === 'pendiente' && (
                     <Button 
                       size="sm" 
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-2 shadow-lg hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 min-w-[130px]"
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 sm:px-4 py-2 sm:py-2.5 shadow-lg hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 min-w-[120px] sm:min-w-[140px] text-[clamp(0.75rem,1.8vw,0.85rem)]"
                       onClick={(e) => {
                         e.stopPropagation()
                         changeStatus(movie.id, movie.type === 'serie' ? 'en_progreso' : 'visto')
@@ -516,12 +516,12 @@ export function PeliculasSection() {
                     >
                       {movie.type === 'serie' ? (
                         <>
-                          <Play className="h-4 w-4 mr-2" />
+                          <Play className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                           En Progreso
                         </>
                       ) : (
                         <>
-                          <Check className="h-4 w-4 mr-2" />
+                          <Check className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                           Marcar Visto
                         </>
                       )}
@@ -531,13 +531,13 @@ export function PeliculasSection() {
                   {movie.status === 'en_progreso' && (
                     <Button 
                       size="sm" 
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-2 shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 hover:scale-105 min-w-[130px]"
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 sm:px-4 py-2 sm:py-2.5 shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 hover:scale-105 min-w-[120px] sm:min-w-[140px] text-[clamp(0.75rem,1.8vw,0.85rem)]"
                       onClick={(e) => {
                         e.stopPropagation()
                         changeStatus(movie.id, 'visto')
                       }}
                     >
-                      <Check className="h-4 w-4 mr-2" />
+                      <Check className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                       Marcar Visto
                     </Button>
                   )}
@@ -545,34 +545,34 @@ export function PeliculasSection() {
                   {movie.status === 'visto' && (
                     <Button 
                       size="sm" 
-                      className="bg-amber-600 hover:bg-amber-700 text-white font-medium px-3 py-2 shadow-lg hover:shadow-amber-500/30 transition-all duration-300 hover:scale-105 min-w-[130px]"
+                      className="bg-amber-600 hover:bg-amber-700 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 shadow-lg hover:shadow-amber-500/30 transition-all duration-300 hover:scale-105 min-w-[110px] sm:min-w-[130px] text-[clamp(0.7rem,1.8vw,0.8rem)]"
                       onClick={(e) => {
                         e.stopPropagation()
                         changeStatus(movie.id, 'pendiente')
                       }}
                     >
-                      <Clock className="h-4 w-4 mr-2" />
+                      <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                       Marcar Pendiente
                     </Button>
                   )}
                 </div>
                 
                 {/* Secondary Action Buttons */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between pt-2">
                                      {/* Left: Type Badge and Series Progress Info */}
-                   <div className="flex items-center gap-2">
-                     {/* Type Badge */}
-                     <Badge variant="outline" className="text-xs text-white border-white/40 bg-white/10 backdrop-blur-sm px-2 py-1">
+                   <div className="flex items-center gap-3">
+                                            {/* Type Badge */}
+                       <Badge variant="outline" className="text-[clamp(0.6rem,1.5vw,0.7rem)] text-white border-white/40 bg-white/10 backdrop-blur-sm px-3 py-1.5">
                        {movie.type === 'pelicula' ? '🎬 Película' : '📺 Serie'}
                      </Badge>
                      
                      {/* Series Progress Info (if applicable) */}
                      {movie.type === 'serie' && movie.season && movie.episode && (
-                       <div className="flex items-center gap-2 text-white/90 text-xs">
-                         <span className="px-2 py-1 bg-white/15 rounded-full backdrop-blur-sm border border-white/20 font-medium">
+                       <div className="flex items-center gap-3 text-white/90 text-[clamp(0.6rem,1.5vw,0.7rem)]">
+                         <span className="px-3 py-1.5 bg-white/20 rounded-full backdrop-blur-sm border border-white/30 font-medium">
                            S{movie.season}
                          </span>
-                         <span className="px-2 py-1 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 font-medium">
+                         <span className="px-3 py-1.5 bg-white/15 rounded-full backdrop-blur-sm border border-white/25 font-medium">
                            E{movie.episode}
                          </span>
                        </div>
@@ -585,26 +585,26 @@ export function PeliculasSection() {
                     <Button 
                       size="sm" 
                       variant="ghost" 
-                      className="h-10 w-10 p-0 text-white rounded-full hover:bg-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-blue-500/20 hover:shadow-lg"
+                      className="h-8 w-8 sm:h-10 sm:w-10 p-0 text-white rounded-full hover:bg-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-blue-500/20 hover:shadow-lg"
                       onClick={(e) => {
                         e.stopPropagation()
                         openEditModal(movie)
                       }}
                     >
-                      <Edit className="h-4 w-4" />
+                      <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
 
                     {/* Enhanced Delete Button */}
                     <Button 
                       size="sm" 
                       variant="ghost" 
-                      className="h-10 w-10 p-0 text-white rounded-full hover:bg-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-red-500/20 hover:shadow-lg"
+                      className="h-8 w-8 sm:h-10 sm:w-10 p-0 text-white rounded-full hover:bg-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-red-500/20 hover:shadow-lg"
                       onClick={(e) => {
                         e.stopPropagation()
                         openDeleteModal(movie)
                       }}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
                   </div>
                 </div>
@@ -613,7 +613,7 @@ export function PeliculasSection() {
 
             {/* Enhanced Hover Indicator */}
             <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
-              <div className="text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 bg-black/80 backdrop-blur-md border border-white/30 shadow-lg">
+              <div className="text-white text-[clamp(0.6rem,1.5vw,0.7rem)] px-2 sm:px-3 py-1 sm:py-1.5 rounded-full flex items-center gap-1.5 bg-black/80 backdrop-blur-md border border-white/30 shadow-lg">
                 <Eye className="h-3 w-3" />
                 Ver detalles
               </div>
@@ -650,14 +650,14 @@ export function PeliculasSection() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="w-full min-h-screen p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6 lg:space-y-8 overflow-x-hidden">
       {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-          <Film className="h-8 w-8 text-primary" />
+      <div className="text-center space-y-2 sm:space-y-3 px-2">
+        <h1 className="text-[clamp(1.5rem,5vw,2.5rem)] font-bold text-gray-900 dark:text-white flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+          <Film className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
           Nuestro Cine de Amor
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-[clamp(0.9rem,3vw,1.1rem)] text-gray-600 dark:text-gray-300 max-w-full sm:max-w-2xl mx-auto px-2">
           Descubre, comparte y disfruta juntos las mejores películas y series
         </p>
       </div>
@@ -665,64 +665,64 @@ export function PeliculasSection() {
       <Separator />
 
       {/* Estadísticas Mejoradas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-primary/5 via-primary/10 to-secondary/5 border-primary/20 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group">
-          <CardContent className="p-4">
+      <div className="flex overflow-x-auto gap-2 sm:gap-3 pb-2 px-3 sm:px-4 lg:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-4 scroll-horizontal">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-primary/80 uppercase tracking-wide">Total</p>
-                <p className="text-2xl font-bold text-primary group-hover:scale-110 transition-transform duration-300">{stats.totalMovies}</p>
-                <p className="text-xs text-muted-foreground">Películas y Series</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-primary/80 dark:text-primary/60 uppercase tracking-wide font-medium">Total</p>
+                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-primary dark:text-primary/80 group-hover:scale-110 transition-transform duration-300">{stats.totalMovies}</p>
+                <p className="text-[clamp(0.7rem,1.8vw,0.8rem)] text-gray-500 dark:text-gray-400">Películas y Series</p>
               </div>
-              <div className="p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors duration-300">
-                <Film className="h-6 w-6 text-primary" />
+              <div className="p-2 bg-primary/10 dark:bg-primary/20 rounded-full group-hover:bg-primary/20 dark:group-hover:bg-primary/30 transition-colors duration-300">
+                <Film className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-500/5 via-blue-600/10 to-blue-700/5 border-blue-500/20 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group">
-          <CardContent className="p-4">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-blue-600/80 uppercase tracking-wide">Películas</p>
-                <p className="text-2xl font-bold text-blue-600 group-hover:scale-110 transition-transform duration-300">{stats.totalPeliculas}</p>
-                <p className="text-xs text-muted-foreground">Películas</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-blue-600/80 dark:text-blue-400/80 uppercase tracking-wide font-medium">Películas</p>
+                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform duration-300">{stats.totalPeliculas}</p>
+                <p className="text-[clamp(0.7rem,1.8vw,0.8rem)] text-gray-500 dark:text-gray-400">Películas</p>
               </div>
-              <div className="p-2 bg-blue-500/10 rounded-full group-hover:bg-blue-500/20 transition-colors duration-300">
-                <Film className="h-6 w-6 text-blue-600" />
+              <div className="p-2 bg-blue-500/10 dark:bg-blue-500/20 rounded-full group-hover:bg-blue-500/20 dark:group-hover:bg-blue-500/30 transition-colors duration-300">
+                <Film className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-500/5 via-purple-600/10 to-purple-700/5 border-purple-500/20 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group">
-          <CardContent className="p-4">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-purple-600/80 uppercase tracking-wide">Series</p>
-                <p className="text-2xl font-bold text-purple-600 group-hover:scale-110 transition-transform duration-300">{stats.totalSeries}</p>
-                <p className="text-xs text-muted-foreground">Series</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-purple-600/80 dark:text-purple-400/80 uppercase tracking-wide font-medium">Series</p>
+                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform duration-300">{stats.totalSeries}</p>
+                <p className="text-[clamp(0.7rem,1.8vw,0.8rem)] text-gray-500 dark:text-gray-400">Series</p>
               </div>
-              <div className="p-2 bg-purple-500/10 rounded-full group-hover:bg-purple-500/20 transition-colors duration-300">
-                <Tv className="h-6 w-6 text-purple-600" />
+              <div className="p-2 bg-purple-500/10 dark:bg-purple-500/20 rounded-full group-hover:bg-purple-500/20 dark:group-hover:bg-purple-500/30 transition-colors duration-300">
+                <Tv className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600 dark:text-purple-400" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-emerald-500/5 via-emerald-500/10 to-emerald-700/5 border-emerald-500/20 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group">
-          <CardContent className="p-4">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-emerald-600/80 uppercase tracking-wide">Género Favorito</p>
-                <p className="text-xl font-bold text-emerald-600 group-hover:scale-110 transition-transform duration-300 line-clamp-1">
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-emerald-600/80 dark:text-emerald-400/80 uppercase tracking-wide font-medium">Género Favorito</p>
+                <p className="text-[clamp(1rem,3vw,1.5rem)] font-bold text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform duration-300 line-clamp-1">
                   {genres.find(g => g.value === stats.mostPopularGenre)?.label || 'N/A'}
                 </p>
-                <p className="text-xs text-muted-foreground">Más popular</p>
+                <p className="text-[clamp(0.7rem,1.8vw,0.8rem)] text-gray-500 dark:text-gray-400">Más popular</p>
               </div>
-              <div className="p-2 bg-emerald-500/10 rounded-full group-hover:bg-emerald-500/20 transition-colors duration-300">
-                <span className="text-xl">{genres.find(g => g.value === stats.mostPopularGenre)?.icon || '🎬'}</span>
+              <div className="p-2 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full group-hover:bg-emerald-500/20 dark:group-hover:bg-emerald-500/30 transition-colors duration-300">
+                <span className="text-lg sm:text-xl">{genres.find(g => g.value === stats.mostPopularGenre)?.icon || '🎬'}</span>
               </div>
             </div>
           </CardContent>
@@ -730,16 +730,16 @@ export function PeliculasSection() {
       </div>
 
       {/* Controles Mejorados */}
-      <Card className="bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200 shadow-sm">
-        <CardContent className="p-4">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex-1 flex flex-col sm:flex-row gap-4">
+      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden mx-3 sm:mx-0">
+        <CardContent className="p-3 sm:p-4 lg:p-6">
+          <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 items-center justify-between">
+            <div className="flex-1 flex flex-col sm:flex-row gap-2 sm:gap-3">
               {/* Búsqueda Mejorada */}
               <div className="relative flex-1 group">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors duration-200" />
                 <Input
                   placeholder="Buscar películas y series..."
-                  className="pl-12 pr-4 py-3 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white hover:bg-gray-50"
+                  className="pl-12 pr-4 py-2 sm:py-3 border-gray-300 dark:border-gray-600 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-xl"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -747,7 +747,7 @@ export function PeliculasSection() {
               
               {/* Filtro de Género Mejorado */}
               <Select value={selectedGenre} onValueChange={setSelectedGenre}>
-                <SelectTrigger className="w-full sm:w-44 py-3 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white hover:bg-gray-50">
+                <SelectTrigger className="w-full sm:w-44 py-2 sm:py-3 border-gray-300 dark:border-gray-600 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-xl">
                   <SelectValue placeholder="Género" />
                 </SelectTrigger>
                 <SelectContent className="max-h-60">
@@ -763,7 +763,7 @@ export function PeliculasSection() {
 
               {/* Filtro de Tipo Mejorado */}
               <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-full sm:w-40 py-3 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white hover:bg-gray-50">
+                <SelectTrigger className="w-full sm:w-40 py-2 sm:py-3 border-gray-300 dark:border-gray-600 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-xl">
                   <SelectValue placeholder="Tipo" />
                 </SelectTrigger>
                 <SelectContent>
@@ -784,7 +784,7 @@ export function PeliculasSection() {
             <div className="flex items-center gap-2">
               <Button
                 onClick={openAddModal}
-                className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-medium px-4 py-2.5 shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105"
+                className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-medium px-3 sm:px-4 py-2 sm:py-2.5 shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105 rounded-full w-full sm:w-auto text-sm sm:text-base"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Agregar
@@ -828,7 +828,7 @@ export function PeliculasSection() {
         </TabsList>
 
         <TabsContent value="vistas" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6 px-4 sm:px-0">
             {peliculasVistas.map((movie) => (
               <MovieCard key={movie.id} movie={movie} />
             ))}
@@ -836,7 +836,7 @@ export function PeliculasSection() {
         </TabsContent>
 
         <TabsContent value="en_progreso" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6 px-4 sm:px-0">
             {peliculasEnProgreso.map((movie) => (
               <MovieCard key={movie.id} movie={movie} />
             ))}
@@ -844,15 +844,15 @@ export function PeliculasSection() {
         </TabsContent>
 
         <TabsContent value="pendientes" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6 px-4 sm:px-0">
             {peliculasPendientes.map((movie) => (
               <MovieCard key={movie.id} movie={movie} />
             ))}
-      </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="favoritas" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6 px-4 sm:px-0">
             {peliculasFavoritas.map((movie) => (
               <MovieCard key={movie.id} movie={movie} />
             ))}
