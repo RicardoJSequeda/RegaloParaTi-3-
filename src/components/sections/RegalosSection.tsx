@@ -321,76 +321,74 @@ export function RegalosSection() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="w-full min-h-screen p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6 lg:space-y-8 overflow-x-hidden">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold text-gray-800 flex items-center justify-center gap-3">
-          <Gift className="h-10 w-10 text-pink-500" />
+      <div className="text-center space-y-2 sm:space-y-3 px-2">
+        <h1 className="text-[clamp(1.5rem,5vw,2.5rem)] font-bold text-gray-900 dark:text-white flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+          <Gift className="h-8 w-8 sm:h-10 sm:w-10 text-pink-500" />
           Regalos y Sorpresas
         </h1>
-        <p className="text-gray-600 text-lg">
+        <p className="text-[clamp(0.9rem,3vw,1.1rem)] text-gray-600 dark:text-gray-300 max-w-full sm:max-w-2xl mx-auto px-2">
           Gestiona tus regalos, deseos y sorpresas especiales
         </p>
       </div>
 
       {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card className="bg-gradient-to-br from-pink-50 to-rose-50 border-pink-200">
-          <CardContent className="p-4">
+      <div className="flex overflow-x-auto gap-2 sm:gap-3 pb-2 px-3 sm:px-4 lg:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-4 scroll-horizontal">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-pink-600 font-medium">Total Regalos</p>
-                <p className="text-2xl font-bold text-pink-700">{stats.totalGifts}</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-pink-600 dark:text-pink-400 font-medium">Total Regalos</p>
+                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-pink-700 dark:text-pink-300">{stats.totalGifts}</p>
               </div>
-              <Gift className="h-8 w-8 text-pink-500" />
+              <Gift className="h-6 w-6 sm:h-8 sm:w-8 text-pink-500" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-          <CardContent className="p-4">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-blue-600 font-medium">Lista de Deseos</p>
-                <p className="text-2xl font-bold text-blue-700">{stats.totalWishlist}</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-blue-600 dark:text-blue-400 font-medium">Lista de Deseos</p>
+                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-blue-700 dark:text-blue-300">{stats.totalWishlist}</p>
               </div>
-              <Heart className="h-8 w-8 text-blue-500" />
+              <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
             </div>
           </CardContent>
         </Card>
 
-
-
-        <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200">
-          <CardContent className="p-4">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-yellow-600 font-medium">Favoritos</p>
-                <p className="text-2xl font-bold text-yellow-700">{stats.favoriteGifts}</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-yellow-600 dark:text-yellow-400 font-medium">Favoritos</p>
+                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-yellow-700 dark:text-yellow-300">{stats.favoriteGifts}</p>
               </div>
-              <Star className="h-8 w-8 text-yellow-500" />
+              <Star className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Controles */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex-1 flex flex-col sm:flex-row gap-3">
+      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden mx-3 sm:mx-0">
+        <CardContent className="p-3 sm:p-4 lg:p-6">
+          <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 items-center justify-between">
+            <div className="flex-1 flex flex-col sm:flex-row gap-2 sm:gap-3">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Buscar regalos..."
-                  className="pl-10"
+                  className="pl-10 border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
               
               <Select value={selectedFilter} onValueChange={setSelectedFilter}>
-                <SelectTrigger className="w-full sm:w-40">
+                <SelectTrigger className="w-full sm:w-40 border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -402,7 +400,7 @@ export function RegalosSection() {
               </Select>
 
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full sm:w-40">
+                <SelectTrigger className="w-full sm:w-40 border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -418,7 +416,7 @@ export function RegalosSection() {
 
             <Button
               onClick={openAddModal}
-              className="bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+              className="bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-4 sm:px-6 py-2 sm:py-3 rounded-full w-full sm:w-auto text-sm sm:text-base"
             >
               <Plus className="h-4 w-4 mr-2" />
               Agregar Regalo
@@ -429,14 +427,14 @@ export function RegalosSection() {
 
       {/* Lista de Regalos */}
       {loading ? (
-        <div className="flex justify-center items-center py-12">
-          <div className="flex items-center gap-3">
-            <Loader2 className="h-8 w-8 animate-spin text-pink-500" />
-            <span className="text-lg text-gray-600">Cargando regalos...</span>
+        <div className="flex justify-center items-center py-8 sm:py-12">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-pink-500" />
+            <span className="text-[clamp(0.9rem,3vw,1.1rem)] text-gray-600 dark:text-gray-400">Cargando regalos...</span>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 px-3 sm:px-0">
           {filteredGifts.map((gift) => (
           <motion.div
             key={gift.id}
@@ -444,11 +442,11 @@ export function RegalosSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${
-              gift.isFavorite ? 'ring-2 ring-pink-200 bg-pink-50' : ''
+            <Card className={`hover:shadow-lg transition-all duration-200 cursor-pointer bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden ${
+              gift.isFavorite ? 'ring-2 ring-pink-200 bg-pink-50 dark:bg-pink-900/20' : ''
             }`}>
-              <CardContent className="p-4">
-                <div className="space-y-3">
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                <div className="space-y-2 sm:space-y-3">
                   {/* Imagen */}
                   <div className="relative">
                     {gift.image ? (
@@ -460,14 +458,14 @@ export function RegalosSection() {
                         />
                       </AspectRatio>
                     ) : (
-                      <div className="w-full h-32 bg-gradient-to-br from-pink-100 to-purple-100 rounded-lg flex items-center justify-center">
-                        <Gift className="h-12 w-12 text-pink-400" />
+                      <div className="w-full h-24 sm:h-32 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-lg flex items-center justify-center">
+                        <Gift className="h-8 w-8 sm:h-12 sm:w-12 text-pink-400" />
                       </div>
                     )}
                     
                     {/* Badges */}
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
-                      <Badge className={`text-xs ${getTypeColor(gift.type)}`}>
+                      <Badge className={`text-[clamp(0.6rem,1.5vw,0.7rem)] ${getTypeColor(gift.type)}`}>
                         {gift.type === 'deseo' ? 'Deseo' : gift.type === 'recibido' ? 'Recibido' : 'Regalado'}
                       </Badge>
 
@@ -478,35 +476,35 @@ export function RegalosSection() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 bg-white/80 hover:bg-white"
+                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 rounded-full"
                         onClick={(e) => {
                           e.stopPropagation()
                           toggleFavorite(gift.id)
                         }}
                       >
-                        <Heart className={`h-4 w-4 ${gift.isFavorite ? 'fill-current text-red-500' : 'text-gray-400'}`} />
+                        <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${gift.isFavorite ? 'fill-current text-red-500' : 'text-gray-400'}`} />
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 bg-white/80 hover:bg-white"
+                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 rounded-full"
                         onClick={(e) => {
                           e.stopPropagation()
                           openEditModal(gift)
                         }}
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 bg-white/80 hover:bg-white"
+                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 rounded-full"
                         onClick={(e) => {
                           e.stopPropagation()
                           openDeleteModal(gift)
                         }}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
                     </div>
                   </div>
@@ -514,12 +512,12 @@ export function RegalosSection() {
                   {/* Información */}
                   <div className="space-y-2">
                     <div className="flex items-start justify-between">
-                      <h3 className="font-semibold text-gray-800 line-clamp-2">{gift.name}</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 text-[clamp(0.9rem,2.5vw,1rem)]">{gift.name}</h3>
                     </div>
                     
-                    <p className="text-sm text-gray-600 line-clamp-2">{gift.description}</p>
+                    <p className="text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400 line-clamp-2">{gift.description}</p>
                     
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <div className="flex items-center gap-2 text-[clamp(0.7rem,1.8vw,0.8rem)] text-gray-500 dark:text-gray-400">
                       <span>{getCategoryIcon(gift.category)}</span>
                       <span>{categories.find(c => c.value === gift.category)?.label}</span>
                     </div>
@@ -532,7 +530,7 @@ export function RegalosSection() {
                             className={`h-3 w-3 ${i < gift.rating! ? 'fill-current text-yellow-400' : 'text-gray-300'}`} 
                           />
                         ))}
-                        <span className="text-xs text-gray-500 ml-1">({gift.rating})</span>
+                        <span className="text-[clamp(0.7rem,1.8vw,0.8rem)] text-gray-500 dark:text-gray-400 ml-1">({gift.rating})</span>
                       </div>
                     )}
                   </div>
@@ -549,13 +547,13 @@ export function RegalosSection() {
         setShowAddModal(false)
         setShowEditModal(false)
       }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 border-0 rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-[clamp(1.2rem,3vw,1.5rem)]">
               <Gift className="h-5 w-5 text-pink-500" />
               {showEditModal ? 'Editar Regalo' : 'Agregar Nuevo Regalo'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[clamp(0.9rem,2.5vw,1rem)]">
               Completa la información del regalo
             </DialogDescription>
           </DialogHeader>
@@ -564,13 +562,14 @@ export function RegalosSection() {
             {/* Información básica */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Nombre del Regalo *
                 </label>
                 <Input
                   value={giftForm.name}
                   onChange={(e) => setGiftForm(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="Ej: Anillo de compromiso"
+                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
                 />
               </div>
 
@@ -578,7 +577,7 @@ export function RegalosSection() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Descripción *
               </label>
               <textarea
@@ -586,18 +585,18 @@ export function RegalosSection() {
                 onChange={(e) => setGiftForm(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Describe el regalo..."
                 rows={3}
-                className="w-full p-3 border border-gray-300 rounded-md resize-none focus:border-pink-500 focus:ring-pink-500"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl resize-none focus:border-pink-500 focus:ring-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
 
             {/* Solo categoría y tipo - campos esenciales */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Categoría
                 </label>
                 <Select value={giftForm.category} onValueChange={(value: GiftType['category']) => setGiftForm(prev => ({ ...prev, category: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -611,11 +610,11 @@ export function RegalosSection() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Tipo
                 </label>
                 <Select value={giftForm.type} onValueChange={(value: GiftType['type']) => setGiftForm(prev => ({ ...prev, type: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -630,26 +629,26 @@ export function RegalosSection() {
 
 
             {/* Solo destinatario - campo esencial */}
-            <div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Para
-                </label>
-                <Select value={giftForm.recipient} onValueChange={(value: GiftType['recipient']) => setGiftForm(prev => ({ ...prev, recipient: value }))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="yo">Para mí</SelectItem>
-                    <SelectItem value="pareja">Para mi pareja</SelectItem>
-                    <SelectItem value="ambos">Para ambos</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                          <div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Para
+                  </label>
+                  <Select value={giftForm.recipient} onValueChange={(value: GiftType['recipient']) => setGiftForm(prev => ({ ...prev, recipient: value }))}>
+                    <SelectTrigger className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="yo">Para mí</SelectItem>
+                      <SelectItem value="pareja">Para mi pareja</SelectItem>
+                      <SelectItem value="ambos">Para ambos</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
               <div>
 
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-pink-400 transition-colors">
+                <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-3 sm:p-4 text-center hover:border-pink-400 transition-colors">
                   <input
                     type="file"
                     accept="image/*"
@@ -663,9 +662,9 @@ export function RegalosSection() {
                         <img 
                           src={URL.createObjectURL(giftForm.image)} 
                           alt="Vista previa"
-                          className="w-20 h-20 mx-auto rounded-lg object-cover"
+                          className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-lg object-cover"
                         />
-                        <p className="text-sm text-gray-600">{giftForm.image.name}</p>
+                        <p className="text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400">{giftForm.image.name}</p>
                         <Button
                           type="button"
                           variant="outline"
@@ -674,15 +673,16 @@ export function RegalosSection() {
                             e.preventDefault()
                             setGiftForm(prev => ({ ...prev, image: null }))
                           }}
+                          className="text-[clamp(0.7rem,1.8vw,0.8rem)] px-2 sm:px-3 py-1 sm:py-2 rounded-lg"
                         >
-                          <X className="h-4 w-4 mr-1" />
+                          <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                           Remover
                         </Button>
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        <ImageIcon className="h-8 w-8 text-gray-400 mx-auto" />
-                        <p className="text-sm text-gray-600">Haz clic para agregar imagen</p>
+                        <ImageIcon className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 mx-auto" />
+                        <p className="text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400">Haz clic para agregar imagen</p>
                       </div>
                     )}
                   </label>
@@ -721,13 +721,13 @@ export function RegalosSection() {
 
       {/* Modal de Confirmación de Eliminación */}
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <DialogContent>
+        <DialogContent className="bg-white dark:bg-gray-800 border-0 rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-[clamp(1.2rem,3vw,1.5rem)]">
               <Trash2 className="h-5 w-5 text-red-500" />
               Eliminar Regalo
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[clamp(0.9rem,2.5vw,1rem)]">
               ¿Estás seguro de que quieres eliminar "{selectedGift?.name}"? Esta acción no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
