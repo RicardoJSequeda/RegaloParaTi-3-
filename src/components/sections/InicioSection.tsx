@@ -49,11 +49,13 @@ export function InicioSection() {
   ]
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-8 sm:space-y-10">
       {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mobile-text">¡Bienvenida a tu espacio especial!</h1>
-        <p className="text-sm sm:text-base text-muted-foreground mobile-text">
+      <div className="space-y-3 text-center">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
+          ¡Bienvenida a tu espacio especial!
+        </h1>
+        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
           Aquí encontrarás todos nuestros recuerdos, mensajes y momentos especiales juntos.
         </p>
       </div>
@@ -61,42 +63,42 @@ export function InicioSection() {
       <Separator />
 
       {/* Contador de Tiempo Juntos */}
-      <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 mobile-card">
-        <CardHeader className="text-center">
-          <CardTitle className="flex items-center justify-center gap-2 text-xl sm:text-2xl mobile-text">
-            <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden">
+        <CardHeader className="text-center pb-4">
+          <CardTitle className="flex items-center justify-center gap-3 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-pink-500" />
             Nuestro Tiempo Juntos
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4 text-center mobile-counter">
-            <div className="space-y-1 sm:space-y-2 mobile-counter-item">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">{timeTogether.years}</div>
-              <div className="text-xs sm:text-sm text-muted-foreground font-medium">AÑOS</div>
+        <CardContent className="px-4 pb-6">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 sm:gap-6 text-center">
+            <div className="space-y-2">
+              <div className="text-3xl sm:text-4xl font-bold text-pink-500 leading-none">{timeTogether.years}</div>
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">AÑOS</div>
             </div>
-            <div className="space-y-1 sm:space-y-2 mobile-counter-item">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">{timeTogether.months}</div>
-              <div className="text-xs sm:text-sm text-muted-foreground font-medium">MESES</div>
+            <div className="space-y-2">
+              <div className="text-3xl sm:text-4xl font-bold text-pink-500 leading-none">{timeTogether.months}</div>
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">MESES</div>
             </div>
-            <div className="space-y-1 sm:space-y-2 mobile-counter-item">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">{timeTogether.days}</div>
-              <div className="text-xs sm:text-sm text-muted-foreground font-medium">DÍAS</div>
+            <div className="space-y-2">
+              <div className="text-3xl sm:text-4xl font-bold text-pink-500 leading-none">{timeTogether.days}</div>
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">DÍAS</div>
             </div>
-            <div className="space-y-1 sm:space-y-2 mobile-counter-item">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">{timeTogether.hours}</div>
-              <div className="text-xs sm:text-sm text-muted-foreground font-medium">HORAS</div>
+            <div className="space-y-2">
+              <div className="text-3xl sm:text-4xl font-bold text-pink-500 leading-none">{timeTogether.hours}</div>
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">HORAS</div>
             </div>
-            <div className="space-y-1 sm:space-y-2 mobile-counter-item">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">{timeTogether.minutes}</div>
-              <div className="text-xs sm:text-sm text-muted-foreground font-medium">MIN</div>
+            <div className="space-y-2">
+              <div className="text-3xl sm:text-4xl font-bold text-pink-500 leading-none">{timeTogether.minutes}</div>
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">MIN</div>
             </div>
-            <div className="space-y-1 sm:space-y-2 mobile-counter-item">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">{timeTogether.seconds}</div>
-              <div className="text-xs sm:text-sm text-muted-foreground font-medium">SEG</div>
+            <div className="space-y-2">
+              <div className="text-3xl sm:text-4xl font-bold text-pink-500 leading-none">{timeTogether.seconds}</div>
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">SEG</div>
             </div>
           </div>
-          <div className="text-center mt-4 sm:mt-6">
-            <p className="text-sm sm:text-lg text-muted-foreground mobile-text">
+          <div className="text-center mt-6 sm:mt-8">
+            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 font-medium">
               Faltan {365 - (timeTogether.days + timeTogether.months * 30)} días para nuestro próximo aniversario ❤️❤️❤️
             </p>
           </div>
@@ -104,17 +106,17 @@ export function InicioSection() {
       </Card>
 
       {/* Carrusel de Fotos Especiales */}
-      <Card className="mobile-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl mobile-text">
-            <Image className="h-5 w-5 text-primary" />
+      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-3 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <Image className="h-6 w-6 sm:h-8 sm:w-8 text-pink-500" />
             Nuestros Momentos Especiales
           </CardTitle>
-          <CardDescription className="mobile-text">
+          <CardDescription className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
             Revive los momentos más hermosos de nuestra historia juntos
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 pb-6">
           <div className="relative">
             <Carousel
               opts={{
@@ -126,22 +128,22 @@ export function InicioSection() {
               <CarouselContent>
                 {carouselImages.map((item) => (
                   <CarouselItem key={item.id} className="basis-full sm:basis-1/2 lg:basis-1/3">
-                    <div className="p-1">
-                      <div className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 carousel-item">
+                    <div className="p-2">
+                      <div className="relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 group">
                         <div className="aspect-[4/5] relative overflow-hidden">
                           <img
                             src={item.image}
                             alt={item.title}
-                            className="w-full h-full object-cover transition-transform duration-500 hover:scale-110 mobile-media"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />
-                          <div className="absolute inset-0 carousel-image-overlay" />
-                          <div className="absolute bottom-0 left-0 right-0 p-4 text-white carousel-description">
-                            <h3 className="font-bold text-lg sm:text-xl mb-2 mobile-text carousel-title carousel-text-shadow">{item.title}</h3>
-                            <p className="text-sm sm:text-base opacity-95 mb-2 mobile-text carousel-subtitle carousel-text-shadow">{item.description}</p>
-                            <p className="text-xs sm:text-sm opacity-90 leading-relaxed mb-3 hidden sm:block mobile-text carousel-long-description carousel-text-shadow">{item.longDescription}</p>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                          <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                            <h3 className="font-bold text-xl sm:text-2xl mb-3 text-shadow-lg">{item.title}</h3>
+                            <p className="text-base sm:text-lg opacity-95 mb-3 text-shadow-md leading-relaxed">{item.description}</p>
+                            <p className="text-sm sm:text-base opacity-90 leading-relaxed mb-4 hidden sm:block text-shadow-sm">{item.longDescription}</p>
                             <div className="flex items-center gap-2">
-                              <Badge variant="secondary" className="text-xs sm:text-sm mobile-touch-target carousel-badge">
-                                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                              <Badge variant="secondary" className="bg-white/20 text-white border-white/30 text-sm px-3 py-1">
+                                <Calendar className="h-4 w-4 mr-2" />
                                 {item.date}
                               </Badge>
                             </div>
@@ -152,28 +154,28 @@ export function InicioSection() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="left-2 sm:left-4 h-8 w-8 sm:h-10 sm:w-10 mobile-carousel-control bg-white/80 hover:bg-white" />
-              <CarouselNext className="right-2 sm:right-4 h-8 w-8 sm:h-10 sm:w-10 mobile-carousel-control bg-white/80 hover:bg-white" />
+              <CarouselPrevious className="absolute left-4 top-1/2 transform -translate-y-1/2 h-12 w-12 bg-white/90 hover:bg-white shadow-lg border-0 rounded-full transition-all duration-300" />
+              <CarouselNext className="absolute right-4 top-1/2 transform -translate-y-1/2 h-12 w-12 bg-white/90 hover:bg-white shadow-lg border-0 rounded-full transition-all duration-300" />
             </Carousel>
           </div>
         </CardContent>
       </Card>
 
       {/* Nuestro Rincón de Amor */}
-      <Card className="bg-gradient-to-r from-secondary/5 to-accent/5 border-secondary/20 mobile-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 mobile-text">
-            <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
+      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-3 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-pink-500" />
             Nuestro Rincón de Amor
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-base sm:text-lg leading-relaxed text-center mobile-text">
+        <CardContent className="px-6 pb-8 space-y-6">
+          <p className="text-base sm:text-lg leading-relaxed text-center text-gray-700 dark:text-gray-300 max-w-4xl mx-auto">
             Este es nuestro espacio especial para guardar y revivir todos los momentos mágicos que hemos compartido juntos. 
             Cada foto, cada mensaje y cada canción es un tesoro que nos recuerda lo especial que es nuestro amor.
           </p>
           <div className="text-center">
-            <blockquote className="text-base sm:text-lg italic text-muted-foreground mobile-text">
+            <blockquote className="text-lg sm:text-xl italic text-pink-600 dark:text-pink-400 font-medium leading-relaxed max-w-3xl mx-auto">
               "El amor no se mide por cuánto tiempo lo has esperado, sino por cuánto estás dispuesto a esperar por él."
             </blockquote>
           </div>
