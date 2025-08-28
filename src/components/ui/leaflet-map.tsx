@@ -45,23 +45,23 @@ export function LeafletMap({ places, className = "h-[600px] w-full", onAddPlace 
 
     const iconConfigs = {
       user: {
-        html: `<div style="background-color: #3b82f6; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 8px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold;">📍</div>`,
+        html: `<div style="background-color: #3b82f6; width: 40px; height: 40px; border-radius: 50%; border: 4px solid white; box-shadow: 0 0 12px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: bold;">📍</div>`,
         className: 'custom-user-icon'
       },
       visited: {
-        html: `<div style="background-color: #10b981; width: 18px; height: 18px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 10px;">✅</div>`,
+        html: `<div style="background-color: #10b981; width: 36px; height: 36px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">✅</div>`,
         className: 'custom-visited-icon'
       },
       pending: {
-        html: `<div style="background-color: #f59e0b; width: 18px; height: 18px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 10px;">⭐</div>`,
+        html: `<div style="background-color: #f59e0b; width: 36px; height: 36px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">⭐</div>`,
         className: 'custom-pending-icon'
       },
       search: {
-        html: `<div style="background-color: #ef4444; width: 18px; height: 18px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 10px;">🔍</div>`,
+        html: `<div style="background-color: #ef4444; width: 36px; height: 36px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">🔍</div>`,
         className: 'custom-search-icon'
       },
       favorite: {
-        html: `<div style="background-color: #ec4899; width: 18px; height: 18px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 10px;">💖</div>`,
+        html: `<div style="background-color: #ec4899; width: 36px; height: 36px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">💖</div>`,
         className: 'custom-favorite-icon'
       }
     }
@@ -70,8 +70,8 @@ export function LeafletMap({ places, className = "h-[600px] w-full", onAddPlace 
     return L.divIcon({
       className: config.className,
       html: config.html,
-      iconSize: [20, 20],
-      iconAnchor: [10, 10]
+      iconSize: [40, 40],
+      iconAnchor: [20, 20]
     })
   }
 
@@ -409,17 +409,28 @@ export function LeafletMap({ places, className = "h-[600px] w-full", onAddPlace 
           const icon = createCustomIcon(iconType)
           
           if (icon) {
-            const marker = L.marker([place.lat, place.lng], { icon })
+            const marker = L.marker([place.lat, place.lng], { 
+              icon,
+              zIndexOffset: place.visited ? 500 : 400 // Priorizar lugares visitados
+            })
               .addTo(map)
               .bindPopup(`
-                <div style="min-width: 200px;">
-                  <h3 style="font-weight: bold; margin-bottom: 8px; color: #374151;">${place.name}</h3>
-                  <p style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">${place.address}</p>
-                  <span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 500; background-color: ${place.visited ? '#d1fae5' : '#fef3c7'}; color: ${place.visited ? '#065f46' : '#92400e'};">
-                    ${place.visited ? '✅ Visitado' : '⭐ Pendiente'}
-                  </span>
+                <div style="min-width: 220px; padding: 8px;">
+                  <div style="text-align: center; margin-bottom: 12px;">
+                    <div style="font-size: 24px; margin-bottom: 4px;">${place.visited ? '✅' : '⭐'}</div>
+                    <h3 style="font-weight: bold; margin-bottom: 8px; color: #374151; font-size: 14px;">${place.name}</h3>
+                    <p style="font-size: 11px; color: #6b7280; margin-bottom: 8px; line-height: 1.3;">${place.address}</p>
+                  </div>
+                  <div style="text-align: center;">
+                    <span style="background: ${place.visited ? '#10b981' : '#f59e0b'}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 500;">
+                      ${place.visited ? 'Visitado' : 'Pendiente'}
+                    </span>
+                  </div>
+                  <p style="font-size: 11px; color: #6b7280; margin-top: 8px; text-align: center;">Tipo: ${place.type}</p>
                 </div>
-              `)
+              `, {
+                className: 'custom-popup'
+              })
 
             markersRef.current.push(marker)
           }
@@ -445,56 +456,130 @@ export function LeafletMap({ places, className = "h-[600px] w-full", onAddPlace 
            const clickLng = e.latlng.lng
            
            if (isValidCoordinate(clickLat, clickLng)) {
+             console.log('📍 Clic en mapa para agregar lugar:', { lat: clickLat, lng: clickLng })
+             
+             // Mostrar indicador visual temporal en el punto de clic
+             const clickIndicator = L.circle([clickLat, clickLng], {
+               color: '#10b981',
+               fillColor: '#10b981',
+               fillOpacity: 0.4,
+               radius: 80,
+               weight: 3
+             }).addTo(map)
+             
              // Obtener información del lugar usando reverse geocoding
              fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${clickLat}&lon=${clickLng}&addressdetails=1`)
                .then(response => response.json())
                .then(data => {
-                 const name = data.display_name.split(',')[0]
-                 const address = data.display_name
+                 const name = data.display_name.split(',')[0] || 'Lugar sin nombre'
+                 const address = data.display_name || 'Dirección no disponible'
                  
-                 // Agregar marcador temporal
+                 console.log('📍 Información del lugar obtenida:', { name, address })
+                 
+                 // Agregar marcador temporal con mejor diseño
                  const tempIcon = createCustomIcon('search')
                  
                  if (tempIcon) {
-                   const tempMarker = L.marker([clickLat, clickLng], { icon: tempIcon })
+                   const tempMarker = L.marker([clickLat, clickLng], { 
+                     icon: tempIcon,
+                     zIndexOffset: 1000 // Asegurar que esté por encima de otros marcadores
+                   })
                      .addTo(map)
                      .bindPopup(`
-                       <div style="min-width: 250px;">
-                         <h3 style="font-weight: bold; margin-bottom: 8px; color: #374151;">${name}</h3>
-                         <p style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">${address}</p>
-                         <div style="display: flex; gap: 4px;">
-                           <button onclick="window.addPlaceFromMap('${name}', '${address}', ${clickLat}, ${clickLng}, 'lugar')" style="background-color: #ec4899; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; flex: 1;">
+                       <div style="min-width: 280px; padding: 8px;">
+                         <div style="text-align: center; margin-bottom: 12px;">
+                           <div style="font-size: 24px; margin-bottom: 4px;">📍</div>
+                           <h3 style="font-weight: bold; margin-bottom: 8px; color: #374151; font-size: 14px;">${name}</h3>
+                           <p style="font-size: 11px; color: #6b7280; margin-bottom: 12px; line-height: 1.3;">${address}</p>
+                         </div>
+                         <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                           <button id="addPlaceBtn" data-name="${name}" data-address="${address}" data-lat="${clickLat}" data-lng="${clickLng}" data-type="lugar" style="background: linear-gradient(135deg, #ec4899, #be185d); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; flex: 1; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                              💖 Lugar Especial
                            </button>
-                           <button onclick="window.addPlaceFromMap('${name}', '${address}', ${clickLat}, ${clickLng}, 'evento')" style="background-color: #8b5cf6; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; flex: 1;">
+                           <button id="addEventBtn" data-name="${name}" data-address="${address}" data-lat="${clickLat}" data-lng="${clickLng}" data-type="evento" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; flex: 1; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                              🎉 Evento
                            </button>
                          </div>
+                         <div style="text-align: center;">
+                           <button id="cancelBtn" style="background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; width: 100%;">
+                             ❌ Cancelar
+                           </button>
+                         </div>
                        </div>
-                     `)
+                     `, {
+                       closeButton: false,
+                       closeOnClick: false,
+                       className: 'custom-popup'
+                     })
                      .openPopup()
 
-                   // Exponer función global
-                   ;(window as any).addPlaceFromMap = (name: string, address: string, lat: number, lng: number, type: string) => {
-                     if (onAddPlace) {
-                       onAddPlace({
-                         name: name,
-                         address: address,
-                         lat: lat,
-                         lng: lng,
-                         type: type === 'evento' ? 'eventos' : 'otro',
-                         visited: false
+                   // Agregar event listeners a los botones del popup
+                   setTimeout(() => {
+                     const addPlaceBtn = document.getElementById('addPlaceBtn')
+                     const addEventBtn = document.getElementById('addEventBtn')
+                     const cancelBtn = document.getElementById('cancelBtn')
+                     
+                     if (addPlaceBtn) {
+                       addPlaceBtn.addEventListener('click', () => {
+                         console.log('💖 Agregando lugar especial:', { name, address, lat: clickLat, lng: clickLng })
+                         if (onAddPlace) {
+                           onAddPlace({
+                             name: name,
+                             address: address,
+                             lat: clickLat,
+                             lng: clickLng,
+                             type: 'otro',
+                             visited: false
+                           })
+                           map.removeLayer(tempMarker)
+                           map.removeLayer(clickIndicator)
+                           setIsAddingPlace(false)
+                         }
                        })
-                       map.removeLayer(tempMarker)
-                       setIsAddingPlace(false)
                      }
-                   }
+                     
+                     if (addEventBtn) {
+                       addEventBtn.addEventListener('click', () => {
+                         console.log('🎉 Agregando evento:', { name, address, lat: clickLat, lng: clickLng })
+                         if (onAddPlace) {
+                           onAddPlace({
+                             name: name,
+                             address: address,
+                             lat: clickLat,
+                             lng: clickLng,
+                             type: 'eventos',
+                             visited: false
+                           })
+                           map.removeLayer(tempMarker)
+                           map.removeLayer(clickIndicator)
+                           setIsAddingPlace(false)
+                         }
+                       })
+                     }
+                     
+                     if (cancelBtn) {
+                       cancelBtn.addEventListener('click', () => {
+                         console.log('❌ Cancelando agregar lugar')
+                         map.removeLayer(tempMarker)
+                         map.removeLayer(clickIndicator)
+                         setIsAddingPlace(false)
+                       })
+                     }
+                   }, 100)
                  }
                })
                .catch(error => {
-                 console.error('Error en reverse geocoding:', error)
+                 console.error('❌ Error en reverse geocoding:', error)
+                 // Limpiar indicadores en caso de error
+                 map.removeLayer(clickIndicator)
+                 // Mostrar mensaje de error al usuario
+                 alert('Error al obtener información del lugar. Intenta de nuevo.')
                })
+           } else {
+             console.log('⚠️ Coordenadas inválidas:', { lat: clickLat, lng: clickLng })
            }
+         } else {
+           console.log('ℹ️ Modo agregar lugar no está activo')
          }
        })
 
@@ -831,6 +916,47 @@ export function LeafletMap({ places, className = "h-[600px] w-full", onAddPlace 
 
   return (
     <div className={`${className} rounded-lg overflow-hidden relative bg-white border`}>
+      <style jsx>{`
+        .custom-popup .leaflet-popup-content-wrapper {
+          border-radius: 12px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .custom-popup .leaflet-popup-content {
+          margin: 0;
+          border-radius: 12px;
+        }
+        .custom-popup .leaflet-popup-tip {
+          background: white;
+        }
+        
+        /* Estilos para iconos de ubicación más visibles */
+        .custom-user-icon,
+        .custom-visited-icon,
+        .custom-pending-icon,
+        .custom-search-icon,
+        .custom-favorite-icon {
+          filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+          transition: all 0.3s ease;
+        }
+        
+        .custom-user-icon:hover,
+        .custom-visited-icon:hover,
+        .custom-pending-icon:hover,
+        .custom-search-icon:hover,
+        .custom-favorite-icon:hover {
+          transform: scale(1.1);
+          filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
+        }
+        
+        /* Asegurar que los iconos sean visibles en todos los zoom levels */
+        .leaflet-marker-icon {
+          transition: all 0.2s ease;
+        }
+        
+        .leaflet-marker-icon:hover {
+          z-index: 1000 !important;
+        }
+      `}</style>
       {/* Barra de búsqueda */}
       <div className="absolute top-4 left-4 right-4 z-[1000]">
         <div className="relative search-container">
@@ -926,11 +1052,20 @@ export function LeafletMap({ places, className = "h-[600px] w-full", onAddPlace 
             <Button
               size="sm"
               variant={isAddingPlace ? "default" : "outline"}
-              className={`h-6 px-2 text-xs ${isAddingPlace ? 'bg-green-500 hover:bg-green-600' : ''}`}
-              onClick={() => setIsAddingPlace(!isAddingPlace)}
+              className={`h-6 px-2 text-xs transition-all duration-200 ${
+                isAddingPlace 
+                  ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg animate-pulse' 
+                  : 'hover:bg-green-50 hover:border-green-300'
+              }`}
+              onClick={() => {
+                const newState = !isAddingPlace
+                setIsAddingPlace(newState)
+                console.log(`🗺️ Modo agregar lugar ${newState ? 'activado' : 'desactivado'}`)
+              }}
               title={isAddingPlace ? "Cancelar modo agregar" : "Agregar lugar haciendo clic"}
             >
-              <MousePointer className="h-3 w-3" />
+              <MousePointer className={`h-3 w-3 ${isAddingPlace ? 'animate-bounce' : ''}`} />
+              {isAddingPlace && <span className="ml-1 text-xs">Activo</span>}
             </Button>
           </div>
         </div>
@@ -939,9 +1074,24 @@ export function LeafletMap({ places, className = "h-[600px] w-full", onAddPlace 
       {/* Contenedor del mapa */}
       <div 
         ref={mapRef} 
-        className="w-full h-full"
-        style={{ minHeight: '500px' }}
+        className={`w-full h-full transition-all duration-200 ${isAddingPlace ? 'cursor-crosshair' : ''}`}
+        style={{ 
+          minHeight: '600px',
+          cursor: isAddingPlace ? 'crosshair' : 'default'
+        }}
       >
+        {/* Indicador sutil del modo activo */}
+        {isAddingPlace && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[500]">
+            <div className="bg-green-500/20 backdrop-blur-sm rounded-full p-8 border-2 border-green-500/30 animate-pulse">
+              <div className="text-center">
+                <MousePointer className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                <p className="text-green-700 font-medium text-sm">Modo Activo</p>
+                <p className="text-green-600 text-xs">Haz clic en el mapa</p>
+              </div>
+            </div>
+          </div>
+        )}
         {!isMapLoaded && (
           <div className="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center">
             <div className="text-center">
@@ -954,49 +1104,9 @@ export function LeafletMap({ places, className = "h-[600px] w-full", onAddPlace 
         )}
       </div>
 
-      {/* Leyenda */}
-      <div className="absolute bottom-4 left-4 z-[999]">
-        <div className="bg-white rounded-lg shadow-lg p-3">
-          <h4 className="font-medium text-sm text-gray-900 mb-2">Leyenda:</h4>
-          <div className="space-y-1 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">📍</div>
-              <span>Mi ubicación</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">✅</div>
-              <span>Visitado</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs">⭐</div>
-              <span>Pendiente</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">🔍</div>
-              <span>Resultados de búsqueda</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-pink-500 rounded-full flex items-center justify-center text-white text-xs">💖</div>
-              <span>Lugares especiales</span>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Indicador de modo agregar lugar */}
-      {isAddingPlace && (
-        <div className="absolute top-24 left-4 right-4 z-[999]">
-          <div className="bg-white rounded-lg shadow-lg p-3 border-l-4 border-green-500">
-            <div className="flex items-center gap-2 text-sm">
-              <MousePointer className="h-4 w-4 text-green-500" />
-              <span className="font-medium text-gray-900">Modo agregar lugar activo</span>
-            </div>
-            <p className="text-xs text-gray-600 mt-1">
-              Haz clic en cualquier punto del mapa para agregar un lugar o evento
-            </p>
-          </div>
-        </div>
-      )}
+
+
     </div>
   )
 }
