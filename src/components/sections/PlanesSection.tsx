@@ -1306,145 +1306,195 @@ function PlanCard({
   const StatusIcon = getStatusIcon(plan.status)
 
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-200 w-full">
-      {plan.image && (
-        <div className="relative h-40 sm:h-48 overflow-hidden rounded-t-lg">
-          <img
-            src={plan.image}
-            alt={plan.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
+    <Card className="hover:shadow-lg transition-shadow duration-200 w-full overflow-hidden">
+      {/* Header con imagen y título */}
+      <div className="relative">
+        {plan.image && (
+          <div className="relative h-52 sm:h-48 overflow-hidden">
+            <img
+              src={plan.image}
+              alt={plan.title}
+              className="w-full h-full object-cover"
+            />
+            {/* Overlay para el título */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute bottom-4 sm:bottom-3 left-4 sm:left-3 right-4 sm:right-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-[clamp(1.2rem,3vw,1.2rem)] font-bold text-white line-clamp-2 drop-shadow-lg">
+                  {plan.title}
+                </CardTitle>
+                <div className="flex items-center gap-2 sm:gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onEdit}
+                    className="h-8 w-8 sm:h-7 sm:w-7 p-0 bg-white/20 hover:bg-white/30 text-white"
+                  >
+                    <Edit className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onDelete}
+                    className="h-8 w-8 sm:h-7 sm:w-7 p-0 bg-white/20 hover:bg-white/30 text-white"
+                  >
+                    <Trash2 className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Título sin imagen */}
+        {!plan.image && (
+          <CardHeader className="pb-2 p-4 sm:p-4">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <CardTitle className="text-[clamp(1.2rem,3vw,1.2rem)] font-bold text-gray-900 dark:text-white line-clamp-2">
+                  {plan.title}
+                </CardTitle>
+              </div>
+              <div className="flex items-center gap-2 sm:gap-1 ml-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onEdit}
+                  className="h-8 w-8 sm:h-7 sm:w-7 p-0"
+                >
+                  <Edit className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onDelete}
+                  className="h-8 w-8 sm:h-7 sm:w-7 p-0 text-red-500 hover:text-red-700"
+                >
+                  <Trash2 className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+        )}
+      </div>
       
-      <CardHeader className="pb-3 p-3 sm:p-6">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-[clamp(1rem,2.5vw,1.1rem)] font-semibold text-gray-900 dark:text-white line-clamp-2">
-              {plan.title}
-            </CardTitle>
-            <CardDescription className="text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400 line-clamp-2 mt-2">
-              {plan.description}
-            </CardDescription>
+      {/* Contenido principal */}
+      <CardContent className="p-4 sm:p-4 space-y-4">
+        {/* Información organizada en 2 columnas - Estado y Fecha a la izquierda */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Columna izquierda - Estado y Fecha */}
+          <div className="space-y-4">
+            {/* Estado */}
+            <div className="flex items-center">
+              <Badge className={`${getStatusColor(plan.status)} text-[clamp(0.8rem,2.5vw,0.8rem)] px-3 py-1.5`}>
+                <StatusIcon className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-2 sm:mr-1.5" />
+                {statuses.find(s => s.value === plan.status)?.label}
+              </Badge>
+            </div>
+            
+            {/* Fecha y Hora */}
+            <div className="flex items-center text-[clamp(0.9rem,2.5vw,0.85rem)] text-gray-600 dark:text-gray-400">
+              <Calendar className="h-5 w-5 sm:h-4 sm:w-4 mr-3 sm:mr-2 text-primary" />
+              <span className="font-medium">{new Date(plan.date).toLocaleDateString('es-ES')}</span>
+              {plan.time && (
+                <>
+                  <Clock className="h-5 w-5 sm:h-4 sm:w-4 mr-3 sm:mr-2 ml-4 sm:ml-3 text-primary" />
+                  <span className="font-medium">{plan.time}</span>
+                </>
+              )}
+            </div>
           </div>
           
-          <div className="flex items-center gap-2 ml-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onEdit}
-              className="h-8 w-8 sm:h-9 sm:w-9 p-0"
-            >
-              <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onDelete}
-              className="h-8 w-8 sm:h-9 sm:w-9 p-0 text-red-500 hover:text-red-700"
-            >
-              <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
-            </Button>
+          {/* Columna derecha - Ubicación y Tags */}
+          <div className="space-y-4">
+            {/* Ubicación */}
+            {plan.location && (
+              <div className="flex items-center text-[clamp(0.9rem,2.5vw,0.85rem)] text-gray-600 dark:text-gray-400">
+                <MapPin className="h-5 w-5 sm:h-4 sm:w-4 mr-3 sm:mr-2 text-primary" />
+                <span className="line-clamp-1 font-medium">{plan.location}</span>
+              </div>
+            )}
+            
+            {/* Tags */}
+            {plan.tags && plan.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {plan.tags.map(tag => (
+                  <Badge key={tag} variant="outline" className="text-[clamp(0.8rem,2.2vw,0.75rem)] px-3 py-1.5 bg-pink-50 border-pink-200 text-pink-700">
+                    <Tag className="h-4 w-4 sm:h-3 w-3 mr-1.5 sm:mr-1" />
+                    <span className="line-clamp-1">{tag}</span>
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      </CardHeader>
+        
+        {/* Descripción - Movida abajo para aprovechar el espacio */}
+        <CardDescription className="text-[clamp(0.9rem,2.5vw,0.9rem)] text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed pt-2">
+          {plan.description}
+        </CardDescription>
 
-      <CardContent className="space-y-4 p-3 sm:p-6 pt-0">
-        {/* Status */}
-        <div className="flex items-center justify-end">
-          <Badge className={`${getStatusColor(plan.status)} text-[clamp(0.7rem,2vw,0.8rem)] px-2 sm:px-3 py-1 sm:py-1.5`}>
-            <StatusIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-            {statuses.find(s => s.value === plan.status)?.label}
-          </Badge>
-        </div>
-
-        {/* Date and Time */}
-        <div className="flex items-center text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400">
-          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-          <span>{new Date(plan.date).toLocaleDateString('es-ES')}</span>
-          {plan.time && (
-            <>
-              <Clock className="h-4 w-4 sm:h-5 sm:w-5 mr-2 ml-4" />
-              <span>{plan.time}</span>
-            </>
-          )}
-        </div>
-
-        {/* Location */}
-        {plan.location && (
-          <div className="flex items-center text-[clamp(0.8rem,2vw,0.9rem)] text-gray-600 dark:text-gray-400">
-            <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-            <span className="line-clamp-1">{plan.location}</span>
-          </div>
-        )}
-
-        {/* Tags */}
-        {plan.tags && plan.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {plan.tags.map(tag => (
-              <Badge key={tag} variant="outline" className="text-[clamp(0.7rem,2vw,0.8rem)] px-2 sm:px-3 py-1 sm:py-1.5">
-                <Tag className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
-
-        {/* Status Actions */}
-        <div className="flex flex-col sm:flex-row gap-2 pt-3">
+        {/* Botones de Acción - Optimizados para Móvil */}
+        <div className="pt-3 border-t border-gray-100">
           {plan.status === 'pendiente' && (
-            <>
-              <Button
-                size="sm"
-                onClick={() => onStatusChange('en_progreso')}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
-              >
-                <PlayCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
-                Iniciar
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => onStatusChange('completado')}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
-              >
-                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
-                Completar
-              </Button>
-            </>
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Button
+                  size="sm"
+                  onClick={() => onStatusChange('en_progreso')}
+                  className="bg-blue-600 hover:bg-blue-700 text-[clamp(0.85rem,2.2vw,0.8rem)] py-2 px-3 h-10 sm:h-9"
+                >
+                  <PlayCircle className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-1.5 sm:mr-1" />
+                  Iniciar
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => onStatusChange('completado')}
+                  className="bg-green-600 hover:bg-green-700 text-[clamp(0.85rem,2.2vw,0.8rem)] py-2 px-3 h-10 sm:h-9"
+                >
+                  <CheckCircle className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-1.5 sm:mr-1" />
+                  Completar
+                </Button>
+              </div>
+            </div>
           )}
           
           {plan.status === 'en_progreso' && (
-            <>
-              <Button
-                size="sm"
-                onClick={() => onStatusChange('completado')}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
-              >
-                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
-                Completar
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => onStatusChange('pendiente')}
-                variant="outline"
-                className="flex-1 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
-              >
-                <Clock className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
-                Pausar
-              </Button>
-            </>
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Button
+                  size="sm"
+                  onClick={() => onStatusChange('completado')}
+                  className="bg-green-600 hover:bg-green-700 text-[clamp(0.85rem,2.2vw,0.8rem)] py-2 px-3 h-10 sm:h-9"
+                >
+                  <CheckCircle className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-1.5 sm:mr-1" />
+                  Completar
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => onStatusChange('pendiente')}
+                  variant="outline"
+                  className="text-[clamp(0.85rem,2.2vw,0.8rem)] py-2 px-3 h-10 sm:h-9"
+                >
+                  <Clock className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-2 sm:mr-1.5" />
+                  Pausar
+                </Button>
+              </div>
+            </div>
           )}
 
           {(plan.status === 'pendiente' || plan.status === 'en_progreso') && (
-            <Button
-              size="sm"
-              onClick={() => onStatusChange('cancelado')}
-              variant="outline"
-              className="text-red-600 border-red-600 hover:bg-red-50 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
-            >
-              <XCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
-              Cancelar
-            </Button>
+            <div className="pt-2">
+              <Button
+                size="sm"
+                onClick={() => onStatusChange('cancelado')}
+                variant="outline"
+                className="w-full text-red-600 border-red-600 hover:bg-red-50 text-[clamp(0.85rem,2.2vw,0.8rem)] py-2 px-3 h-10 sm:h-9"
+              >
+                <XCircle className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-1.5 sm:mr-1" />
+                Cancelar
+              </Button>
+            </div>
           )}
 
           {plan.status === 'completado' && (
@@ -1452,9 +1502,9 @@ function PlanCard({
               size="sm"
               onClick={() => onStatusChange('en_progreso')}
               variant="outline"
-              className="flex-1 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
+              className="w-full text-[clamp(0.85rem,2.2vw,0.8rem)] py-2 px-3 h-10 sm:h-9"
             >
-              <PlayCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
+              <PlayCircle className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-1.5 sm:mr-1" />
               Reabrir
             </Button>
           )}
@@ -1463,9 +1513,9 @@ function PlanCard({
             <Button
               size="sm"
               onClick={() => onStatusChange('pendiente')}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-[clamp(0.8rem,2vw,0.9rem)] py-2 sm:py-2.5"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-[clamp(0.85rem,2.2vw,0.8rem)] py-2 px-3 h-10 sm:h-9"
             >
-              <Clock className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
+              <Clock className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-1.5 sm:mr-1" />
               Reactivar
             </Button>
           )}
