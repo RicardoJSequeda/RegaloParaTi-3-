@@ -331,6 +331,15 @@ export function RecuerdosSection() {
   // Función para agregar lugar desde el mapa
   const handleAddPlaceFromMap = async (newPlace: any) => {
     try {
+      console.log('🗺️ Agregando lugar desde el mapa:', newPlace)
+      
+      // Validar datos del lugar
+      if (!newPlace.name || !newPlace.address || !newPlace.lat || !newPlace.lng) {
+        console.error('❌ Datos del lugar incompletos:', newPlace)
+        alert('Error: Datos del lugar incompletos')
+        return
+      }
+
       const placeData = {
         name: newPlace.name,
         address: newPlace.address,
@@ -341,6 +350,8 @@ export function RecuerdosSection() {
         tags: [newPlace.type.toLowerCase()]
       }
 
+      console.log('📝 Enviando datos a Supabase:', placeData)
+
       const { data, error } = await supabase
         .from('places')
         .insert([placeData])
@@ -348,9 +359,12 @@ export function RecuerdosSection() {
         .single()
 
       if (error) {
-        console.error('Error adding place:', error)
+        console.error('❌ Error al agregar lugar en Supabase:', error)
+        alert('Error al guardar el lugar en la base de datos')
         return
       }
+
+      console.log('✅ Lugar agregado exitosamente:', data)
 
       // Actualizar mapPlaces para compatibilidad
       const newMapPlace = {
@@ -371,8 +385,13 @@ export function RecuerdosSection() {
         setSearchResults([])
         setSearchTerm('')
       }
+
+      // Mostrar mensaje de éxito
+      alert(`✅ Lugar "${newPlace.name}" agregado exitosamente!`)
+      
     } catch (error) {
-      console.error('Error in handleAddPlaceFromMap:', error)
+      console.error('❌ Error in handleAddPlaceFromMap:', error)
+      alert('Error inesperado al agregar el lugar')
     }
   }
 
@@ -939,8 +958,8 @@ export function RecuerdosSection() {
         </motion.div>
 
         {/* Sección "Mapa de Lugares Especiales" */}
-        <motion.div className="space-y-4 max-w-5xl mx-auto" variants={itemVariants}>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <motion.div className="space-y-3 max-w-6xl mx-auto" variants={itemVariants}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <h2 className="text-xl sm:text-2xl font-bold text-pink-700">
               {showMapResults ? 'Resultados de Búsqueda en el Mapa' : 'Mapa de Lugares Especiales'}
             </h2>
@@ -976,7 +995,7 @@ export function RecuerdosSection() {
           )}
           
           {/* Mapa con altura mejorada para móvil */}
-          <div className="relative max-w-5xl mx-auto">
+          <div className="relative max-w-6xl mx-auto">
             <LeafletMap 
               places={showMapResults ? searchResults.map(place => ({
                 id: parseInt(place.id.replace(/\D/g, '') || '0'),
@@ -987,7 +1006,7 @@ export function RecuerdosSection() {
                 type: place.type,
                 visited: place.status === 'visitado'
               })) : mapPlaces} 
-              className="h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] w-full rounded-2xl border-0 shadow-lg" 
+              className="h-[350px] sm:h-[450px] md:h-[550px] lg:h-[600px] w-full rounded-2xl border-0 shadow-lg" 
               onAddPlace={handleAddPlaceFromMap}
             />
           </div>
