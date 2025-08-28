@@ -975,136 +975,138 @@ export function MetasSection() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold text-gray-800 flex items-center justify-center gap-3">
-          <Target className="h-10 w-10 text-primary" />
+      <div className="text-center space-y-3 px-4">
+        <h1 className="text-[clamp(2rem,6vw,2.5rem)] font-bold text-gray-800 flex items-center justify-center gap-2 sm:gap-3">
+          <Target className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
           Nuestras Metas y Sueños
         </h1>
-        <p className="text-gray-600 text-lg">
+        <p className="text-[clamp(1rem,3vw,1.125rem)] text-gray-600 leading-relaxed">
           Planifica tu futuro juntos y haz realidad tus sueños
         </p>
       </div>
 
       {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 px-4">
         <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-blue-600 font-medium">Total Metas</p>
-                <p className="text-2xl font-bold text-blue-700">{stats.totalGoals}</p>
+                <p className="text-[clamp(0.75rem,2.5vw,0.875rem)] text-blue-600 font-medium">Total Metas</p>
+                <p className="text-[clamp(1.5rem,4vw,1.5rem)] font-bold text-blue-700">{stats.totalGoals}</p>
               </div>
-              <Target className="h-8 w-8 text-blue-500" />
+              <Target className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-green-600 font-medium">Completadas</p>
-                <p className="text-2xl font-bold text-green-700">{stats.completedGoals}</p>
+                <p className="text-[clamp(0.75rem,2.5vw,0.875rem)] text-green-600 font-medium">Completadas</p>
+                <p className="text-[clamp(1.5rem,4vw,1.5rem)] font-bold text-green-700">{stats.completedGoals}</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-500" />
+              <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-purple-600 font-medium">Sueños</p>
-                <p className="text-2xl font-bold text-purple-700">{stats.totalDreams}</p>
+                <p className="text-[clamp(0.75rem,2.5vw,0.875rem)] text-purple-600 font-medium">Sueños</p>
+                <p className="text-[clamp(1.5rem,4vw,1.5rem)] font-bold text-purple-700">{stats.totalDreams}</p>
               </div>
-              <Star className="h-8 w-8 text-purple-500" />
+              <Star className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500" />
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-orange-600 font-medium">Progreso</p>
-                <p className="text-2xl font-bold text-orange-700">{stats.averageProgress.toFixed(0)}%</p>
+                <p className="text-[clamp(0.75rem,2.5vw,0.875rem)] text-orange-600 font-medium">Progreso</p>
+                <p className="text-[clamp(1.5rem,4vw,1.5rem)] font-bold text-orange-700">{stats.averageProgress.toFixed(0)}%</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-orange-500" />
+              <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-orange-500" />
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-pink-50 to-pink-100 border-pink-200">
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-pink-600 font-medium">Próximas</p>
-                <p className="text-2xl font-bold text-pink-700">{stats.upcomingDeadlines}</p>
+                <p className="text-[clamp(0.75rem,2.5vw,0.875rem)] text-pink-600 font-medium">Próximas</p>
+                <p className="text-[clamp(1.5rem,4vw,1.5rem)] font-bold text-pink-700">{stats.upcomingDeadlines}</p>
               </div>
-              <CalendarDays className="h-8 w-8 text-pink-500" />
+              <CalendarDays className="h-6 w-6 sm:h-8 sm:w-8 text-pink-500" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6 px-4">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="metas" className="flex items-center gap-2">
+          <TabsTrigger value="metas" className="flex items-center gap-1.5 sm:gap-2 text-[clamp(0.875rem,2.5vw,1rem)] py-2.5 sm:py-3">
             <Target className="h-4 w-4" />
             Metas
           </TabsTrigger>
-          <TabsTrigger value="sueños" className="flex items-center gap-2">
+          <TabsTrigger value="sueños" className="flex items-center gap-1.5 sm:gap-2 text-[clamp(0.875rem,2.5vw,1rem)] py-2.5 sm:py-3">
             <Star className="h-4 w-4" />
             Sueños
           </TabsTrigger>
         </TabsList>
 
         {/* Tab: Metas */}
-        <TabsContent value="metas" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div className="flex gap-4">
+        <TabsContent value="metas" className="space-y-4 sm:space-y-6 px-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <Input
                 placeholder="Buscar metas..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-64"
+                className="w-full sm:w-64"
               />
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Todas">Todas las categorías</SelectItem>
-                  {categories.map(category => (
-                    <SelectItem key={category.value} value={category.value}>
-                      {category.icon} {category.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Todas">Todos los estados</SelectItem>
-                  <SelectItem value="pendiente">Pendiente</SelectItem>
-                  <SelectItem value="en_progreso">En Progreso</SelectItem>
-                  <SelectItem value="completado">Completado</SelectItem>
-                  <SelectItem value="pausado">Pausado</SelectItem>
-                  <SelectItem value="cancelado">Cancelado</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex gap-3">
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger className="w-full sm:w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Todas">Todas las categorías</SelectItem>
+                    {categories.map(category => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.icon} {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <SelectTrigger className="w-full sm:w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Todas">Todos los estados</SelectItem>
+                    <SelectItem value="pendiente">Pendiente</SelectItem>
+                    <SelectItem value="en_progreso">En Progreso</SelectItem>
+                    <SelectItem value="completado">Completado</SelectItem>
+                    <SelectItem value="pausado">Pausado</SelectItem>
+                    <SelectItem value="cancelado">Cancelado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <Button onClick={() => setShowAddGoalDialog(true)} className="flex items-center gap-2">
+            <Button onClick={() => setShowAddGoalDialog(true)} className="flex items-center gap-2 w-full sm:w-auto">
               <Plus className="h-4 w-4" />
               Nueva Meta
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filteredGoals.map((goal) => (
               <motion.div
                 key={goal.id}
@@ -1115,15 +1117,15 @@ export function MetasSection() {
                 <Card className={`hover:shadow-lg transition-all duration-200 ${
                   goal.isFavorite ? 'ring-2 ring-yellow-200 bg-yellow-50' : ''
                 }`}>
-                  <CardHeader className="pb-3">
+                  <CardHeader className="pb-3 px-4 sm:px-6 py-3 sm:py-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <CardTitle className="text-lg flex items-center gap-2">
+                        <CardTitle className="text-[clamp(1.125rem,3vw,1.125rem)] flex items-center gap-2">
                           {goal.title}
                           {goal.isPrivate && <EyeOff className="h-4 w-4 text-gray-400" />}
                           {goal.isFavorite && <Star className="h-4 w-4 text-yellow-500 fill-current" />}
                         </CardTitle>
-                        <CardDescription className="mt-2">
+                        <CardDescription className="mt-2 text-[clamp(0.875rem,2.5vw,0.875rem)]">
                           {goal.description}
                         </CardDescription>
                       </div>
@@ -1131,23 +1133,23 @@ export function MetasSection() {
                         variant="ghost"
                         size="sm"
                         onClick={() => deleteGoal(goal.id)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 h-8 w-8 sm:h-9 sm:w-9 p-0"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </CardHeader>
                   
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 px-4 sm:px-6 pb-4 sm:pb-6">
                     {/* Badges */}
                     <div className="flex flex-wrap gap-2">
-                      <Badge className={getCategoryColor(goal.category)}>
+                      <Badge className={`${getCategoryColor(goal.category)} text-[clamp(0.75rem,2.2vw,0.75rem)] px-2.5 py-1`}>
                         {getCategoryIcon(goal.category)} {categories.find(c => c.value === goal.category)?.label}
                       </Badge>
-                      <Badge className={getPriorityColor(goal.priority)}>
+                      <Badge className={`${getPriorityColor(goal.priority)} text-[clamp(0.75rem,2.2vw,0.75rem)] px-2.5 py-1`}>
                         {goal.priority}
                       </Badge>
-                      <Badge className={getStatusColor(goal.status)}>
+                      <Badge className={`${getStatusColor(goal.status)} text-[clamp(0.75rem,2.2vw,0.75rem)] px-2.5 py-1`}>
                         {goal.status === 'completado' ? 'Completado' : 
                          goal.status === 'en_progreso' ? 'En Progreso' : 
                          goal.status === 'pendiente' ? 'Pendiente' : 
@@ -1157,85 +1159,93 @@ export function MetasSection() {
 
                     {/* Progreso */}
                     <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-[clamp(0.875rem,2.5vw,0.875rem)]">
                         <span>Progreso</span>
-                        <span>{goal.progress}%</span>
+                        <span className="font-medium">{goal.progress}%</span>
                       </div>
-                      <div className="h-2">
-  <Progress value={goal.progress} />
-</div>
+                      <div className="h-2.5 sm:h-2">
+                        <Progress value={goal.progress} />
+                      </div>
                     </div>
 
                     {/* Información adicional */}
-                    <div className="space-y-2 text-sm text-gray-600">
+                    <div className="space-y-2.5 text-[clamp(0.875rem,2.5vw,0.875rem)] text-gray-600">
                       {goal.targetDate && (
                         <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          <span>Meta: {new Date(goal.targetDate).toLocaleDateString()}</span>
+                          <Calendar className="h-4 w-4 text-primary" />
+                          <span className="font-medium">Meta: {new Date(goal.targetDate).toLocaleDateString()}</span>
                         </div>
                       )}
                       {goal.budget && goal.budget > 0 && (
                         <div className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4" />
-                          <span>Presupuesto: ${goal.budget.toLocaleString()}</span>
+                          <DollarSign className="h-4 w-4 text-primary" />
+                          <span className="font-medium">Presupuesto: ${goal.budget.toLocaleString()}</span>
                         </div>
                       )}
                       {goal.location && (
                         <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4" />
-                          <span>{goal.location}</span>
+                          <MapPin className="h-4 w-4 text-primary" />
+                          <span className="font-medium">{goal.location}</span>
                         </div>
                       )}
                     </div>
 
                     {/* Acciones */}
-                    <div className="flex gap-2 flex-wrap">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          if (updatingGoal[goal.id]) return
-                          const newProgress = Math.min(goal.progress + 25, 100)
-                          updateGoalProgress(goal.id, newProgress)
-                        }}
-                        disabled={goal.status === 'completado'}
-                      >
-                        <TrendingUp className="h-4 w-4 mr-1" />
-                        Avanzar
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          if (updatingGoal[goal.id]) return
-                          const newProgress = Math.max(goal.progress - 25, 0)
-                          updateGoalProgress(goal.id, newProgress)
-                        }}
-                        disabled={goal.progress === 0}
-                      >
-                        <TrendingDown className="h-4 w-4 mr-1" />
-                        Retroceder
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          if (updatingGoal[goal.id]) return
-                          updateGoalProgress(goal.id, 0)
-                        }}
-                        disabled={goal.progress === 0}
-                      >
-                        <Clock className="h-4 w-4 mr-1" />
-                        Resetear
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEditGoalDialog(goal)}
-                      >
-                        <Edit className="h-4 w-4 mr-1" />
-                        Editar
-                      </Button>
+                    <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (updatingGoal[goal.id]) return
+                            const newProgress = Math.min(goal.progress + 25, 100)
+                            updateGoalProgress(goal.id, newProgress)
+                          }}
+                          disabled={goal.status === 'completado'}
+                          className="text-[clamp(0.75rem,2.2vw,0.75rem)] py-2 px-3 h-9 sm:h-8"
+                        >
+                          <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
+                          Avanzar
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (updatingGoal[goal.id]) return
+                            const newProgress = Math.max(goal.progress - 25, 0)
+                            updateGoalProgress(goal.id, newProgress)
+                          }}
+                          disabled={goal.progress === 0}
+                          className="text-[clamp(0.75rem,2.2vw,0.75rem)] py-2 px-3 h-9 sm:h-8"
+                        >
+                          <TrendingDown className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
+                          Retroceder
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (updatingGoal[goal.id]) return
+                            updateGoalProgress(goal.id, 0)
+                          }}
+                          disabled={goal.progress === 0}
+                          className="text-[clamp(0.75rem,2.2vw,0.75rem)] py-2 px-3 h-9 sm:h-8"
+                        >
+                          <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
+                          Resetear
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openEditGoalDialog(goal)}
+                          className="text-[clamp(0.75rem,2.2vw,0.75rem)] py-2 px-3 h-9 sm:h-8"
+                        >
+                          <Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
+                          Editar
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -1245,17 +1255,17 @@ export function MetasSection() {
         </TabsContent>
 
         {/* Tab: Sueños */}
-        <TabsContent value="sueños" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div className="flex gap-4">
+        <TabsContent value="sueños" className="space-y-4 sm:space-y-6 px-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <Input
                 placeholder="Buscar sueños..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-64"
+                className="w-full sm:w-64"
               />
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-full sm:w-40">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -1268,13 +1278,13 @@ export function MetasSection() {
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={() => setShowAddDreamDialog(true)} className="flex items-center gap-2">
+            <Button onClick={() => setShowAddDreamDialog(true)} className="flex items-center gap-2 w-full sm:w-auto">
               <Plus className="h-4 w-4" />
               Nuevo Sueño
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filteredDreams.map((dream) => (
               <motion.div
                 key={dream.id}
@@ -1285,15 +1295,15 @@ export function MetasSection() {
                 <Card className={`hover:shadow-lg transition-all duration-200 ${
                   dream.isAchieved ? 'ring-2 ring-green-200 bg-green-50' : ''
                 }`}>
-                  <CardHeader className="pb-3">
+                  <CardHeader className="pb-3 px-4 sm:px-6 py-3 sm:py-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <CardTitle className="text-lg flex items-center gap-2">
+                        <CardTitle className="text-[clamp(1.125rem,3vw,1.125rem)] flex items-center gap-2">
                           {dream.title}
                           {dream.isAchieved && <Trophy className="h-4 w-4 text-green-500" />}
                           {dream.isShared && <Users2 className="h-4 w-4 text-blue-500" />}
                         </CardTitle>
-                        <CardDescription className="mt-2">
+                        <CardDescription className="mt-2 text-[clamp(0.875rem,2.5vw,0.875rem)]">
                           {dream.description}
                         </CardDescription>
                       </div>
@@ -1301,47 +1311,47 @@ export function MetasSection() {
                         variant="ghost"
                         size="sm"
                         onClick={() => deleteDream(dream.id)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 h-8 w-8 sm:h-9 sm:w-9 p-0"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </CardHeader>
                   
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 px-4 sm:px-6 pb-4 sm:pb-6">
                     {/* Badges */}
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                      <Badge className="bg-purple-100 text-purple-800 border-purple-200 text-[clamp(0.75rem,2.2vw,0.75rem)] px-2.5 py-1">
                         {dreamCategories.find(c => c.value === dream.category)?.icon} {dreamCategories.find(c => c.value === dream.category)?.label}
                       </Badge>
-                      <Badge className={getPriorityColor(dream.priority)}>
+                      <Badge className={`${getPriorityColor(dream.priority)} text-[clamp(0.75rem,2.2vw,0.75rem)] px-2.5 py-1`}>
                         {dream.priority}
                       </Badge>
                       {dream.isAchieved && (
-                        <Badge className="bg-green-100 text-green-800 border-green-200">
+                        <Badge className="bg-green-100 text-green-800 border-green-200 text-[clamp(0.75rem,2.2vw,0.75rem)] px-2.5 py-1">
                           ¡Logrado!
                         </Badge>
                       )}
                     </div>
 
                     {/* Información adicional */}
-                    <div className="space-y-2 text-sm text-gray-600">
+                    <div className="space-y-2.5 text-[clamp(0.875rem,2.5vw,0.875rem)] text-gray-600">
                       {dream.estimatedCost && dream.estimatedCost > 0 && (
                         <div className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4" />
-                          <span>Costo estimado: ${dream.estimatedCost.toLocaleString()}</span>
+                          <DollarSign className="h-4 w-4 text-primary" />
+                          <span className="font-medium">Costo estimado: ${dream.estimatedCost.toLocaleString()}</span>
                         </div>
                       )}
                       {dream.location && (
                         <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4" />
-                          <span>{dream.location}</span>
+                          <MapPin className="h-4 w-4 text-primary" />
+                          <span className="font-medium">{dream.location}</span>
                         </div>
                       )}
                       {dream.timeframe && (
                         <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4" />
-                          <span>Plazo: {dream.timeframe === 'pronto' ? 'Pronto' : 
+                          <Clock className="h-4 w-4 text-primary" />
+                          <span className="font-medium">Plazo: {dream.timeframe === 'pronto' ? 'Pronto' : 
                                        dream.timeframe === 'este_año' ? 'Este año' : 
                                        dream.timeframe === 'proximo_año' ? 'Próximo año' : 'Futuro lejano'}</span>
                         </div>
@@ -1349,20 +1359,21 @@ export function MetasSection() {
                     </div>
 
                     {/* Acciones */}
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => toggleDreamAchieved(dream.id)}
+                        className="text-[clamp(0.75rem,2.2vw,0.75rem)] py-2 px-3 h-9 sm:h-8"
                       >
                         {dream.isAchieved ? (
                           <>
-                            <X className="h-4 w-4 mr-1" />
+                            <X className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
                             Desmarcar
                           </>
                         ) : (
                           <>
-                            <Trophy className="h-4 w-4 mr-1" />
+                            <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
                             ¡Logrado!
                           </>
                         )}
@@ -1371,8 +1382,9 @@ export function MetasSection() {
                         variant="outline"
                         size="sm"
                         onClick={() => openEditDreamDialog(dream)}
+                        className="text-[clamp(0.75rem,2.2vw,0.75rem)] py-2 px-3 h-9 sm:h-8"
                       >
-                        <Edit className="h-4 w-4 mr-1" />
+                        <Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
                         Editar
                       </Button>
                     </div>
