@@ -1347,7 +1347,7 @@ export function MascotasSection() {
                       <Button variant="ghost" size="sm" onClick={() => deletePet(pet.id)} className="text-red-500 hover:text-red-700 py-1.5 px-2 text-[clamp(0.75rem,2vw,0.75rem)] h-7">
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
-                    </div>
+                  </div>
                   </div>
                   <CardDescription className="text-[clamp(0.8rem,2vw,0.75rem)]">
                     {pet.breed && `${pet.breed} • `}
