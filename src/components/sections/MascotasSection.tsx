@@ -1180,71 +1180,68 @@ export function MascotasSection() {
 
 
   return (
-    <div className="space-y-8">
+    <div className="w-full min-h-screen p-0 sm:p-4 lg:p-6 space-y-4 sm:space-y-6 lg:space-y-8 overflow-x-hidden">
       {/* Header */}
-      <div className="space-y-2">
-        <div className="flex justify-between items-start">
+      <div className="space-y-3 sm:space-y-2 px-4 sm:px-0">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
           <div>
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-          <PawPrint className="h-8 w-8 text-primary" />
+        <h1 className="text-[clamp(1.8rem,6vw,2.5rem)] font-bold tracking-tight flex flex-col sm:flex-row items-center gap-3 sm:gap-2 text-center sm:text-left">
+          <PawPrint className="h-9 w-9 sm:h-8 sm:w-8 text-primary" />
           Cuidado de Mascotas
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-[clamp(1rem,3.5vw,1.1rem)] text-muted-foreground text-center sm:text-left mt-2">
           Gestiona el cuidado y salud de tus mascotas de manera organizada.
         </p>
           </div>
-          
-
-
         </div>
       </div>
 
       {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4">
-        <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
-          <CardContent className="p-6">
+      <div className="flex overflow-x-auto gap-4 pb-2 px-4 sm:px-0 sm:grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 sm:gap-4">
+        <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 min-w-[140px] sm:min-w-0">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Mascotas</p>
-                <p className="text-2xl font-bold text-primary">{pets.length}</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.875rem)] font-medium text-muted-foreground">Mascotas</p>
+                <p className="text-[clamp(1.6rem,4.5vw,1.5rem)] font-bold text-primary">{pets.length}</p>
               </div>
-              <PawPrint className="h-8 w-8 text-primary" />
+              <PawPrint className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
-          <CardContent className="p-6">
+        <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 min-w-[140px] sm:min-w-0">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Tareas Pendientes</p>
-                <p className="text-2xl font-bold text-blue-600">{pendingTasks}</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.875rem)] font-medium text-muted-foreground">Tareas Pendientes</p>
+                <p className="text-[clamp(1.6rem,4.5vw,1.5rem)] font-bold text-blue-600">{pendingTasks}</p>
               </div>
-              <Clock className="h-8 w-8 text-blue-600" />
+              <Clock className="h-7 w-7 sm:h-8 sm:w-8 text-blue-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200">
-          <CardContent className="p-6">
+        <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200 min-w-[140px] sm:min-w-0">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Tareas Completadas</p>
-                <p className="text-2xl font-bold text-green-600">{completedTasks}</p>
+                <p className="text-[clamp(1.6rem,4.5vw,1.5rem)] font-bold text-green-600">{completedTasks}</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-7 w-7 sm:h-8 sm:w-8 text-green-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200">
-          <CardContent className="p-6">
+        <Card className="bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 min-w-[140px] sm:min-w-0">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Fotos</p>
-                <p className="text-2xl font-bold text-purple-600">{totalPhotos}</p>
+                <p className="text-[clamp(0.8rem,2.5vw,0.875rem)] font-medium text-muted-foreground">Fotos</p>
+                <p className="text-[clamp(1.6rem,4.5vw,1.5rem)] font-bold text-purple-600">{totalPhotos}</p>
               </div>
-              <Camera className="h-8 w-8 text-purple-600" />
+              <Camera className="h-7 w-7 sm:h-8 sm:w-8 text-purple-600" />
             </div>
           </CardContent>
         </Card>
@@ -1253,37 +1250,37 @@ export function MascotasSection() {
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="mascotas" className="flex items-center gap-2">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 px-4 sm:px-0">
+        <TabsList className="grid w-full grid-cols-3 gap-2">
+          <TabsTrigger value="mascotas" className="flex items-center gap-2 py-2.5 px-3 text-[clamp(0.75rem,2.5vw,0.875rem)]">
             <PawPrint className="h-4 w-4" />
             Mascotas
           </TabsTrigger>
-          <TabsTrigger value="tareas" className="flex items-center gap-2">
+          <TabsTrigger value="tareas" className="flex items-center gap-2 py-2.5 px-3 text-[clamp(0.75rem,2.5vw,0.875rem)]">
             <Activity className="h-4 w-4" />
             Tareas
           </TabsTrigger>
 
           {/* Tab de medicamentos eliminado */}
 
-          <TabsTrigger value="fotos" className="flex items-center gap-2">
+          <TabsTrigger value="fotos" className="flex items-center gap-2 py-2.5 px-3 text-[clamp(0.75rem,2.5vw,0.875rem)]">
             <Camera className="h-4 w-4" />
             Fotos
           </TabsTrigger>
         </TabsList>
 
         {/* Tab: Mascotas */}
-        <TabsContent value="mascotas" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div className="flex gap-2">
+        <TabsContent value="mascotas" className="space-y-6 px-4 sm:px-0">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
               <Input
                 placeholder="Buscar mascotas..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-64"
+                className="w-full sm:w-64 py-3 text-[clamp(0.95rem,2.5vw,1rem)]"
               />
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-full sm:w-40 py-3 text-[clamp(0.95rem,2.5vw,1rem)]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -1299,16 +1296,16 @@ export function MascotasSection() {
               </Select>
             </div>
 
-            <Button onClick={() => setShowAddPetDialog(true)} className="flex items-center gap-2">
+            <Button onClick={() => setShowAddPetDialog(true)} className="flex items-center gap-2 w-full sm:w-auto py-3 px-4 text-[clamp(0.9rem,2.5vw,0.875rem)]">
               <Plus className="h-4 w-4" />
               Agregar Mascota
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredPets.map((pet) => (
               <Card key={pet.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="aspect-square relative bg-gradient-to-br from-primary/10 to-secondary/10">
+                <div className="aspect-[4/3] relative bg-gradient-to-br from-primary/10 to-secondary/10">
                   {pet.image ? (
                   <img
                       src={pet.image}
@@ -1318,48 +1315,48 @@ export function MascotasSection() {
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <div className="text-center">
-                        <PawPrint className="h-16 w-16 text-primary/40 mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground">Sin foto</p>
+                        <PawPrint className="h-12 w-12 sm:h-10 sm:w-10 text-primary/40 mx-auto mb-2" />
+                        <p className="text-[clamp(0.8rem,2vw,0.75rem)] text-muted-foreground">Sin foto</p>
                       </div>
                     </div>
                   )}
                   <div className="absolute top-2 right-2">
-                    <Badge variant="secondary" className="flex items-center gap-1 bg-white/90 backdrop-blur-sm">
+                    <Badge variant="secondary" className="flex items-center gap-1 bg-white/90 backdrop-blur-sm text-[clamp(0.7rem,1.8vw,0.75rem)] px-2 py-1">
                       {getPetTypeIcon(pet.type)}
                       {pet.type}
                     </Badge>
                   </div>
                   <div className="absolute top-2 left-2">
-                    <Button size="sm" variant="outline" onClick={() => editPet(pet.id)} className="bg-white/80">
-                      <Edit className="h-4 w-4" />
+                    <Button size="sm" variant="outline" onClick={() => editPet(pet.id)} className="bg-white/80 h-7 w-7 p-0">
+                      <Edit className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                   <div className="absolute bottom-2 left-2">
-                    <Badge variant="outline" className="bg-white/90 backdrop-blur-sm">
+                    <Badge variant="outline" className="bg-white/90 backdrop-blur-sm text-[clamp(0.7rem,1.8vw,0.75rem)] px-2 py-1">
                     {pet.name}
                     </Badge>
                   </div>
                 </div>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{pet.name}</CardTitle>
+                <CardHeader className="pb-2 px-4 py-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <CardTitle className="text-[clamp(1rem,2.5vw,1rem)]">{pet.name}</CardTitle>
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" onClick={() => editPet(pet.id)}>
-                        <Edit className="h-4 w-4" />
+                      <Button variant="outline" size="sm" onClick={() => editPet(pet.id)} className="py-1.5 px-2 text-[clamp(0.75rem,2vw,0.75rem)] h-7">
+                        <Edit className="h-3.5 w-3.5" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => deletePet(pet.id)} className="text-red-500 hover:text-red-700">
-                        <Trash2 className="h-4 w-4" />
+                      <Button variant="ghost" size="sm" onClick={() => deletePet(pet.id)} className="text-red-500 hover:text-red-700 py-1.5 px-2 text-[clamp(0.75rem,2vw,0.75rem)] h-7">
+                        <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   </div>
-                  <CardDescription>
+                  <CardDescription className="text-[clamp(0.8rem,2vw,0.75rem)]">
                     {pet.breed && `${pet.breed} • `}
                     {pet.birthDate && `Nacido: ${new Date(pet.birthDate).toLocaleDateString()}`}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-4 pb-4 pt-0">
                   {pet.notes && (
-                    <p className="text-sm text-muted-foreground mb-4">{pet.notes}</p>
+                    <p className="text-[clamp(0.8rem,2vw,0.75rem)] text-muted-foreground">{pet.notes}</p>
                   )}
                 </CardContent>
               </Card>
@@ -1368,15 +1365,15 @@ export function MascotasSection() {
         </TabsContent>
 
         {/* Tab: Tareas */}
-        <TabsContent value="tareas" className="space-y-6">
-          <div className="flex justify-between items-center">
+        <TabsContent value="tareas" className="space-y-6 px-4 sm:px-0">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <Input
               placeholder="Buscar tareas..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-64"
+              className="w-full sm:w-64 py-3 text-[clamp(0.95rem,2.5vw,1rem)]"
             />
-            <Button onClick={() => setShowAddTaskDialog(true)} className="flex items-center gap-2">
+            <Button onClick={() => setShowAddTaskDialog(true)} className="flex items-center gap-2 w-full sm:w-auto py-3 px-4 text-[clamp(0.9rem,2.5vw,0.875rem)]">
               <Plus className="h-4 w-4" />
               Agregar Tarea
             </Button>
@@ -1447,88 +1444,7 @@ export function MascotasSection() {
 
 
 
-          {/* Registros de Salud */}
-          <div className="space-y-4">
-            <h4 className="text-md font-semibold text-muted-foreground flex items-center gap-2">
-              <Stethoscope className="h-4 w-4" />
-              Registros de Salud
-            </h4>
-            {healthRecords.map((record) => {
-              const pet = getPetById(record.petId)
-              return (
-                <Card key={`health-${record.id}`}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <Stethoscope className="h-5 w-5 text-primary" />
-                        {record.title}
-                      </span>
-                      <div className="flex items-center gap-2">
-                      <Badge variant="outline">{record.type}</Badge>
-                        <Button variant="outline" size="sm" onClick={() => {
-                          const r = healthRecords.find(h => h.id === record.id)
-                          if (r) {
-                            setNewHealthRecord({
-                              id: r.id,
-                              petId: `${r.petId}`,
-                              date: r.date,
-                              type: r.type,
-                              title: r.title,
-                              description: r.description,
-                              veterinarian: r.veterinarian,
-                              clinic: r.clinic,
-                              cost: r.cost,
-                              nextDue: r.nextDue,
-                              notes: r.notes,
-                              attachments: r.attachments
-                            })
-                            setIsEditingHealth(true)
-                            setShowAddHealthDialog(true)
-                          }
-                        }}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => deleteHealthRecord(record.id)} className="text-red-500 hover:text-red-700">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </CardTitle>
-                    <CardDescription>
-                      {pet?.name} • {new Date(record.date).toLocaleDateString()}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm mb-4">{record.description}</p>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      {record.veterinarian && (
-                        <div>
-                          <span className="font-medium">Veterinario:</span> {record.veterinarian}
-                        </div>
-                      )}
-                      {record.clinic && (
-                        <div>
-                          <span className="font-medium">Clínica:</span> {record.clinic}
-                        </div>
-                      )}
-                      {record.cost && (
-                        <div>
-                          <span className="font-medium">Costo:</span> ${record.cost}
-                        </div>
-                      )}
-                      {record.nextDue && (
-                        <div>
-                          <span className="font-medium">Próxima cita:</span> {new Date(record.nextDue).toLocaleDateString()}
-                        </div>
-                      )}
-                    </div>
-                    {record.notes && (
-                      <p className="text-sm text-muted-foreground mt-4">{record.notes}</p>
-                    )}
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
+
 
         {/* Sección de medicamentos eliminada */}
 
@@ -1537,20 +1453,20 @@ export function MascotasSection() {
 
 
         {/* Tab: Fotos */}
-        <TabsContent value="fotos" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Biblioteca de Fotos</h3>
-            <Button onClick={() => setShowAddPhotoDialog(true)} className="flex items-center gap-2">
+        <TabsContent value="fotos" className="space-y-6 px-4 sm:px-0">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <h3 className="text-[clamp(1.2rem,3vw,1.125rem)] font-semibold text-center sm:text-left">Biblioteca de Fotos</h3>
+            <Button onClick={() => setShowAddPhotoDialog(true)} className="flex items-center gap-2 w-full sm:w-auto py-3 px-4 text-[clamp(0.9rem,2.5vw,0.875rem)]">
               <Plus className="h-4 w-4" />
               Agregar Foto
             </Button>
           </div>
 
-          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 [column-fill:_balance]">
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:_balance]">
             {photos.map((photo) => {
               const pet = getPetById(photo.petId)
               return (
-                <Card key={photo.id} className="overflow-hidden break-inside-avoid mb-4 inline-block w-full">
+                <Card key={photo.id} className="overflow-hidden break-inside-avoid mb-3 inline-block w-full">
                   <div className="relative">
                     <img
                       src={photo.image}
@@ -1577,22 +1493,23 @@ export function MascotasSection() {
                             setShowAddPhotoDialog(true)
                           }
                         }}
-                        className="bg-white/80"
+                        className="bg-white/80 h-7 w-7 p-0"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit className="w-3.5 h-3.5" />
                       </Button>
                       <Button
                         size="sm"
                         variant="destructive"
                         onClick={() => deletePhoto(photo.id)}
+                        className="h-7 w-7 p-0"
                       >
-                        <X className="w-4 h-4" />
+                        <X className="w-3.5 h-3.5" />
                       </Button>
                     </div>
                   </div>
-                  <CardContent className="p-4">
+                  <CardContent className="p-3">
                     {photo.description && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-[clamp(0.8rem,2vw,0.75rem)] text-muted-foreground">
                         {photo.description}
                       </p>
                     )}
@@ -1606,22 +1523,23 @@ export function MascotasSection() {
 
       {/* Dialog: Agregar Mascota */}
       <Dialog open={showAddPetDialog} onOpenChange={setShowAddPetDialog}>
-        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto mx-2 sm:mx-0 p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle>{selectedPet ? 'Editar Mascota' : 'Agregar Nueva Mascota'}</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-[clamp(1.2rem,3vw,1.25rem)]">{selectedPet ? 'Editar Mascota' : 'Agregar Nueva Mascota'}</DialogTitle>
+            <DialogDescription className="text-[clamp(0.95rem,2.5vw,1rem)]">
               {selectedPet ? 'Modifica la información de tu mascota.' : 'Completa la información de tu nueva mascota.'}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <FormValidation errors={validationErrors} />
             <div className="grid gap-2">
-              <label htmlFor="name">Nombre</label>
+              <label htmlFor="name" className="text-[clamp(0.9rem,2.5vw,0.875rem)] font-medium">Nombre</label>
               <Input
                 id="name"
                 value={newPet.name || ''}
                 onChange={(e) => setNewPet({ ...newPet, name: e.target.value })}
                 placeholder="Nombre de la mascota"
+                className="py-3 text-[clamp(0.95rem,2.5vw,1rem)]"
               />
             </div>
             <div className="grid gap-2">
@@ -1716,16 +1634,18 @@ export function MascotasSection() {
               </div>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2">
             <Button variant="outline" onClick={() => {
               setShowAddPetDialog(false)
               setSelectedPet(null)
               setNewPet({})
               setValidationErrors([])
-            }}>
+            }} className="w-full sm:w-auto py-3 px-6 text-[clamp(0.95rem,2.5vw,1rem)]">
               Cancelar
             </Button>
-            <Button onClick={addPet}>{selectedPet ? 'Guardar Cambios' : 'Agregar Mascota'}</Button>
+            <Button onClick={addPet} className="w-full sm:w-auto py-3 px-6 text-[clamp(0.95rem,2.5vw,1rem)] bg-primary hover:bg-primary/90">
+              {selectedPet ? 'Guardar Cambios' : 'Agregar Mascota'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
