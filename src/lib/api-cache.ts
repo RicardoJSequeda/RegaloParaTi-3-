@@ -64,11 +64,19 @@ class ApiCache {
    */
   clean(): void {
     const now = Date.now()
-    for (const [key, entry] of this.cache.entries()) {
+    const keysToDelete: string[] = []
+    
+    // Iterar sobre las entradas de forma compatible con ES5
+    this.cache.forEach((entry, key) => {
       if (now - entry.timestamp > entry.ttl) {
-        this.cache.delete(key)
+        keysToDelete.push(key)
       }
-    }
+    })
+    
+    // Eliminar las entradas expiradas
+    keysToDelete.forEach(key => {
+      this.cache.delete(key)
+    })
   }
 
   /**

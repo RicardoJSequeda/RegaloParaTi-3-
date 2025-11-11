@@ -93,7 +93,7 @@ const nextConfig = {
 
   // Variables de entorno públicas
   env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
+    CUSTOM_KEY: process.env.CUSTOM_KEY || '',
   },
 }
 
