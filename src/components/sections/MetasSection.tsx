@@ -545,16 +545,32 @@ export function MetasSection() {
     if (!error) setDreams(data as Dream[])
   }
 
-  // Realtime subscriptions
+  // Realtime subscriptions con throttle
   useEffect(() => {
+    let lastGoalsUpdate = 0
+    let lastDreamsUpdate = 0
+    const throttleDelay = 1000 // 1 segundo
+    
     const goalsChannel = supabase
       .channel('goals_changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'goals' }, loadGoals)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'goals' }, () => {
+        const now = Date.now()
+        if (now - lastGoalsUpdate > throttleDelay) {
+          lastGoalsUpdate = now
+          loadGoals()
+        }
+      })
       .subscribe()
 
     const dreamsChannel = supabase
       .channel('dreams_changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'dreams' }, loadDreams)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'dreams' }, () => {
+        const now = Date.now()
+        if (now - lastDreamsUpdate > throttleDelay) {
+          lastDreamsUpdate = now
+          loadDreams()
+        }
+      })
       .subscribe()
 
     return () => {
@@ -592,8 +608,8 @@ export function MetasSection() {
     notes: ''
   })
 
-  // Estadísticas
-  const stats: GoalStats = {
+  // Estadísticas (memoizadas)
+  const stats: GoalStats = useMemo(() => ({
     totalGoals: goals.length,
     completedGoals: goals.filter(g => g.status === 'completado').length,
     inProgressGoals: goals.filter(g => g.status === 'en_progreso').length,
@@ -604,27 +620,33 @@ export function MetasSection() {
     upcomingDeadlines: goals.filter(g => g.targetDate && new Date(g.targetDate) > new Date() && g.status !== 'completado').length,
     totalBudget: goals.reduce((sum, g) => sum + (g.budget || 0), 0),
     spentBudget: goals.reduce((sum, g) => sum + (g.currentSpent || 0), 0)
-  }
+  }), [goals, dreams])
 
-  // Filtrar metas
-  const filteredGoals = goals.filter(goal => {
-    const matchesSearch = goal.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         goal.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         goal.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    const matchesCategory = selectedCategory === 'Todas' || goal.category === selectedCategory
-    const matchesStatus = selectedStatus === 'Todas' || goal.status === selectedStatus
-    
-    return matchesSearch && matchesCategory && matchesStatus
-  })
+  // Filtrar metas (memoizado con debounce)
+  const filteredGoals = useMemo(() => {
+    return goals.filter(goal => {
+      const matchesSearch = debouncedSearchTerm === '' ||
+        goal.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        goal.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        goal.tags.some(tag => tag.toLowerCase().includes(debouncedSearchTerm.toLowerCase()))
+      const matchesCategory = selectedCategory === 'Todas' || goal.category === selectedCategory
+      const matchesStatus = selectedStatus === 'Todas' || goal.status === selectedStatus
+      
+      return matchesSearch && matchesCategory && matchesStatus
+    })
+  }, [goals, debouncedSearchTerm, selectedCategory, selectedStatus])
 
-  // Filtrar sueños
-  const filteredDreams = dreams.filter(dream => {
-    const matchesSearch = dream.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         dream.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'Todas' || dream.category === selectedCategory
-    
-    return matchesSearch && matchesCategory
-  })
+  // Filtrar sueños (memoizado con debounce)
+  const filteredDreams = useMemo(() => {
+    return dreams.filter(dream => {
+      const matchesSearch = debouncedSearchTerm === '' ||
+        dream.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        dream.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      const matchesCategory = selectedCategory === 'Todas' || dream.category === selectedCategory
+      
+      return matchesSearch && matchesCategory
+    })
+  }, [dreams, debouncedSearchTerm, selectedCategory])
 
   const addGoal = async () => {
     if (!goalForm.title) return
