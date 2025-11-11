@@ -36,3 +36,5 @@ export { Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastT
 export { Skeleton } from './skeleton'
 export { Label } from './label'
 export { GlobalPlayer } from './global-player'
+export { ErrorBoundary, useErrorHandler } from './error-boundary'
+export { Skeleton as LoadingSkeleton, CardSkeleton, ListSkeleton, ImageSkeleton, FormSkeleton, TableSkeleton } from './loading-skeleton'

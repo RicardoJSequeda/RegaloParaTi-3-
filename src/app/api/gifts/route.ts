@@ -1,46 +1,84 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getBrowserClient } from '@/lib/supabase/browser-client'
+import { withErrorHandler, parseRequestBody, validateRequiredFields, AppError } from '@/lib/api-error-handler'
+import { validateString, validateDate, validateNumber, sanitizeObject } from '@/lib/validation'
 
-export async function GET() {
-  try {
-    const supabase = getBrowserClient()
-    
-    const { data: gifts, error } = await supabase
-      .from('gifts')
-      .select('*')
-      .order('created_at', { ascending: false })
+export const GET = withErrorHandler(async () => {
+  const supabase = getBrowserClient()
+  
+  const { data: gifts, error } = await supabase
+    .from('gifts')
+    .select('*')
+    .order('created_at', { ascending: false })
 
-    if (error) {
-      console.error('Error fetching gifts:', error)
-      return NextResponse.json({ error: 'Error al obtener regalos' }, { status: 500 })
-    }
-
-    return NextResponse.json(gifts)
-  } catch (error) {
-    console.error('Error in GET /api/gifts:', error)
-    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
+  if (error) {
+    throw new AppError('Error al obtener regalos', 500, 'DATABASE_ERROR', error)
   }
-}
 
-export async function POST(request: NextRequest) {
-  try {
-    const supabase = getBrowserClient()
-    const body = await request.json()
-    
-    const { data: gift, error } = await supabase
-      .from('gifts')
-      .insert([body])
-      .select()
-      .single()
+  return NextResponse.json(gifts || [])
+})
 
-    if (error) {
-      console.error('Error creating gift:', error)
-      return NextResponse.json({ error: 'Error al crear regalo' }, { status: 500 })
-    }
+export const POST = withErrorHandler(async (request: NextRequest) => {
+  const supabase = getBrowserClient()
+  const body = await parseRequestBody(request)
+  
+  // Validar campos requeridos
+  validateRequiredFields(body, ['title'])
 
-    return NextResponse.json(gift)
-  } catch (error) {
-    console.error('Error in POST /api/gifts:', error)
-    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
+  // Validar y sanitizar campos
+  const titleValidation = validateString(body.title, 'Título', {
+    required: true,
+    minLength: 1,
+    maxLength: 200
+  })
+
+  if (!titleValidation.isValid) {
+    throw new AppError(titleValidation.errors.join(', '), 400, 'VALIDATION_ERROR')
   }
-}
+
+  // Validar fecha si está presente
+  if (body.date_received) {
+    const dateValidation = validateDate(body.date_received, 'Fecha de recepción', {
+      format: 'YYYY-MM-DD'
+    })
+    if (!dateValidation.isValid) {
+      throw new AppError(dateValidation.errors.join(', '), 400, 'VALIDATION_ERROR')
+    }
+  }
+
+  // Validar precio si está presente
+  if (body.price !== undefined && body.price !== null) {
+    const priceValidation = validateNumber(body.price, 'Precio', {
+      min: 0
+    })
+    if (!priceValidation.isValid) {
+      throw new AppError(priceValidation.errors.join(', '), 400, 'VALIDATION_ERROR')
+    }
+  }
+
+  // Sanitizar datos
+  const sanitizedData = sanitizeObject({
+    title: body.title.trim(),
+    description: body.description?.trim() || null,
+    giver: body.giver?.trim() || null,
+    date_received: body.date_received || null,
+    price: body.price || null,
+    category: body.category || 'otro',
+    tags: Array.isArray(body.tags) ? body.tags : [],
+    image_url: body.image_url || null,
+    is_favorite: body.is_favorite ?? false,
+    notes: body.notes?.trim() || null
+  })
+  
+  const { data: gift, error } = await supabase
+    .from('gifts')
+    .insert([sanitizedData])
+    .select()
+    .single()
+
+  if (error) {
+    throw new AppError('Error al crear regalo', 500, 'DATABASE_ERROR', error)
+  }
+
+  return NextResponse.json(gift, { status: 201 })
+})

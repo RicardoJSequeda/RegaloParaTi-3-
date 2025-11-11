@@ -1,83 +1,95 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getBrowserClient } from '@/lib/supabase/browser-client'
+import { withErrorHandler, parseRequestBody, validateRequiredFields, AppError } from '@/lib/api-error-handler'
+import { validateString, validateDate, sanitizeObject } from '@/lib/validation'
 
-export async function GET() {
-  try {
-    const supabase = getBrowserClient()
-    
-    const { data, error } = await supabase
-      .from('plans')
-      .select('*')
-      .order('date', { ascending: true })
+export const GET = withErrorHandler(async () => {
+  const supabase = getBrowserClient()
+  
+  const { data, error } = await supabase
+    .from('plans')
+    .select('*')
+    .order('date', { ascending: true })
 
-    if (error) {
-      console.error('Error fetching plans:', error)
-      return NextResponse.json(
-        { error: 'Error al obtener los planes', details: error.message },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json(data || [])
-  } catch (error) {
-    console.error('Error in GET /api/plans:', error)
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
-    )
+  if (error) {
+    throw new AppError('Error al obtener los planes', 500, 'DATABASE_ERROR', error)
   }
-}
 
-export async function POST(request: NextRequest) {
-  try {
-    const supabase = getBrowserClient()
-    const body = await request.json()
+  return NextResponse.json(data || [])
+})
 
-    // Validar campos requeridos
-    if (!body.title || !body.description || !body.date) {
-      return NextResponse.json(
-        { error: 'Título, descripción y fecha son requeridos' },
-        { status: 400 }
-      )
-    }
+export const POST = withErrorHandler(async (request: NextRequest) => {
+  const supabase = getBrowserClient()
+  const body = await parseRequestBody(request)
 
-    // Preparar datos para inserción
-    const planData = {
-      title: body.title,
-      description: body.description,
-      date: body.date,
-      time: body.time || null,
-      location: body.location || null,
-      category: body.category || 'otro',
-      priority: body.priority || 'Media',
-      status: body.status || 'pendiente',
-      notes: body.notes || null,
-      participants: body.participants || [],
-      tags: body.tags || [],
-      reminder: body.reminder || { enabled: false, time: '1h', type: 'notification' },
-      image: body.image || null
-    }
+  // Validar campos requeridos
+  validateRequiredFields(body, ['title', 'description', 'date'])
 
-    const { data, error } = await supabase
-      .from('plans')
-      .insert([planData])
-      .select()
-      .single()
+  // Validar y sanitizar campos
+  const titleValidation = validateString(body.title, 'Título', {
+    required: true,
+    minLength: 1,
+    maxLength: 200
+  })
 
-    if (error) {
-      console.error('Error creating plan:', error)
-      return NextResponse.json(
-        { error: 'Error al crear el plan', details: error.message },
-        { status: 500 }
-      )
-    }
+  const descValidation = validateString(body.description, 'Descripción', {
+    required: true,
+    minLength: 1,
+    maxLength: 2000
+  })
 
-    return NextResponse.json(data, { status: 201 })
-  } catch (error) {
-    console.error('Error in POST /api/plans:', error)
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
-    )
+  const dateValidation = validateDate(body.date, 'Fecha', {
+    required: true,
+    format: 'YYYY-MM-DD'
+  })
+
+  if (!titleValidation.isValid || !descValidation.isValid || !dateValidation.isValid) {
+    const errors = [
+      ...titleValidation.errors,
+      ...descValidation.errors,
+      ...dateValidation.errors
+    ]
+    throw new AppError(errors.join(', '), 400, 'VALIDATION_ERROR', { errors })
   }
-}
+
+  // Validar prioridad
+  const validPriorities = ['Alta', 'Media', 'Baja']
+  if (body.priority && !validPriorities.includes(body.priority)) {
+    throw new AppError('Prioridad inválida', 400, 'VALIDATION_ERROR')
+  }
+
+  // Validar estado
+  const validStatuses = ['pendiente', 'en_progreso', 'completado', 'cancelado']
+  if (body.status && !validStatuses.includes(body.status)) {
+    throw new AppError('Estado inválido', 400, 'VALIDATION_ERROR')
+  }
+
+  // Sanitizar datos
+  const planData = sanitizeObject({
+    title: body.title.trim(),
+    description: body.description.trim(),
+    date: body.date,
+    time: body.time?.trim() || null,
+    location: body.location?.trim() || null,
+    category: body.category || 'otro',
+    priority: body.priority || 'Media',
+    status: body.status || 'pendiente',
+    notes: body.notes?.trim() || null,
+    participants: Array.isArray(body.participants) ? body.participants : [],
+    tags: Array.isArray(body.tags) ? body.tags : [],
+    reminder: body.reminder || { enabled: false, time: '1h', type: 'notification' },
+    image: body.image || null
+  })
+
+  const { data, error } = await supabase
+    .from('plans')
+    .insert([planData])
+    .select()
+    .single()
+
+  if (error) {
+    throw new AppError('Error al crear el plan', 500, 'DATABASE_ERROR', error)
+  }
+
+  return NextResponse.json(data, { status: 201 })
+})

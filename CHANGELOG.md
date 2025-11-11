@@ -2,6 +2,41 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.2.0] - 2024-12-XX
+
+### ✨ Nuevas Funcionalidades
+
+#### 🎣 Hooks Personalizados
+- ✅ `useApi` - Hook para manejar requests de API con retry automático
+- ✅ `useForm` - Hook para formularios con validación integrada
+- ✅ Retry logic automático en requests fallidos
+- ✅ Manejo de estados de carga y error
+
+#### 🛡️ Error Handling
+- ✅ `ErrorBoundary` component para capturar errores de React
+- ✅ Manejo de errores mejorado en componentes
+- ✅ Fallback UI personalizable
+
+#### 💀 UI Components
+- ✅ Componentes de loading skeleton (CardSkeleton, ListSkeleton, etc.)
+- ✅ Mejor feedback visual en estados de carga
+
+#### ⚡ Performance
+- ✅ Utilidades de performance (debounce, throttle, memoize)
+- ✅ Sistema de caching para API routes
+- ✅ Cache con TTL configurable
+- ✅ Headers de cache en responses
+
+#### 🔒 Validación
+- ✅ Validación aplicada a endpoints: gifts, recipes, plans, photos
+- ✅ Validación de URLs, fechas, números
+- ✅ Validación de categorías y tipos
+- ✅ Sanitización mejorada
+
+### 📝 Documentación
+- ✅ `EJEMPLOS_USO.md` - Ejemplos de uso de nuevas funcionalidades
+- ✅ Documentación de hooks y utilidades
+
 ## [1.1.0] - 2024-12-XX
 
 ### ✨ Mejoras Implementadas
