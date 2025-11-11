@@ -4,20 +4,41 @@ import { lazy, Suspense, memo } from 'react'
 import { Section } from '@/types'
 import { InicioSection } from './InicioSection'
 import { CardSkeleton, ListSkeleton } from '@/components/ui/loading-skeleton'
+import { ErrorBoundary } from '@/components/ui/error-boundary'
 
 // Lazy load de secciones pesadas para code splitting
-const RecuerdosSection = lazy(() => import('./RecuerdosSection').then(m => ({ default: m.RecuerdosSection })))
-const MensajesSection = lazy(() => import('./MensajesSection').then(m => ({ default: m.MensajesSection })))
-const MusicaSection = lazy(() => import('./MusicaSection').then(m => ({ default: m.default })))
-const SorpresaSection = lazy(() => import('./SorpresaSection').then(m => ({ default: m.default })))
-const RegalosSection = lazy(() => import('./RegalosSection').then(m => ({ default: m.RegalosSection })))
-const DiarioSection = lazy(() => import('./DiarioSection').then(m => ({ default: m.DiarioSection })))
-const RecetasSection = lazy(() => import('./RecetasSection').then(m => ({ default: m.RecetasSection })))
-const PlanesSection = lazy(() => import('./PlanesSection').then(m => ({ default: m.PlanesSection })))
-const PeliculasSection = lazy(() => import('./PeliculasSection').then(m => ({ default: m.PeliculasSection })))
-const FotosSection = lazy(() => import('./FotosSection').then(m => ({ default: m.default })))
-const MascotasSection = lazy(() => import('./MascotasSection').then(m => ({ default: m.MascotasSection })))
-const MetasSection = lazy(() => import('./MetasSection').then(m => ({ default: m.MetasSection })))
+// Usar importaciones directas más simples y robustas
+const RecuerdosSection = lazy(() => 
+  import('./RecuerdosSection').then(mod => ({ default: mod.RecuerdosSection }))
+)
+const MensajesSection = lazy(() => 
+  import('./MensajesSection').then(mod => ({ default: mod.MensajesSection }))
+)
+const RegalosSection = lazy(() => 
+  import('./RegalosSection').then(mod => ({ default: mod.RegalosSection }))
+)
+const DiarioSection = lazy(() => 
+  import('./DiarioSection').then(mod => ({ default: mod.DiarioSection }))
+)
+const RecetasSection = lazy(() => 
+  import('./RecetasSection').then(mod => ({ default: mod.RecetasSection }))
+)
+const PlanesSection = lazy(() => 
+  import('./PlanesSection').then(mod => ({ default: mod.PlanesSection }))
+)
+const PeliculasSection = lazy(() => 
+  import('./PeliculasSection').then(mod => ({ default: mod.PeliculasSection }))
+)
+const MascotasSection = lazy(() => 
+  import('./MascotasSection').then(mod => ({ default: mod.MascotasSection }))
+)
+const MetasSection = lazy(() => 
+  import('./MetasSection').then(mod => ({ default: mod.MetasSection }))
+)
+// Default exports (sin transformación necesaria)
+const MusicaSection = lazy(() => import('./MusicaSection'))
+const SorpresaSection = lazy(() => import('./SorpresaSection'))
+const FotosSection = lazy(() => import('./FotosSection'))
 
 // Componente de loading optimizado
 const SectionSkeleton = () => (
@@ -34,9 +55,11 @@ interface ContentSectionProps {
 // Memoizar el componente para prevenir re-renders innecesarios
 export const ContentSection = memo(function ContentSection({ section }: ContentSectionProps) {
   return (
-    <Suspense fallback={<SectionSkeleton />}>
-      {renderSection(section)}
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={<SectionSkeleton />}>
+        {renderSection(section)}
+      </Suspense>
+    </ErrorBoundary>
   )
 })
 
