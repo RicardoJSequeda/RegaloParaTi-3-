@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -100,10 +101,19 @@ export function RecetasSection() {
 
     loadRecipes()
 
-    // Real-time updates
+    // Real-time updates con throttle
+    let lastUpdate = 0
+    const throttleDelay = 1000 // 1 segundo
+    
     const channel = supabase
       .channel('recipes-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'recipes' }, () => loadRecipes())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'recipes' }, () => {
+        const now = Date.now()
+        if (now - lastUpdate > throttleDelay) {
+          lastUpdate = now
+          loadRecipes()
+        }
+      })
       .subscribe()
 
     return () => {
@@ -130,6 +140,9 @@ export function RecetasSection() {
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Todas')
+  
+  // Debounce para búsqueda
+  const debouncedSearchTerm = useDebounce(searchTerm, 300)
 
 
   const [recipeForm, setRecipeForm] = useState<RecipeForm>({
@@ -143,8 +156,8 @@ export function RecetasSection() {
     images: []
   })
 
-  // Estadísticas
-  const stats = {
+  // Estadísticas (memoizadas)
+  const stats = useMemo(() => ({
     totalRecipes: recipes.length,
     averageRating: (() => {
       const ratedRecipes = recipes.filter(r => r.rating && r.rating > 0)
@@ -154,7 +167,7 @@ export function RecetasSection() {
     })(),
     favoriteRecipes: recipes.filter(r => r.isFavorite).length,
     mostPopularCategory: getMostPopularCategory()
-  }
+  }), [recipes])
 
   function getMostPopularCategory() {
     if (recipes.length === 0) return 'N/A'
@@ -170,16 +183,19 @@ export function RecetasSection() {
     return entries.reduce((a, b) => categoryCounts[a[0]] > categoryCounts[b[0]] ? a : b)[0]
   }
 
-  // Filtrar recetas
-  const filteredRecipes = recipes.filter(recipe => {
-    const matchesSearch = recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         recipe.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         recipe.ingredients.some(ingredient => ingredient.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                         recipe.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    const matchesCategory = selectedCategory === 'Todas' || recipe.category === selectedCategory.toLowerCase()
-    
-    return matchesSearch && matchesCategory
-  })
+  // Filtrar recetas (memoizado con debounce)
+  const filteredRecipes = useMemo(() => {
+    return recipes.filter(recipe => {
+      const matchesSearch = debouncedSearchTerm === '' ||
+        recipe.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        recipe.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        recipe.ingredients.some(ingredient => ingredient.toLowerCase().includes(debouncedSearchTerm.toLowerCase())) ||
+        recipe.tags.some(tag => tag.toLowerCase().includes(debouncedSearchTerm.toLowerCase()))
+      const matchesCategory = selectedCategory === 'Todas' || recipe.category === selectedCategory.toLowerCase()
+      
+      return matchesSearch && matchesCategory
+    })
+  }, [recipes, debouncedSearchTerm, selectedCategory])
 
   const openAddModal = () => {
     setRecipeForm({

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -509,6 +510,9 @@ export function MetasSection() {
   const [selectedCategory, setSelectedCategory] = useState('Todas')
   const [selectedStatus, setSelectedStatus] = useState('Todas')
   const [updatingGoal, setUpdatingGoal] = useState<Record<number, boolean>>({})
+  
+  // Debounce para búsqueda
+  const debouncedSearchTerm = useDebounce(searchTerm, 300)
   // Animación de éxito (confetti)
   const fireConfetti = async () => {
     try {

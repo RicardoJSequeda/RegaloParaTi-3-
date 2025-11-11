@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -42,43 +43,56 @@ const categories = [
 export function MensajesSection() {
   const supabase = getBrowserClient()
   const [messages, setMessages] = useState<Message[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string>('')
+  
+  // Debounce para búsqueda
+  const debouncedSearchQuery = useDebounce(searchQuery, 300)
 
   // cargar mensajes
   useEffect(() => {
     const load = async () => {
-      const { data, error } = await supabase
-        .from('messages')
-        .select('id,title,content,date,category,is_read,is_favorite,images')
-        .order('date', { ascending: false })
-      if (!error && data) {
-        setMessages(
-          data.map((m: any) => ({
-            id: m.id,
-            title: m.title,
-            content: m.content,
-            date: m.date,
-            category: m.category,
-            isRead: !!m.is_read,
-            isFavorite: !!m.is_favorite,
-            images: m.images || []
-          }))
-        )
+      try {
+        const response = await fetch('/api/messages')
+        if (response.ok) {
+          const data = await response.json()
+          setMessages(
+            data.map((m: any) => ({
+              id: m.id,
+              title: m.title,
+              content: m.content,
+              date: m.date,
+              category: m.category,
+              isRead: !!m.is_read,
+              isFavorite: !!m.is_favorite,
+              images: m.images || []
+            }))
+          )
+        }
+      } catch (error) {
+        console.error('Error loading messages:', error)
       }
     }
     load()
 
-    // realtime
+    // realtime con throttle
+    let lastUpdate = 0
+    const throttleDelay = 1000 // 1 segundo
+    
     const channel = supabase
       .channel('messages-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => load())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => {
+        const now = Date.now()
+        if (now - lastUpdate > throttleDelay) {
+          lastUpdate = now
+          load()
+        }
+      })
       .subscribe()
     return () => {
       supabase.removeChannel(channel)
     }
   }, [supabase])
-
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingMessage, setEditingMessage] = useState<Message | null>(null)
@@ -99,19 +113,26 @@ export function MensajesSection() {
     e.preventDefault()
   }
 
-  // Estadísticas
-  const totalMessages = messages.length
-  const unreadMessages = messages.filter(m => !m.isRead).length
-  const readMessages = messages.filter(m => m.isRead).length
-  const favoriteMessages = messages.filter(m => m.isFavorite).length
+  // Estadísticas (memoizadas)
+  const stats = useMemo(() => ({
+    totalMessages: messages.length,
+    unreadMessages: messages.filter(m => !m.isRead).length,
+    readMessages: messages.filter(m => m.isRead).length,
+    favoriteMessages: messages.filter(m => m.isFavorite).length
+  }), [messages])
+  
+  const { totalMessages, unreadMessages, readMessages, favoriteMessages } = stats
 
-  // Filtrar mensajes
-  const filteredMessages = messages.filter(message => {
-    const matchesSearch = message.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         message.content.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = !selectedCategory || message.category === selectedCategory
-    return matchesSearch && matchesCategory
-  })
+  // Filtrar mensajes (memoizado con debounce)
+  const filteredMessages = useMemo(() => {
+    return messages.filter(message => {
+      const matchesSearch = debouncedSearchQuery === '' ||
+        message.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        message.content.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+      const matchesCategory = !selectedCategory || message.category === selectedCategory
+      return matchesSearch && matchesCategory
+    })
+  }, [messages, debouncedSearchQuery, selectedCategory])
 
   // Toggle favorito
   const toggleFavorite = async (messageId: string) => {

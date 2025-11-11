@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -82,6 +83,9 @@ export function DiarioSection() {
   const [selectedMood, setSelectedMood] = useState('Todos')
   const [selectedAuthor, setSelectedAuthor] = useState('Todos')
   const [showPrivate, setShowPrivate] = useState(true)
+  
+  // Debounce para búsqueda
+  const debouncedSearchTerm = useDebounce(searchTerm, 300)
 
   const [entryForm, setEntryForm] = useState<DiaryEntryForm>({
     title: '',
@@ -118,21 +122,27 @@ export function DiarioSection() {
     fetchEntries()
   }, [])
 
-  // Suscripción en tiempo real
+  // Suscripción en tiempo real con throttle
   useEffect(() => {
     const supabase = getBrowserClient()
+    let lastUpdate = 0
+    const throttleDelay = 1000 // 1 segundo
     
     const channel = supabase
       .channel('diary_changes')
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'diary_entries' },
         (payload) => {
-          if (payload.eventType === 'INSERT') {
-            setEntries(prev => [payload.new as DiaryEntryType, ...prev])
-          } else if (payload.eventType === 'UPDATE') {
-            setEntries(prev => prev.map(e => e.id === payload.new.id ? payload.new as DiaryEntryType : e))
-          } else if (payload.eventType === 'DELETE') {
-            setEntries(prev => prev.filter(e => e.id !== payload.old.id))
+          const now = Date.now()
+          if (now - lastUpdate > throttleDelay) {
+            lastUpdate = now
+            if (payload.eventType === 'INSERT') {
+              setEntries(prev => [payload.new as DiaryEntryType, ...prev])
+            } else if (payload.eventType === 'UPDATE') {
+              setEntries(prev => prev.map(e => e.id === payload.new.id ? payload.new as DiaryEntryType : e))
+            } else if (payload.eventType === 'DELETE') {
+              setEntries(prev => prev.filter(e => e.id !== payload.old.id))
+            }
           }
         }
       )
@@ -143,8 +153,8 @@ export function DiarioSection() {
     }
   }, [])
 
-  // Estadísticas
-  const stats = {
+  // Estadísticas (memoizadas para mejor rendimiento)
+  const stats = useMemo(() => ({
     totalEntries: entries.length,
     totalWords: entries.reduce((sum, entry) => sum + entry.wordCount, 0),
     averageWords: Math.round(entries.reduce((sum, entry) => sum + entry.wordCount, 0) / (entries.length || 1)) || 0,
@@ -154,7 +164,7 @@ export function DiarioSection() {
     longestEntry: entries.length
       ? entries.reduce((longest, entry) => (entry.wordCount > longest.wordCount ? entry : longest), entries[0])
       : null
-  }
+  }), [entries])
 
   function getMostFrequentMood() {
     if (entries.length === 0) return 'feliz'
@@ -167,17 +177,20 @@ export function DiarioSection() {
     return moodEntries.reduce((a, b) => (moodCounts[a[0]] > moodCounts[b[0]] ? a : b))[0]
   }
 
-  // Filtrar entradas
-  const filteredEntries = entries.filter(entry => {
-    const matchesSearch = entry.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         entry.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         entry.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    const matchesMood = selectedMood === 'Todos' || entry.mood === selectedMood
-    const matchesAuthor = selectedAuthor === 'Todos' || entry.author === selectedAuthor
-    const matchesPrivacy = showPrivate || !entry.isPrivate
-    
-    return matchesSearch && matchesMood && matchesAuthor && matchesPrivacy
-  })
+  // Filtrar entradas (memoizado con debounce)
+  const filteredEntries = useMemo(() => {
+    return entries.filter(entry => {
+      const matchesSearch = debouncedSearchTerm === '' ||
+        entry.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        entry.content.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        entry.tags.some(tag => tag.toLowerCase().includes(debouncedSearchTerm.toLowerCase()))
+      const matchesMood = selectedMood === 'Todos' || entry.mood === selectedMood
+      const matchesAuthor = selectedAuthor === 'Todos' || entry.author === selectedAuthor
+      const matchesPrivacy = showPrivate || !entry.isPrivate
+      
+      return matchesSearch && matchesMood && matchesAuthor && matchesPrivacy
+    })
+  }, [entries, debouncedSearchTerm, selectedMood, selectedAuthor, showPrivate])
 
   const openAddModal = () => {
     setEntryForm({

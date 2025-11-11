@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
 import { 
   Card, 
   CardContent, 
@@ -132,10 +133,12 @@ const defaultPhotos: Photo[] = [
 
 export default function FotosSection() {
   const [photos, setPhotos] = useState<Photo[]>([])
-  const [filteredPhotos, setFilteredPhotos] = useState<Photo[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState<'date' | 'title' | 'type'>('date')
   const [filterType, setFilterType] = useState<'all' | 'image' | 'video' | 'gif'>('all')
+  
+  // Debounce para búsqueda
+  const debouncedSearchTerm = useDebounce(searchTerm, 300)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null)
@@ -249,14 +252,21 @@ export default function FotosSection() {
     }
   }
 
-  // Suscripción en tiempo real
+  // Suscripción en tiempo real con throttle
   useEffect(() => {
+    let lastUpdate = 0
+    const throttleDelay = 1000 // 1 segundo
+    
     const channel = supabase
       .channel('photos_changes')
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'photos' }, 
         () => {
-          loadPhotos()
+          const now = Date.now()
+          if (now - lastUpdate > throttleDelay) {
+            lastUpdate = now
+            loadPhotos()
+          }
         }
       )
       .subscribe()
@@ -266,12 +276,13 @@ export default function FotosSection() {
     }
   }, [supabase])
 
-  // Filter and sort photos
-  useEffect(() => {
+  // Filter and sort photos (memoizado con debounce)
+  const filteredPhotos = useMemo(() => {
     let filtered = photos.filter(photo => {
-      const matchesSearch = photo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           (photo.description && photo.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                           photo.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      const matchesSearch = debouncedSearchTerm === '' ||
+        photo.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        (photo.description && photo.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase())) ||
+        photo.tags.some(tag => tag.toLowerCase().includes(debouncedSearchTerm.toLowerCase()))
       
       const matchesType = filterType === 'all' || photo.file_type === filterType
       
@@ -292,8 +303,8 @@ export default function FotosSection() {
       }
     })
 
-    setFilteredPhotos(filtered)
-  }, [photos, searchTerm, sortBy, filterType])
+    return filtered
+  }, [photos, debouncedSearchTerm, sortBy, filterType])
 
   // Save photos to localStorage
   useEffect(() => {

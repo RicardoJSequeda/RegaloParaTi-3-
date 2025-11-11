@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { Section } from '@/types'
 import { Navigation } from '@/components/ui/navigation'
 import { FloatingHearts } from '@/components/ui/floating-hearts'
@@ -21,18 +21,37 @@ export function Dashboard({ onLogout, onToggleDarkMode, isDarkMode }: DashboardP
   const hearts = useFloatingHearts()
   const { preferences } = usePreferences()
 
-  // Determinar si mostrar corazones flotantes
-  const shouldShowHearts = preferences.showFloatingHearts && 
-    (!isDarkMode || preferences.floatingHeartsInDarkMode)
+  // Memoizar función de cambio de sección para prevenir re-renders
+  const handleSectionChange = useCallback((section: Section) => {
+    setActiveSection(section)
+  }, [])
+
+  // Memoizar función de toggle sidebar
+  const handleSidebarToggle = useCallback((open: boolean) => {
+    setSidebarOpen(open)
+  }, [])
+
+  // Determinar si mostrar corazones flotantes (memoizado)
+  const shouldShowHearts = useMemo(() => 
+    preferences.showFloatingHearts && 
+    (!isDarkMode || preferences.floatingHeartsInDarkMode),
+    [preferences.showFloatingHearts, preferences.floatingHeartsInDarkMode, isDarkMode]
+  )
+
+  // Memoizar padding del contenedor
+  const containerPadding = useMemo(() => 
+    activeSection === 'inicio' ? 'p-2 sm:p-3 md:p-4' : 'p-3 sm:p-4 md:p-6',
+    [activeSection]
+  )
 
   return (
     <div className="min-h-screen bg-background flex">
       <Navigation
         navigationItems={navigationItems}
         activeSection={activeSection}
-        onSectionChange={setActiveSection}
+        onSectionChange={handleSectionChange}
         sidebarOpen={sidebarOpen}
-        onSidebarOpenChange={setSidebarOpen}
+        onSidebarOpenChange={handleSidebarToggle}
         onLogout={onLogout}
         onToggleDarkMode={onToggleDarkMode}
         isDarkMode={isDarkMode}
@@ -40,7 +59,7 @@ export function Dashboard({ onLogout, onToggleDarkMode, isDarkMode }: DashboardP
 
       {/* Contenido principal - Mejorado para móvil */}
       <main className="flex-1 lg:ml-72">
-        <div className={activeSection === 'inicio' ? 'p-2 sm:p-3 md:p-4' : 'p-3 sm:p-4 md:p-6'}>
+        <div className={containerPadding}>
           <ContentSection section={activeSection} />
         </div>
       </main>

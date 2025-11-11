@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -122,14 +123,21 @@ export function PeliculasSection() {
     }
   }
 
-  // Suscripción en tiempo real
+  // Suscripción en tiempo real con throttle
   useEffect(() => {
+    let lastUpdate = 0
+    const throttleDelay = 1000 // 1 segundo
+    
     const channel = supabase
       .channel('movies_changes')
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'movies' }, 
         () => {
-          loadMovies()
+          const now = Date.now()
+          if (now - lastUpdate > throttleDelay) {
+            lastUpdate = now
+            loadMovies()
+          }
         }
       )
       .subscribe()
@@ -139,13 +147,8 @@ export function PeliculasSection() {
     }
   }, [supabase])
 
-  // Estadísticas
-  const stats = {
-    totalMovies: movies.length,
-    totalPeliculas: movies.filter(m => m.type === 'pelicula').length,
-    totalSeries: movies.filter(m => m.type === 'serie').length,
-    mostPopularGenre: getMostPopularGenre()
-  }
+  // Debounce para búsqueda
+  const debouncedSearchTerm = useDebounce(searchTerm, 300)
 
   function getMostPopularGenre() {
     const genreCounts = movies.reduce((acc, movie) => {
@@ -160,24 +163,35 @@ export function PeliculasSection() {
     )[0]
   }
 
-  // Filtrar películas
-  const filteredMovies = movies.filter(movie => {
-    const matchesSearch = movie.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         movie.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesGenre = selectedGenre === 'Todos' || movie.genre === selectedGenre.toLowerCase()
-    const matchesType = selectedType === 'Todos' || movie.type === selectedType.toLowerCase()
-    return matchesSearch && matchesGenre && matchesType
-  })
+  // Estadísticas (memoizadas)
+  const stats = useMemo(() => ({
+    totalMovies: movies.length,
+    totalPeliculas: movies.filter(m => m.type === 'pelicula').length,
+    totalSeries: movies.filter(m => m.type === 'serie').length,
+    mostPopularGenre: getMostPopularGenre()
+  }), [movies])
 
-  // Agrupar por estado
-  const peliculasVistas = filteredMovies.filter(m => m.status === 'visto')
-  const peliculasPendientes = filteredMovies.filter(m => m.status === 'pendiente')
-  const peliculasEnProgreso = filteredMovies.filter(m => m.status === 'en_progreso')
-  const peliculasFavoritas = filteredMovies.filter(m => m.isFavorite)
+  // Filtrar películas (memoizado)
+  const filteredMovies = useMemo(() => {
+    return movies.filter(movie => {
+      const matchesSearch = debouncedSearchTerm === '' ||
+        movie.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        movie.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      const matchesGenre = selectedGenre === 'Todos' || movie.genre === selectedGenre.toLowerCase()
+      const matchesType = selectedType === 'Todos' || movie.type === selectedType.toLowerCase()
+      return matchesSearch && matchesGenre && matchesType
+    })
+  }, [movies, debouncedSearchTerm, selectedGenre, selectedType])
 
-  // Agrupar por tipo
-  const peliculas = filteredMovies.filter(m => m.type === 'pelicula')
-  const series = filteredMovies.filter(m => m.type === 'serie')
+  // Agrupar por estado (memoizado)
+  const peliculasVistas = useMemo(() => filteredMovies.filter(m => m.status === 'visto'), [filteredMovies])
+  const peliculasPendientes = useMemo(() => filteredMovies.filter(m => m.status === 'pendiente'), [filteredMovies])
+  const peliculasEnProgreso = useMemo(() => filteredMovies.filter(m => m.status === 'en_progreso'), [filteredMovies])
+  const peliculasFavoritas = useMemo(() => filteredMovies.filter(m => m.isFavorite), [filteredMovies])
+
+  // Agrupar por tipo (memoizado)
+  const peliculas = useMemo(() => filteredMovies.filter(m => m.type === 'pelicula'), [filteredMovies])
+  const series = useMemo(() => filteredMovies.filter(m => m.type === 'serie'), [filteredMovies])
 
   // Funciones para manejar imágenes
   const handleImageUpload = (file: File) => {

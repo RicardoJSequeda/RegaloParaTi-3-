@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -9,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { LeafletMap } from '@/components/ui/leaflet-map'
 import { Heart, Calendar, MapPin, Image, Clock, Star, Map, Camera, Plane, Search, Edit, Trash2, ChevronRight, AlertCircle, X, Save, Plus, Upload } from 'lucide-react'
-import { Milestone, MemoryPlace, Curiosity } from '@/types'
+import { Milestone, MemoryPlace } from '@/types'
 import { getBrowserClient } from '@/lib/supabase/browser-client'
 
 export function RecuerdosSection() {
@@ -18,17 +19,18 @@ export function RecuerdosSection() {
   // Estados para datos de Supabase
   const [milestones, setMilestones] = useState<Milestone[]>([])
   const [places, setPlaces] = useState<MemoryPlace[]>([])
-  const [curiosities, setCuriosities] = useState<Curiosity[]>([])
   const [loading, setLoading] = useState(true)
   
   // Estados para UI
-  const [currentCuriosityIndex, setCurrentCuriosityIndex] = useState(0)
   const [selectedFilter, setSelectedFilter] = useState('Todos')
   const [selectedPlaceFilter, setSelectedPlaceFilter] = useState('Todos')
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState<MemoryPlace[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [showMapResults, setShowMapResults] = useState(false)
+  
+  // Debounce para búsqueda (optimización de rendimiento)
+  const debouncedSearchTerm = useDebounce(searchTerm, 300)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -124,26 +126,32 @@ export function RecuerdosSection() {
     loadData()
   }, [])
 
-  // Suscripción en tiempo real
+  // Suscripción en tiempo real con throttle
   useEffect(() => {
+    let lastMilestonesUpdate = 0
+    let lastPlacesUpdate = 0
+    const throttleDelay = 1000 // 1 segundo
+    
     const channel = supabase
       .channel('memories_changes')
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'milestones' }, 
         () => {
-          loadMilestones()
+          const now = Date.now()
+          if (now - lastMilestonesUpdate > throttleDelay) {
+            lastMilestonesUpdate = now
+            loadMilestones()
+          }
         }
       )
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'places' }, 
         () => {
-          loadPlaces()
-        }
-      )
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'curiosities' }, 
-        () => {
-          loadCuriosities()
+          const now = Date.now()
+          if (now - lastPlacesUpdate > throttleDelay) {
+            lastPlacesUpdate = now
+            loadPlaces()
+          }
         }
       )
       .subscribe()
@@ -158,8 +166,7 @@ export function RecuerdosSection() {
     try {
       await Promise.all([
         loadMilestones(),
-        loadPlaces(),
-        loadCuriosities()
+        loadPlaces()
       ])
     } catch (error) {
       console.error('Error loading data:', error)
@@ -204,32 +211,15 @@ export function RecuerdosSection() {
     }
   }
 
-  const loadCuriosities = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('curiosities')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
+  // Filtrar hitos según el filtro seleccionado (memoizado)
+  const filteredMilestones = useMemo(() => {
+    return selectedFilter === 'Todos' 
+      ? milestones 
+      : milestones.filter(milestone => milestone.type === selectedFilter.toLowerCase())
+  }, [milestones, selectedFilter])
 
-      if (error) {
-        console.error('Error loading curiosities:', error)
-        return
-      }
-
-      setCuriosities(data || [])
-    } catch (error) {
-      console.error('Error in loadCuriosities:', error)
-    }
-  }
-
-  // Filtrar hitos según el filtro seleccionado
-  const filteredMilestones = selectedFilter === 'Todos' 
-    ? milestones 
-    : milestones.filter(milestone => milestone.type === selectedFilter.toLowerCase())
-
-  // Función de búsqueda avanzada
-  const performSearch = (query: string) => {
+  // Función de búsqueda avanzada (memoizada)
+  const performSearch = useCallback((query: string) => {
     if (!query.trim()) {
       setSearchResults([])
       setShowMapResults(false)
@@ -265,7 +255,7 @@ export function RecuerdosSection() {
     setSearchResults(sortedResults)
     setShowMapResults(sortedResults.length > 0)
     setIsSearching(false)
-  }
+  }, [places])
 
   // Función para calcular relevancia de búsqueda
   const getRelevanceScore = (place: MemoryPlace, query: string): number => {
@@ -300,33 +290,25 @@ export function RecuerdosSection() {
     return score
   }
 
-  // Búsqueda con debounce
+  // Búsqueda con debounce optimizado
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (searchTerm.trim()) {
-        performSearch(searchTerm)
-      } else {
-        setSearchResults([])
-        setShowMapResults(false)
-      }
-    }, 300)
-
-    return () => clearTimeout(timeoutId)
-  }, [searchTerm])
-
-  // Filtrar lugares según el filtro seleccionado (sin búsqueda)
-  const filteredPlaces = places.filter(place => {
-    const matchesFilter = selectedPlaceFilter === 'Todos' ||
-                         (selectedPlaceFilter === 'Visitados' && place.status === 'visitado') ||
-                         (selectedPlaceFilter === 'Pendientes' && place.status === 'pendiente')
-    return matchesFilter
-  })
-
-  const showNextCuriosity = () => {
-    if (curiosities.length > 0) {
-      setCurrentCuriosityIndex((prev) => (prev + 1) % curiosities.length)
+    if (debouncedSearchTerm.trim()) {
+      performSearch(debouncedSearchTerm)
+    } else {
+      setSearchResults([])
+      setShowMapResults(false)
     }
-  }
+  }, [debouncedSearchTerm, performSearch])
+
+  // Filtrar lugares según el filtro seleccionado (memoizado)
+  const filteredPlaces = useMemo(() => {
+    return places.filter(place => {
+      const matchesFilter = selectedPlaceFilter === 'Todos' ||
+                           (selectedPlaceFilter === 'Visitados' && place.status === 'visitado') ||
+                           (selectedPlaceFilter === 'Pendientes' && place.status === 'pendiente')
+      return matchesFilter
+    })
+  }, [places, selectedPlaceFilter])
 
   // Función para agregar lugar desde el mapa
   const handleAddPlaceFromMap = async (newPlace: any) => {
@@ -718,30 +700,6 @@ export function RecuerdosSection() {
           <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Revive los momentos más especiales de nuestra historia juntos
           </p>
-        </motion.div>
-
-        {/* Sección "¿Sabías que...?" */}
-        <motion.div variants={itemVariants} className="max-w-4xl mx-auto">
-          <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden">
-            <CardContent className="p-6 sm:p-8">
-              <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
-                <div className="text-4xl sm:text-5xl text-pink-500 font-bold flex-shrink-0">?</div>
-                <div className="flex-1 space-y-4">
-                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">¿Sabías que...?</h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base sm:text-lg max-w-3xl">
-                    {curiosities.length > 0 ? curiosities[currentCuriosityIndex]?.text : 'No hay curiosidades disponibles'}
-                  </p>
-                  <Button 
-                    onClick={showNextCuriosity}
-                    className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105"
-                    disabled={curiosities.length === 0}
-                  >
-                    Mostrar siguiente curiosidad
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </motion.div>
 
         {/* Sección "Hitos de Nuestro Amor" - Rediseñada */}
