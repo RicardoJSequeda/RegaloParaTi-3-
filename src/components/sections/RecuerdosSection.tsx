@@ -12,6 +12,7 @@ import { LeafletMap } from '@/components/ui/leaflet-map'
 import { Heart, Calendar, MapPin, Image, Clock, Star, Map, Camera, Plane, Search, Edit, Trash2, ChevronRight, AlertCircle, X, Save, Plus, Upload } from 'lucide-react'
 import { Milestone, MemoryPlace } from '@/types'
 import { getBrowserClient } from '@/lib/supabase/browser-client'
+import { ImageWithFallback } from '@/components/ui/image-with-fallback'
 
 export function RecuerdosSection() {
   const supabase = getBrowserClient()
@@ -816,13 +817,16 @@ export function RecuerdosSection() {
                           transition={{ duration: 0.3 }}
                         >
                           <div className="timeline-card rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
-                            {/* Imagen del hito */}
+                            {/* Imagen del hito - Optimizada */}
                             <div className="relative">
                               <div className="w-full h-48 sm:h-56 overflow-hidden">
-                                <img
+                                <ImageWithFallback
                                   src={milestone.image_url || 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=600&h=400&fit=crop&crop=center'}
                                   alt={milestone.title}
+                                  fallbackSrc="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=600&h=400&fit=crop&crop=center"
                                   className="w-full h-full object-cover timeline-image rounded-t-2xl"
+                                  showLoading={true}
+                                  loading="lazy"
                                 />
                               </div>
                               
@@ -1061,13 +1065,16 @@ export function RecuerdosSection() {
                 <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer bg-white dark:bg-gray-800 border-0 rounded-2xl overflow-hidden">
                   <CardContent className="p-4 sm:p-6">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                      {/* Imagen del lugar */}
+                      {/* Imagen del lugar - Optimizada */}
                       {place.image_url && (
-                        <div className="flex-shrink-0">
-                          <img 
+                        <div className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24">
+                          <ImageWithFallback 
                             src={place.image_url} 
                             alt={place.name}
-                            className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl border shadow-sm"
+                            fallbackSrc="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=200&h=200&fit=crop&crop=center"
+                            className="w-full h-full object-cover rounded-xl border shadow-sm"
+                            showLoading={true}
+                            loading="lazy"
                           />
                         </div>
                       )}
@@ -1181,31 +1188,35 @@ export function RecuerdosSection() {
                   Imagen del Hito
                 </label>
                 
-                {/* Preview de imagen actual */}
+                {/* Preview de imagen actual - Optimizada */}
                 {editingMilestone.image_url && !imagePreview && (
-                  <div className="mb-3">
-                    <img 
+                  <div className="mb-3 h-32">
+                    <ImageWithFallback 
                       src={editingMilestone.image_url} 
                       alt="Imagen actual" 
-                      className="w-full h-32 object-cover rounded-lg border"
+                      fallbackSrc="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=400&h=300&fit=crop&crop=center"
+                      className="w-full h-full object-cover rounded-lg border"
+                      showLoading={true}
                     />
                   </div>
                 )}
-                
-                {/* Preview de nueva imagen */}
+
+                {/* Preview de nueva imagen - Optimizada */}
                 {imagePreview && (
-                  <div className="mb-3 relative">
-                    <img 
+                  <div className="mb-3 relative h-32">
+                    <ImageWithFallback 
                       src={imagePreview} 
                       alt="Preview" 
-                      className="w-full h-32 object-cover rounded-lg border"
+                      fallbackSrc="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=400&h=300&fit=crop&crop=center"
+                      className="w-full h-full object-cover rounded-lg border"
+                      showLoading={false}
                     />
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       onClick={clearImageSelection}
-                      className="absolute top-1 right-1 h-6 w-6 p-0 bg-white/80 hover:bg-white"
+                      className="absolute top-1 right-1 h-6 w-6 p-0 bg-white/80 hover:bg-white z-10"
                     >
                       <X className="h-3 w-3" />
                     </Button>
@@ -1394,31 +1405,35 @@ export function RecuerdosSection() {
                   Imagen del Lugar
                 </label>
                 
-                {/* Preview de imagen actual */}
+                {/* Preview de imagen actual - Optimizada */}
                 {editingPlace.image_url && !imagePreview && (
-                  <div className="mb-3">
-                    <img 
+                  <div className="mb-3 h-32">
+                    <ImageWithFallback 
                       src={editingPlace.image_url} 
                       alt="Imagen actual" 
-                      className="w-full h-32 object-cover rounded-lg border"
+                      fallbackSrc="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=400&h=300&fit=crop&crop=center"
+                      className="w-full h-full object-cover rounded-lg border"
+                      showLoading={true}
                     />
                   </div>
                 )}
-                
-                {/* Preview de nueva imagen */}
+
+                {/* Preview de nueva imagen - Optimizada */}
                 {imagePreview && (
-                  <div className="mb-3 relative">
-                    <img 
+                  <div className="mb-3 relative h-32">
+                    <ImageWithFallback 
                       src={imagePreview} 
                       alt="Preview" 
-                      className="w-full h-32 object-cover rounded-lg border"
+                      fallbackSrc="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=400&h=300&fit=crop&crop=center"
+                      className="w-full h-full object-cover rounded-lg border"
+                      showLoading={false}
                     />
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       onClick={clearImageSelection}
-                      className="absolute top-1 right-1 h-6 w-6 p-0 bg-white/80 hover:bg-white"
+                      className="absolute top-1 right-1 h-6 w-6 p-0 bg-white/80 hover:bg-white z-10"
                     >
                       <X className="h-3 w-3" />
                     </Button>
