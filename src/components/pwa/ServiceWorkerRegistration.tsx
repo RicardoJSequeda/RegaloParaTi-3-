@@ -6,8 +6,9 @@ export function ServiceWorkerRegistration() {
   useEffect(() => {
     if (
       typeof window !== 'undefined' &&
-      'serviceWorker' in navigator &&
-      process.env.NODE_ENV === 'production'
+      'serviceWorker' in navigator
+      // Permitir en desarrollo para testing, pero solo en HTTPS o localhost
+      // && (process.env.NODE_ENV === 'production' || window.location.hostname === 'localhost')
     ) {
       // Registrar el service worker
       navigator.serviceWorker
