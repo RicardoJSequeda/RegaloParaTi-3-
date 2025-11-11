@@ -2,6 +2,26 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.3.0] - 2024-12-XX
+
+### ✨ Mejoras Adicionales
+
+#### 🛡️ Error Handling
+- ✅ ErrorBoundary agregado en layout principal
+- ✅ Protección global contra errores de React
+
+#### 🗄️ Caching
+- ✅ Caching implementado en endpoints: diary, messages, surprises, milestones, photos
+- ✅ Limpieza automática de cache en operaciones POST/PATCH/DELETE
+- ✅ Headers de cache en responses (Cache-Control, X-Cache)
+- ✅ TTL configurable por endpoint
+
+#### 🔒 Validación
+- ✅ Validación completa en endpoints: surprises, milestones
+- ✅ Validación de tipos de contenido y desbloqueo
+- ✅ Validación de coordenadas geográficas
+- ✅ Validación de URLs de imágenes y videos
+
 ## [1.2.0] - 2024-12-XX
 
 ### ✨ Nuevas Funcionalidades

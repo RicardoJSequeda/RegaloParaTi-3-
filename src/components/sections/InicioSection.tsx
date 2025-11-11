@@ -1,16 +1,22 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel'
 import { Heart, Calendar, Image } from 'lucide-react'
 import { useTimeTogether } from '@/hooks/useTimeTogether'
+import { AnimatedCounter } from '@/components/ui/animated-counter'
+import { ImageWithFallback } from '@/components/ui/image-with-fallback'
+import { CarouselIndicators } from '@/components/ui/carousel-indicators'
+import { motion } from 'framer-motion'
 
 export function InicioSection() {
   const anniversaryDate = '2023-02-03'
   const timeTogether = useTimeTogether(anniversaryDate)
+  const [api, setApi] = useState<CarouselApi>()
+  const [current, setCurrent] = useState(0)
   
   // Imágenes para el carrusel más grande
   const carouselImages = [
@@ -48,142 +54,257 @@ export function InicioSection() {
     }
   ]
 
+  // Sincronizar el índice del carrusel
+  useEffect(() => {
+    if (!api) {
+      return
+    }
+
+    setCurrent(api.selectedScrollSnap())
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap())
+    })
+  }, [api])
+
+  // Función para formatear fecha del próximo aniversario
+  const formatNextAnniversary = () => {
+    const date = timeTogether.nextAnniversary.date
+    return date.toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    })
+  }
+
+  // Animaciones para el contador
+  const counterVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    }
+  }
+
   return (
-    <div className="space-y-8 sm:space-y-10">
-      {/* Header */}
-      <div className="space-y-3 text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
+      {/* Header Compacto */}
+      <motion.div 
+        className="space-y-2 text-center"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-pink-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
           ¡Bienvenida a tu espacio especial!
         </h1>
-        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed px-4">
           Aquí encontrarás todos nuestros recuerdos, mensajes y momentos especiales juntos.
         </p>
-      </div>
+      </motion.div>
 
-      <Separator />
+      <Separator className="my-4" />
 
-      {/* Contador de Tiempo Juntos */}
-      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden">
-        <CardHeader className="text-center pb-4">
-          <CardTitle className="flex items-center justify-center gap-3 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-            <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-pink-500" />
-            Nuestro Tiempo Juntos
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-4 pb-6">
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 sm:gap-6 text-center">
-            <div className="space-y-2">
-              <div className="text-3xl sm:text-4xl font-bold text-pink-500 leading-none">{timeTogether.years}</div>
-              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">AÑOS</div>
+      {/* Contador de Tiempo Juntos Compacto */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <Card className="bg-gradient-to-br from-white to-pink-50/30 dark:from-gray-800 dark:to-gray-900/50 shadow-lg border border-pink-100 dark:border-pink-900/30 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300">
+          <CardHeader className="text-center pb-3 pt-4 px-4">
+            <CardTitle className="flex items-center justify-center gap-2 text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+              <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-pink-500 fill-pink-500" />
+              Nuestro Tiempo Juntos
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-3 sm:px-4 pb-4 pt-2">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 text-center">
+              <motion.div 
+                className="space-y-1"
+                variants={counterVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-br from-pink-500 to-pink-600 bg-clip-text text-transparent leading-none">
+                  <AnimatedCounter value={timeTogether.years} />
+                </div>
+                <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">AÑOS</div>
+              </motion.div>
+              <motion.div 
+                className="space-y-1"
+                variants={counterVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: 0.05 }}
+              >
+                <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-br from-pink-500 to-pink-600 bg-clip-text text-transparent leading-none">
+                  <AnimatedCounter value={timeTogether.months} />
+                </div>
+                <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">MESES</div>
+              </motion.div>
+              <motion.div 
+                className="space-y-1"
+                variants={counterVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: 0.1 }}
+              >
+                <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-br from-pink-500 to-pink-600 bg-clip-text text-transparent leading-none">
+                  <AnimatedCounter value={timeTogether.days} />
+                </div>
+                <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">DÍAS</div>
+              </motion.div>
+              <motion.div 
+                className="space-y-1"
+                variants={counterVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: 0.15 }}
+              >
+                <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-br from-purple-500 to-purple-600 bg-clip-text text-transparent leading-none">
+                  <AnimatedCounter value={timeTogether.hours} />
+                </div>
+                <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">HORAS</div>
+              </motion.div>
+              <motion.div 
+                className="space-y-1"
+                variants={counterVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: 0.2 }}
+              >
+                <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-br from-purple-500 to-purple-600 bg-clip-text text-transparent leading-none">
+                  <AnimatedCounter value={timeTogether.minutes} />
+                </div>
+                <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">MIN</div>
+              </motion.div>
+              <motion.div 
+                className="space-y-1"
+                variants={counterVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: 0.25 }}
+              >
+                <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-br from-purple-500 to-purple-600 bg-clip-text text-transparent leading-none">
+                  <AnimatedCounter value={timeTogether.seconds} />
+                </div>
+                <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">SEG</div>
+              </motion.div>
             </div>
-            <div className="space-y-2">
-              <div className="text-3xl sm:text-4xl font-bold text-pink-500 leading-none">{timeTogether.months}</div>
-              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">MESES</div>
+            <div className="text-center mt-4 space-y-1">
+              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 font-medium">
+                {timeTogether.nextAnniversary.daysUntil === 0 ? (
+                  <span className="text-pink-600 dark:text-pink-400">
+                    ¡Hoy es nuestro aniversario! 🎉❤️🎉
+                  </span>
+                ) : timeTogether.nextAnniversary.daysUntil === 1 ? (
+                  <span className="text-pink-600 dark:text-pink-400">
+                    ¡Mañana es nuestro aniversario! ❤️❤️❤️
+                  </span>
+                ) : (
+                  <>
+                    Faltan <span className="text-pink-600 dark:text-pink-400 font-bold text-lg">{timeTogether.nextAnniversary.daysUntil}</span> días para nuestro próximo aniversario ❤️
+                  </>
+                )}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Próximo aniversario: {formatNextAnniversary()}
+              </p>
             </div>
-            <div className="space-y-2">
-              <div className="text-3xl sm:text-4xl font-bold text-pink-500 leading-none">{timeTogether.days}</div>
-              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">DÍAS</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-3xl sm:text-4xl font-bold text-pink-500 leading-none">{timeTogether.hours}</div>
-              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">HORAS</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-3xl sm:text-4xl font-bold text-pink-500 leading-none">{timeTogether.minutes}</div>
-              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">MIN</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-3xl sm:text-4xl font-bold text-pink-500 leading-none">{timeTogether.seconds}</div>
-              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">SEG</div>
-            </div>
-          </div>
-          <div className="text-center mt-6 sm:mt-8">
-            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 font-medium">
-              Faltan {365 - (timeTogether.days + timeTogether.months * 30)} días para nuestro próximo aniversario ❤️❤️❤️
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </motion.div>
 
-      {/* Carrusel de Fotos Especiales */}
-      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-3 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-            <Image className="h-6 w-6 sm:h-8 sm:w-8 text-pink-500" />
-            Nuestros Momentos Especiales
-          </CardTitle>
-          <CardDescription className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-            Revive los momentos más hermosos de nuestra historia juntos
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="px-4 pb-6">
-          <div className="relative">
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent>
-                {carouselImages.map((item) => (
-                  <CarouselItem key={item.id} className="basis-full sm:basis-1/2 lg:basis-1/3">
-                    <div className="p-2">
-                      <div className="relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 group">
-                        <div className="aspect-[4/5] relative overflow-hidden">
-                          <img
-                            src={item.image}
-                            alt={item.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                          <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                            <h3 className="font-bold text-xl sm:text-2xl mb-3 text-shadow-lg">{item.title}</h3>
-                            <p className="text-base sm:text-lg opacity-95 mb-3 text-shadow-md leading-relaxed">{item.description}</p>
-                            <p className="text-sm sm:text-base opacity-90 leading-relaxed mb-4 hidden sm:block text-shadow-sm">{item.longDescription}</p>
-                            <div className="flex items-center gap-2">
-                              <Badge variant="secondary" className="bg-white/20 text-white border-white/30 text-sm px-3 py-1">
-                                <Calendar className="h-4 w-4 mr-2" />
-                                {item.date}
-                              </Badge>
+      {/* Carrusel de Fotos Especiales Mejorado */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+      >
+        <Card className="bg-white dark:bg-gray-800 shadow-xl border-0 rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500">
+          <CardHeader className="pb-4 bg-gradient-to-r from-pink-500/5 to-purple-500/5">
+            <CardTitle className="flex items-center gap-3 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+              <Image className="h-6 w-6 sm:h-8 sm:w-8 text-pink-500" />
+              Nuestros Momentos Especiales
+            </CardTitle>
+            <CardDescription className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
+              Revive los momentos más hermosos de nuestra historia juntos
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-2 sm:px-4 pb-6">
+            <div className="relative">
+              <Carousel
+                setApi={setApi}
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {carouselImages.map((item, index) => (
+                    <CarouselItem key={item.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
+                      <motion.div
+                        className="p-2"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                      >
+                        <div className="relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 group cursor-pointer">
+                          <div className="aspect-[4/5] relative overflow-hidden">
+                            <ImageWithFallback
+                              src={item.image}
+                              alt={item.title}
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                              showLoading={true}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300" />
+                            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white transform translate-y-0 group-hover:translate-y-0 transition-transform duration-300">
+                              <motion.h3 
+                                className="font-bold text-xl sm:text-2xl mb-2 drop-shadow-lg"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 }}
+                              >
+                                {item.title}
+                              </motion.h3>
+                              <p className="text-sm sm:text-base opacity-95 mb-2 drop-shadow-md leading-relaxed line-clamp-2">
+                                {item.description}
+                              </p>
+                              <p className="text-xs sm:text-sm opacity-90 leading-relaxed mb-4 hidden sm:block line-clamp-3">
+                                {item.longDescription}
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <Badge variant="secondary" className="bg-white/20 backdrop-blur-sm text-white border-white/30 text-xs sm:text-sm px-3 py-1.5 hover:bg-white/30 transition-colors">
+                                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                                  {item.date}
+                                </Badge>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="absolute left-4 top-1/2 transform -translate-y-1/2 h-12 w-12 bg-white/90 hover:bg-white shadow-lg border-0 rounded-full transition-all duration-300" />
-              <CarouselNext className="absolute right-4 top-1/2 transform -translate-y-1/2 h-12 w-12 bg-white/90 hover:bg-white shadow-lg border-0 rounded-full transition-all duration-300" />
-            </Carousel>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Nuestro Rincón de Amor */}
-      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-3 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-            <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-pink-500" />
-            Nuestro Rincón de Amor
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-6 pb-8 space-y-6">
-          <p className="text-base sm:text-lg leading-relaxed text-center text-gray-700 dark:text-gray-300 max-w-4xl mx-auto">
-            Este es nuestro espacio especial para guardar y revivir todos los momentos mágicos que hemos compartido juntos. 
-            Cada foto, cada mensaje y cada canción es un tesoro que nos recuerda lo especial que es nuestro amor.
-          </p>
-          <div className="text-center">
-            <blockquote className="text-lg sm:text-xl italic text-pink-600 dark:text-pink-400 font-medium leading-relaxed max-w-3xl mx-auto">
-              "El amor no se mide por cuánto tiempo lo has esperado, sino por cuánto estás dispuesto a esperar por él."
-            </blockquote>
-          </div>
-        </CardContent>
-      </Card>
-
-
-
+                      </motion.div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-12 sm:w-12 bg-white/95 dark:bg-gray-800/95 hover:bg-white dark:hover:bg-gray-700 shadow-lg border-0 rounded-full transition-all duration-300 z-10 hover:scale-110" />
+                <CarouselNext className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-12 sm:w-12 bg-white/95 dark:bg-gray-800/95 hover:bg-white dark:hover:bg-gray-700 shadow-lg border-0 rounded-full transition-all duration-300 z-10 hover:scale-110" />
+              </Carousel>
+              <CarouselIndicators
+                total={carouselImages.length}
+                current={current}
+                onSelect={(index) => api?.scrollTo(index)}
+                className="mt-4"
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
 
     </div>
   )
