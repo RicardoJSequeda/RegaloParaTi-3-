@@ -2,9 +2,23 @@ import { NextResponse } from 'next/server'
 import { getAdminClient } from '@/server/supabase-admin'
 import { withErrorHandler, parseRequestBody, validateRequiredFields, AppError } from '@/lib/api-error-handler'
 import { validateString, validateDate, sanitizeObject } from '@/lib/validation'
+import { apiCache, createCacheKey } from '@/lib/api-cache'
 
 export const GET = withErrorHandler(async () => {
 	const supabase = getAdminClient()
+	
+	// Intentar obtener del cache
+	const cacheKey = createCacheKey('messages', 'all')
+	const cached = apiCache.get<any[]>(cacheKey)
+	if (cached !== null) {
+		return NextResponse.json({ data: cached }, {
+			headers: {
+				'X-Cache': 'HIT',
+				'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600'
+			}
+		})
+	}
+	
 	const { data, error } = await supabase
 		.from('messages')
 		.select('*')
@@ -14,7 +28,17 @@ export const GET = withErrorHandler(async () => {
 		throw new AppError('Error al obtener mensajes', 500, 'DATABASE_ERROR', error)
 	}
 	
-	return NextResponse.json({ data: data || [] })
+	const messagesData = data || []
+	
+	// Guardar en cache (5 minutos)
+	apiCache.set(cacheKey, messagesData, 5 * 60 * 1000)
+	
+	return NextResponse.json({ data: messagesData }, {
+		headers: {
+			'X-Cache': 'MISS',
+			'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600'
+		}
+	})
 })
 
 export const POST = withErrorHandler(async (req: Request) => {
@@ -80,6 +104,9 @@ export const POST = withErrorHandler(async (req: Request) => {
 	if (error) {
 		throw new AppError('Error al crear mensaje', 500, 'DATABASE_ERROR', error)
 	}
+
+	// Limpiar cache
+	apiCache.delete(createCacheKey('messages', 'all'))
 	
 	return NextResponse.json({ data }, { status: 201 })
 })

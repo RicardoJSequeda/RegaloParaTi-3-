@@ -2,9 +2,22 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getBrowserClient } from '@/lib/supabase/browser-client'
 import { withErrorHandler, parseRequestBody, validateRequiredFields, AppError } from '@/lib/api-error-handler'
 import { validateString, validateDate, sanitizeObject } from '@/lib/validation'
+import { apiCache, createCacheKey } from '@/lib/api-cache'
 
 export const GET = withErrorHandler(async () => {
   const supabase = getBrowserClient()
+  
+  // Intentar obtener del cache
+  const cacheKey = createCacheKey('diary', 'all')
+  const cached = apiCache.get<any[]>(cacheKey)
+  if (cached !== null) {
+    return NextResponse.json(cached, {
+      headers: {
+        'X-Cache': 'HIT',
+        'Cache-Control': 'public, s-maxage=180, stale-while-revalidate=360'
+      }
+    })
+  }
   
   const { data: entries, error } = await supabase
     .from('diary_entries')
@@ -15,7 +28,17 @@ export const GET = withErrorHandler(async () => {
     throw new AppError('Error al obtener entradas del diario', 500, 'DATABASE_ERROR', error)
   }
 
-  return NextResponse.json(entries || [])
+  const entriesData = entries || []
+  
+  // Guardar en cache (3 minutos - más corto porque es contenido dinámico)
+  apiCache.set(cacheKey, entriesData, 3 * 60 * 1000)
+
+  return NextResponse.json(entriesData, {
+    headers: {
+      'X-Cache': 'MISS',
+      'Cache-Control': 'public, s-maxage=180, stale-while-revalidate=360'
+    }
+  })
 })
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
@@ -72,6 +95,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   if (error) {
     throw new AppError('Error al crear entrada del diario', 500, 'DATABASE_ERROR', error)
   }
+
+  // Limpiar cache
+  apiCache.delete(createCacheKey('diary', 'all'))
 
   return NextResponse.json(entry, { status: 201 })
 })
