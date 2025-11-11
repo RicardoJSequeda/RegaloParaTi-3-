@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -11,6 +11,7 @@ import { AnimatedCounter } from '@/components/ui/animated-counter'
 import { ImageWithFallback } from '@/components/ui/image-with-fallback'
 import { CarouselIndicators } from '@/components/ui/carousel-indicators'
 import { motion } from 'framer-motion'
+import Autoplay from 'embla-carousel-autoplay'
 
 export function InicioSection() {
   const anniversaryDate = '2023-02-03'
@@ -18,7 +19,7 @@ export function InicioSection() {
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
   
-  // Imágenes para el carrusel más grande
+  // Imágenes para el carrusel (10 fotos)
   const carouselImages = [
     {
       id: 1,
@@ -51,8 +52,67 @@ export function InicioSection() {
       longDescription: "Un momento especial que captura la esencia de nuestro amor. Mirando hacia el futuro, veo un camino lleno de promesas, risas y momentos inolvidables. Contigo todo es posible y hermoso.",
       image: "/images/carrucel/20.jpg",
       date: "Nuestro Presente"
+    },
+    {
+      id: 5,
+      title: "Aventuras Compartidas",
+      description: "Cada viaje es una nueva historia juntos",
+      longDescription: "Explorando el mundo de la mano, creando recuerdos que durarán para siempre. Cada destino es especial porque lo compartimos juntos.",
+      image: "/images/carrucel/02.jpg",
+      date: "Aventuras Juntos"
+    },
+    {
+      id: 6,
+      title: "Risas y Alegría",
+      description: "La felicidad se multiplica cuando estamos juntos",
+      longDescription: "Cada risa, cada sonrisa, cada momento de alegría compartida es un tesoro que guardamos en nuestros corazones.",
+      image: "/images/carrucel/03.jpg",
+      date: "Momentos de Alegría"
+    },
+    {
+      id: 7,
+      title: "Celebraciones Especiales",
+      description: "Cada ocasión es perfecta contigo",
+      longDescription: "Celebrando la vida, el amor y cada momento especial. Contigo cada celebración se convierte en un recuerdo inolvidable.",
+      image: "/images/carrucel/04.jpg",
+      date: "Celebraciones"
+    },
+    {
+      id: 8,
+      title: "Paz y Tranquilidad",
+      description: "Encontrando la calma en tu compañía",
+      longDescription: "Los momentos más simples se vuelven extraordinarios cuando los compartimos. Tu presencia llena mi vida de paz y serenidad.",
+      image: "/images/carrucel/05.jpg",
+      date: "Momentos de Paz"
+    },
+    {
+      id: 9,
+      title: "Amor Eterno",
+      description: "Un vínculo que crece cada día",
+      longDescription: "Nuestro amor se fortalece con cada día que pasa. Eres mi compañera, mi mejor amiga, mi todo. Juntos construimos un futuro lleno de amor.",
+      image: "/images/carrucel/06.jpg",
+      date: "Amor Infinito"
+    },
+    {
+      id: 10,
+      title: "Sueños Compartidos",
+      description: "Construyendo nuestro futuro juntos",
+      longDescription: "Cada sueño, cada meta, cada proyecto es más hermoso cuando lo compartimos. Juntos podemos lograr cualquier cosa.",
+      image: "/images/carrucel/07.jpg",
+      date: "Nuestros Sueños"
     }
   ]
+
+  // Configurar autoplay
+  const autoplayPlugin = useCallback(
+    () =>
+      Autoplay({
+        delay: 4000, // 4 segundos entre cada slide
+        stopOnInteraction: false, // Continúa después de interacción
+        stopOnMouseEnter: true, // Se pausa al pasar el mouse
+      }),
+    []
+  )
 
   // Sincronizar el índice del carrusel
   useEffect(() => {
@@ -237,6 +297,7 @@ export function InicioSection() {
             <div className="relative">
               <Carousel
                 setApi={setApi}
+                plugins={[autoplayPlugin()]}
                 opts={{
                   align: "start",
                   loop: true,
