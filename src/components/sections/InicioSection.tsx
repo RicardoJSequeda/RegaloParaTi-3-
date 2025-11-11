@@ -263,28 +263,12 @@ export function InicioSection() {
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                               showLoading={true}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300" />
-                            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white transform translate-y-0 group-hover:translate-y-0 transition-transform duration-300">
-                              <motion.h3 
-                                className="font-bold text-xl sm:text-2xl mb-2 drop-shadow-lg"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3 }}
-                              >
-                                {item.title}
-                              </motion.h3>
-                              <p className="text-sm sm:text-base opacity-95 mb-2 drop-shadow-md leading-relaxed line-clamp-2">
-                                {item.description}
-                              </p>
-                              <p className="text-xs sm:text-sm opacity-90 leading-relaxed mb-4 hidden sm:block line-clamp-3">
-                                {item.longDescription}
-                              </p>
-                              <div className="flex items-center gap-2">
-                                <Badge variant="secondary" className="bg-white/20 backdrop-blur-sm text-white border-white/30 text-xs sm:text-sm px-3 py-1.5 hover:bg-white/30 transition-colors">
-                                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                                  {item.date}
-                                </Badge>
-                              </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 flex items-center justify-center">
+                              <Badge variant="secondary" className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-gray-900 dark:text-white border-white/30 text-xs sm:text-sm px-3 py-1.5 shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-colors">
+                                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                                {item.date}
+                              </Badge>
                             </div>
                           </div>
                         </div>
