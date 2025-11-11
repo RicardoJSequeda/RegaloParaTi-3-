@@ -1,36 +1,100 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Configuración mínima y estable
+  // Configuración de producción optimizada
   trailingSlash: false,
+  
+  // Configuración de imágenes
   images: {
-    unoptimized: true
+    // Habilitar optimización de imágenes para mejor performance
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Si tienes problemas con imágenes, puedes deshabilitar temporalmente
+    // unoptimized: process.env.NODE_ENV === 'development',
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
   },
-  // Deshabilitar optimizaciones problemáticas
+
+  // Configuración experimental (solo para desarrollo si hay problemas)
   experimental: {
-    // Deshabilitar optimizaciones de chunks problemáticas
-    optimizePackageImports: false,
-    // Deshabilitar optimizaciones de webpack
-    webpackBuildWorker: false
+    // Optimizar imports de paquetes grandes
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
-  // Configuración de webpack para resolver problemas
-  webpack: (config, { isServer }) => {
-    // Deshabilitar optimizaciones problemáticas
-    config.optimization = {
-      ...config.optimization,
-      splitChunks: false,
-      runtimeChunk: false
+
+  // Configuración de compilación
+  compiler: {
+    // Remover console.log en producción (opcional)
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+
+  // Headers de seguridad
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin'
+          },
+        ],
+      },
+    ]
+  },
+
+  // Configuración de webpack
+  webpack: (config, { isServer, dev }) => {
+    // Configuración para resolver problemas de módulos en el cliente
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+      }
     }
-    
-    // Configuración para resolver problemas de módulos
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      net: false,
-      tls: false
-    }
+
+    // Optimizaciones básicas de producción (simplificadas para evitar errores)
+    // Las optimizaciones de Next.js son suficientes por defecto
     
     return config
-  }
+  },
+
+  // Variables de entorno públicas
+  env: {
+    CUSTOM_KEY: process.env.CUSTOM_KEY,
+  },
 }
 
 module.exports = nextConfig
