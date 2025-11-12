@@ -13,8 +13,14 @@ export const metadata: Metadata = {
   description: 'Una aplicación especial para guardar recuerdos con tu pareja',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'DetalleParaTi',
+  },
+  manifest: '/manifest.webmanifest',
+  other: {
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'black-translucent',
   },
   icons: {
     icon: [
@@ -41,10 +47,13 @@ export const metadata: Metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  viewportFit: 'cover',
-  themeColor: '#ec4899',
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover', // Para iOS notch
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ec4899' },
+    { media: '(prefers-color-scheme: dark)', color: '#ec4899' },
+  ],
 }
 
 export default function RootLayout({

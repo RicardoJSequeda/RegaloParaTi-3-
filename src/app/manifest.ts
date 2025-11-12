@@ -10,6 +10,9 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: '#ffffff',
     theme_color: '#ec4899',
     orientation: 'portrait-primary',
+    // Configuraciones adicionales para PWA móvil
+    display_override: ['standalone', 'fullscreen'],
+    prefer_related_applications: false,
     scope: '/',
     icons: [
       {

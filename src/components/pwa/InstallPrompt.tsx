@@ -47,28 +47,28 @@ export function InstallPrompt() {
       setDeferredPrompt(null)
     }
 
-    // Para desarrollo: mostrar el prompt después de verificar que hay manifest y SW
-    // En producción, el navegador mostrará automáticamente el beforeinstallprompt
-    if (process.env.NODE_ENV === 'development') {
-      // Verificar que el manifest existe
-      fetch('/manifest.webmanifest')
-        .then(() => {
-          // Si el manifest existe y hay service worker, mostrar prompt en desarrollo
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistration().then((registration) => {
-              if (registration) {
-                // Mostrar después de un pequeño delay para mejor UX
-                setTimeout(() => {
+    // Verificar que el manifest existe y mostrar prompt si es necesario
+    fetch('/manifest.webmanifest')
+      .then(() => {
+        // Si el manifest existe y hay service worker, mostrar prompt
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistration().then((registration) => {
+            if (registration) {
+              // Mostrar después de un delay para mejor UX (más corto en producción)
+              const delay = process.env.NODE_ENV === 'development' ? 5000 : 3000
+              setTimeout(() => {
+                // Solo mostrar si no hay deferredPrompt (para iOS o cuando el navegador no muestra el evento)
+                if (!deferredPrompt) {
                   setShowPrompt(true)
-                }, 5000)
-              }
-            })
-          }
-        })
-        .catch(() => {
-          // Manifest no disponible, no mostrar prompt
-        })
-    }
+                }
+              }, delay)
+            }
+          })
+        }
+      })
+      .catch(() => {
+        // Manifest no disponible, no mostrar prompt
+      })
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     window.addEventListener('appinstalled', handleAppInstalled)
@@ -125,25 +125,28 @@ export function InstallPrompt() {
       return
     }
 
-    // Verificar si el usuario rechazó recientemente (últimas 24 horas)
+    // Verificar si el usuario rechazó recientemente (últimas 12 horas, reducido para mejor UX)
     const dismissed = localStorage.getItem('pwa-install-dismissed')
     if (dismissed && !deferredPrompt) {
       const dismissedTime = parseInt(dismissed, 10)
       const hoursSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60)
-      if (hoursSinceDismissed < 24) {
+      if (hoursSinceDismissed < 12) {
         setShouldShow(false)
         return
       }
     }
 
-    // No mostrar si no hay prompt disponible y no es iOS (a menos que sea desarrollo)
-    if (!showPrompt && !deferredPrompt && !isIOS && process.env.NODE_ENV === 'production') {
-      setShouldShow(false)
+    // Mostrar el prompt si:
+    // 1. Hay deferredPrompt (Chrome/Edge)
+    // 2. Es iOS (mostrar instrucciones)
+    // 3. O si showPrompt es true (después de verificar manifest/SW)
+    if (deferredPrompt || isIOS || showPrompt) {
+      setShouldShow(true)
       return
     }
 
-    // Si llegamos aquí, podemos mostrar el prompt
-    setShouldShow(true)
+    // No mostrar si no hay ninguna condición
+    setShouldShow(false)
   }, [isInstalled, isStandalone, showPrompt, deferredPrompt, isIOS])
 
   // No mostrar si no debería mostrarse
@@ -154,7 +157,7 @@ export function InstallPrompt() {
   // Si es iOS, mostrar instrucciones diferentes
   if (isIOS && !deferredPrompt) {
     return (
-      <Card className="fixed bottom-4 right-4 z-50 max-w-sm shadow-lg border-2 border-pink-500 animate-in slide-in-from-bottom-5">
+      <Card className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-sm z-50 shadow-2xl border-2 border-pink-500 animate-in slide-in-from-bottom-5">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
@@ -195,7 +198,7 @@ export function InstallPrompt() {
 
   // Prompt para Chrome/Edge/Android
   return (
-    <Card className="fixed bottom-4 right-4 z-50 max-w-sm shadow-lg border-2 border-pink-500 animate-in slide-in-from-bottom-5">
+    <Card className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-sm z-50 shadow-2xl border-2 border-pink-500 animate-in slide-in-from-bottom-5">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
