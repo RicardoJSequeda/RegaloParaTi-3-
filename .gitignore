@@ -54,3 +54,7 @@ logs
 tmp/
 temp/
 
+# Icon generation
+public/icon-base.png
+favicon_io/
+
