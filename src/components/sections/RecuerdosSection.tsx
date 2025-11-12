@@ -689,42 +689,42 @@ export function RecuerdosSection() {
   return (
     <>
       <motion.div 
-        className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10"
+        className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-10"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Header */}
-        <motion.div className="space-y-3 text-center" variants={itemVariants}>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Recuerdos</h1>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+        <motion.div className="space-y-2 sm:space-y-3 text-center" variants={itemVariants}>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white px-2">Recuerdos</h1>
+          <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-2">
             Revive los momentos más especiales de nuestra historia juntos
           </p>
         </motion.div>
 
         {/* Sección "Hitos de Nuestro Amor" - Rediseñada */}
-        <motion.div className="space-y-8" variants={itemVariants}>
+        <motion.div className="space-y-4 sm:space-y-6 md:space-y-8" variants={itemVariants}>
           {/* Header con estadísticas */}
-          <div className="text-center space-y-4">
-            <h2 className="text-3xl sm:text-4xl font-bold text-pink-700">
+          <div className="text-center space-y-3 sm:space-y-4 px-2">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-pink-700">
               Hitos de Nuestro Amor 💖
             </h2>
-            <p className="text-gray-600 text-lg">
+            <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400">
               {filteredMilestones.length} de {milestones.length} hitos especiales
             </p>
             
             {/* Filtros mejorados con scroll horizontal en móvil */}
-            <div className="flex overflow-x-auto gap-3 pb-2 px-4 sm:px-0 sm:flex-wrap sm:justify-center sm:overflow-visible scroll-horizontal">
+            <div className="flex overflow-x-auto gap-2 sm:gap-3 pb-2 px-2 sm:px-0 sm:flex-wrap sm:justify-center sm:overflow-visible scroll-horizontal -mx-2 sm:mx-0">
               {["Todos", "Aniversario", "Viajes", "Eventos", "Otros"].map((filter) => (
                 <Button
                   key={filter}
                   variant={selectedFilter === filter ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedFilter(filter)}
-                  className={`text-sm px-4 py-2 rounded-full flex-shrink-0 sm:flex-shrink ${
+                  className={`text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-2 rounded-full flex-shrink-0 sm:flex-shrink min-h-[44px] touch-target ${
                     selectedFilter === filter 
                       ? "bg-pink-500 hover:bg-pink-600 text-white shadow-lg" 
-                      : "border-2 border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400"
+                      : "border-2 border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400 dark:border-pink-600 dark:text-pink-400 dark:hover:bg-pink-900/20"
                   }`}
                 >
                   {filter}
@@ -741,24 +741,24 @@ export function RecuerdosSection() {
             {/* Línea central mejorada */}
             <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-1 timeline-line transform -translate-x-1/2"></div>
             
-            <div className="space-y-12 sm:space-y-16 md:space-y-20">
+            <div className="space-y-6 sm:space-y-8 md:space-y-12 lg:space-y-16">
               {filteredMilestones.length === 0 ? (
                 <motion.div 
-                  className="text-center py-16 timeline-empty rounded-3xl"
+                  className="text-center py-8 sm:py-12 md:py-16 timeline-empty rounded-2xl sm:rounded-3xl px-4"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6 }}
                 >
-                  <div className="w-20 h-20 timeline-empty-icon rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Heart className="w-10 h-10 text-pink-500" />
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 timeline-empty-icon rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <Heart className="w-8 h-8 sm:w-10 sm:h-10 text-pink-500" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
                     {selectedFilter !== 'Todos' 
                       ? 'No hay hitos con este filtro'
                       : '¡Comienza tu historia de amor!'
                     }
                   </h3>
-                  <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 max-w-md mx-auto">
                     {selectedFilter !== 'Todos' 
                       ? 'Intenta cambiar los filtros para ver más hitos especiales'
                       : 'Agrega tu primer hito para comenzar a documentar los momentos más especiales de vuestra relación'
@@ -766,10 +766,10 @@ export function RecuerdosSection() {
                   </p>
                   {selectedFilter === 'Todos' && (
                     <Button 
-                      className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-full shadow-lg"
+                      className="bg-pink-500 hover:bg-pink-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full shadow-lg min-h-[44px] text-sm sm:text-base"
                       onClick={() => {/* Aquí podrías abrir un modal para agregar hito */}}
                     >
-                      <Plus className="w-4 h-4 mr-2" />
+                      <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                       Agregar Primer Hito
                     </Button>
                   )}
@@ -792,7 +792,7 @@ export function RecuerdosSection() {
                         <div className="w-3/10 hidden md:block"></div>
                       ) : null}
                       
-                      <div className={`relative w-full max-w-[90%] mx-auto md:w-2/5 ${isLeft ? 'md:ml-6' : 'md:mr-6'}`}>
+                      <div className={`relative w-full max-w-[95%] sm:max-w-[90%] mx-auto md:w-2/5 ${isLeft ? 'md:ml-6' : 'md:mr-6'}`}>
                         {/* Punto de la línea de tiempo */}
                         <motion.div 
                           className={`absolute ${isLeft ? '-left-10' : '-right-10'} top-8 hidden md:block`}
@@ -803,8 +803,8 @@ export function RecuerdosSection() {
                         </motion.div>
 
                         {/* Número en móvil */}
-                        <div className="md:hidden mb-6 text-center">
-                          <div className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg mx-auto shadow-lg">
+                        <div className="md:hidden mb-4 sm:mb-6 text-center">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold text-base sm:text-lg mx-auto shadow-lg">
                             {String(index + 1).padStart(2, '0')}
                           </div>
                         </div>
@@ -815,43 +815,43 @@ export function RecuerdosSection() {
                           whileHover={{ scale: 1.02 }}
                           transition={{ duration: 0.3 }}
                         >
-                          <div className="timeline-card rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+                          <div className="timeline-card rounded-xl sm:rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
                             {/* Imagen del hito */}
                             <div className="relative">
-                              <div className="w-full h-48 sm:h-56 overflow-hidden">
+                              <div className="w-full h-40 sm:h-48 md:h-56 overflow-hidden">
                                 <img
                                   src={milestone.image_url || 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=600&h=400&fit=crop&crop=center'}
                                   alt={milestone.title}
-                                  className="w-full h-full object-cover timeline-image rounded-t-2xl"
+                                  className="w-full h-full object-cover timeline-image rounded-t-xl sm:rounded-t-2xl"
                                 />
                               </div>
                               
-                              {/* Overlay con controles */}
-                              <div className="absolute inset-0 timeline-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <div className="absolute top-3 right-3 flex gap-2">
+                              {/* Overlay con controles - siempre visible en móvil */}
+                              <div className="absolute inset-0 timeline-overlay opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+                                <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex gap-1.5 sm:gap-2">
                                   <Button 
                                     size="sm" 
                                     variant="ghost" 
-                                    className="h-10 w-10 p-0 timeline-controls"
+                                    className="h-9 w-9 sm:h-10 sm:w-10 p-0 timeline-controls bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
                                     onClick={() => handleEditMilestone(milestone)}
                                   >
-                                    <Edit className="h-4 w-4" />
+                                    <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                                   </Button>
                                   <Button 
                                     size="sm" 
                                     variant="ghost" 
-                                    className="h-10 w-10 p-0 timeline-controls"
+                                    className="h-9 w-9 sm:h-10 sm:w-10 p-0 timeline-controls bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
                                     onClick={() => handleDeleteMilestone(milestone)}
                                   >
-                                    <Trash2 className="h-4 w-4" />
+                                    <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                                   </Button>
                                 </div>
                               </div>
 
                               {/* Badge de fecha */}
-                              <div className="absolute bottom-3 left-3">
-                                <Badge className="timeline-date-badge text-gray-800 border-0 shadow-md">
-                                  <Calendar className="h-3 w-3 mr-1" />
+                              <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3">
+                                <Badge className="timeline-date-badge text-gray-800 dark:text-gray-200 border-0 shadow-md text-xs sm:text-sm px-2 sm:px-3 py-1">
+                                  <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
                                   {new Date(milestone.date_taken).toLocaleDateString('es-ES', {
                                     year: 'numeric',
                                     month: 'short',
@@ -862,28 +862,28 @@ export function RecuerdosSection() {
                             </div>
 
                             {/* Contenido del hito */}
-                            <div className="p-6 timeline-card-content">
-                              <h3 className="text-xl font-bold text-gray-800 mb-2 timeline-title">
+                            <div className="p-4 sm:p-5 md:p-6 timeline-card-content">
+                              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-white mb-2 timeline-title">
                                 {milestone.title}
                               </h3>
-                              <p className="text-gray-600 leading-relaxed mb-4 line-clamp-3">
+                              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-3">
                                 {milestone.description}
                               </p>
                               
                               {/* Tags del hito */}
                               {milestone.tags && milestone.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-2 mb-4 timeline-tags">
+                                <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4 timeline-tags">
                                   {milestone.tags.slice(0, 3).map((tag, tagIndex) => (
                                     <Badge 
                                       key={tagIndex} 
                                       variant="secondary" 
-                                      className="text-xs timeline-tag"
+                                      className="text-[10px] sm:text-xs timeline-tag px-2 py-0.5"
                                     >
                                       {tag}
                                     </Badge>
                                   ))}
                                   {milestone.tags.length > 3 && (
-                                    <Badge variant="secondary" className="text-xs">
+                                    <Badge variant="secondary" className="text-[10px] sm:text-xs px-2 py-0.5">
                                       +{milestone.tags.length - 3}
                                     </Badge>
                                   )}
@@ -893,7 +893,7 @@ export function RecuerdosSection() {
                               {/* Botón ver más */}
                               <Button 
                                 variant="link" 
-                                className="p-0 h-auto text-pink-600 hover:text-pink-700 font-medium"
+                                className="p-0 h-auto text-pink-600 hover:text-pink-700 dark:text-pink-400 dark:hover:text-pink-300 font-medium text-sm sm:text-base min-h-[44px] sm:min-h-0"
                               >
                                 Ver más detalles
                                 <ChevronRight className="h-4 w-4 ml-1" />
@@ -916,9 +916,9 @@ export function RecuerdosSection() {
         </motion.div>
 
         {/* Sección "Mapa de Lugares Especiales" */}
-        <motion.div className="space-y-3 max-w-6xl mx-auto" variants={itemVariants}>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <h2 className="text-xl sm:text-2xl font-bold text-pink-700">
+        <motion.div className="space-y-3 sm:space-y-4 max-w-6xl mx-auto" variants={itemVariants}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 px-2">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-pink-700 dark:text-pink-400">
               {showMapResults ? 'Resultados de Búsqueda en el Mapa' : 'Mapa de Lugares Especiales'}
             </h2>
             {showMapResults && (
@@ -929,7 +929,7 @@ export function RecuerdosSection() {
                   setShowMapResults(false)
                   setSearchResults([])
                 }}
-                className="text-pink-600 border-pink-300 hover:bg-pink-50 text-xs sm:text-sm"
+                className="text-pink-600 border-pink-300 hover:bg-pink-50 dark:border-pink-600 dark:text-pink-400 dark:hover:bg-pink-900/20 text-xs sm:text-sm min-h-[44px] px-3 sm:px-4"
               >
                 <X className="h-4 w-4 mr-1" />
                 Limpiar búsqueda
@@ -939,21 +939,21 @@ export function RecuerdosSection() {
           
           {/* Información de resultados */}
           {showMapResults && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <div className="flex items-center gap-2 text-blue-800">
-                <Search className="h-4 w-4" />
-                <span className="font-medium">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg sm:rounded-xl p-3 mx-2 sm:mx-0">
+              <div className="flex items-center gap-2 text-blue-800 dark:text-blue-300">
+                <Search className="h-4 w-4 flex-shrink-0" />
+                <span className="font-medium text-sm sm:text-base">
                   {searchResults.length} resultado{searchResults.length !== 1 ? 's' : ''} encontrado{searchResults.length !== 1 ? 's' : ''} para "{searchTerm}"
                 </span>
               </div>
-              <p className="text-blue-600 text-sm mt-1">
+              <p className="text-blue-600 dark:text-blue-400 text-xs sm:text-sm mt-1.5">
                 Los resultados se muestran en el mapa. Haz clic en los marcadores para ver detalles.
               </p>
             </div>
           )}
           
           {/* Mapa con altura mejorada para móvil */}
-          <div className="relative max-w-6xl mx-auto">
+          <div className="relative max-w-6xl mx-auto px-2 sm:px-0">
             <LeafletMap 
               places={showMapResults ? searchResults.map(place => ({
                 id: parseInt(place.id.replace(/\D/g, '') || '0'),
@@ -964,27 +964,27 @@ export function RecuerdosSection() {
                 type: place.type,
                 visited: place.status === 'visitado'
               })) : mapPlaces} 
-              className="h-[350px] sm:h-[450px] md:h-[550px] lg:h-[600px] w-full rounded-2xl border-0 shadow-lg" 
+              className="h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] w-full rounded-xl sm:rounded-2xl border-0 shadow-lg" 
               onAddPlace={handleAddPlaceFromMap}
             />
           </div>
         </motion.div>
 
         {/* Sección "Lista de Lugares Guardados" */}
-        <motion.div className="space-y-4 max-w-5xl mx-auto" variants={itemVariants}>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <h2 className="text-xl sm:text-2xl font-bold text-pink-700">Lista de Lugares Guardados</h2>
-            <div className="flex overflow-x-auto gap-2 pb-2 px-4 sm:px-0 sm:flex-wrap sm:overflow-visible scroll-horizontal">
+        <motion.div className="space-y-3 sm:space-y-4 max-w-5xl mx-auto" variants={itemVariants}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 px-2">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-pink-700 dark:text-pink-400">Lista de Lugares Guardados</h2>
+            <div className="flex overflow-x-auto gap-2 pb-2 px-2 sm:px-0 sm:flex-wrap sm:overflow-visible scroll-horizontal -mx-2 sm:mx-0">
               {["Todos", "Visitados", "Pendientes", "Eventos"].map((filter) => (
                 <Button
                   key={filter}
                   variant={selectedPlaceFilter === filter ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedPlaceFilter(filter)}
-                  className={`text-xs sm:text-sm flex-shrink-0 sm:flex-shrink px-3 py-2 rounded-full ${
+                  className={`text-xs sm:text-sm flex-shrink-0 sm:flex-shrink px-3 sm:px-4 py-2.5 sm:py-2 rounded-full min-h-[44px] touch-target ${
                     selectedPlaceFilter === filter 
                       ? "bg-pink-500 hover:bg-pink-600 text-white shadow-lg" 
-                      : "border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400"
+                      : "border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400 dark:border-pink-600 dark:text-pink-400 dark:hover:bg-pink-900/20"
                   }`}
                 >
                   {filter}
@@ -994,18 +994,18 @@ export function RecuerdosSection() {
           </div>
           
           {/* Buscador mejorado */}
-          <div className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl p-4 sm:p-6 max-w-4xl mx-auto">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+          <div className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 max-w-4xl mx-auto mx-2 sm:mx-auto">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-pink-400" />
+                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-pink-400" />
                 <Input
                   placeholder="Buscar lugares... (ej: Montería, restaurante)"
-                  className="pl-12 pr-4 py-3 border-gray-200 dark:border-gray-700 focus:border-pink-500 focus:ring-pink-500 text-sm sm:text-base rounded-xl"
+                  className="pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 border-gray-200 dark:border-gray-700 focus:border-pink-500 focus:ring-pink-500 text-sm sm:text-base rounded-lg sm:rounded-xl min-h-[44px]"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 {isSearching && (
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                  <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-pink-500"></div>
                   </div>
                 )}
@@ -1018,15 +1018,15 @@ export function RecuerdosSection() {
                   setSearchResults([])
                   setSearchTerm('')
                 }}
-                className="border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm px-4 py-3 rounded-xl"
+                className="border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl min-h-[44px] w-full sm:w-auto"
               >
                 <X className="h-4 w-4 mr-2" />
                 Limpiar
               </Button>
             </div>
             {searchTerm && (
-              <div className="mt-3 text-sm text-pink-600 dark:text-pink-400">
-                <Search className="h-4 w-4 inline mr-2" />
+              <div className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-pink-600 dark:text-pink-400">
+                <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 inline mr-1.5 sm:mr-2" />
                 Buscando: "{searchTerm}"
               </div>
             )}
@@ -1034,17 +1034,17 @@ export function RecuerdosSection() {
 
           {/* Lista de lugares con grid responsive */}
           <motion.div 
-            className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 max-w-6xl mx-auto"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6 max-w-6xl mx-auto px-2 sm:px-0"
             variants={containerVariants}
           >
             {/* Información de búsqueda */}
             {showMapResults && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
-                <div className="flex items-center gap-2 text-yellow-800">
-                  <Map className="h-4 w-4" />
-                  <span className="font-medium">Búsqueda activa</span>
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg sm:rounded-xl p-3 mb-3 sm:mb-4 col-span-full">
+                <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-300">
+                  <Map className="h-4 w-4 flex-shrink-0" />
+                  <span className="font-medium text-sm sm:text-base">Búsqueda activa</span>
                 </div>
-                <p className="text-yellow-600 text-sm mt-1">
+                <p className="text-yellow-600 dark:text-yellow-400 text-xs sm:text-sm mt-1.5">
                   Los resultados de búsqueda se muestran en el mapa arriba. Aquí puedes ver todos los lugares guardados.
                 </p>
               </div>
@@ -1058,55 +1058,55 @@ export function RecuerdosSection() {
                 transition={{ delay: index * 0.1 }}
                 className="w-full"
               >
-                <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer bg-white dark:bg-gray-800 border-0 rounded-2xl overflow-hidden">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer bg-white dark:bg-gray-800 border-0 rounded-xl sm:rounded-2xl overflow-hidden">
+                  <CardContent className="p-3 sm:p-4 md:p-6">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                       {/* Imagen del lugar */}
                       {place.image_url && (
-                        <div className="flex-shrink-0">
+                        <div className="flex-shrink-0 w-full sm:w-auto">
                           <img 
                             src={place.image_url} 
                             alt={place.name}
-                            className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl border shadow-sm"
+                            className="w-full sm:w-20 sm:h-20 md:w-24 md:h-24 h-32 sm:h-auto object-cover rounded-lg sm:rounded-xl border shadow-sm"
                           />
                         </div>
                       )}
                       
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-lg sm:text-xl text-gray-900 dark:text-white truncate mb-1">{place.name}</h3>
-                        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-1">{place.visit_date || 'Próximamente'}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{place.address}</p>
+                      <div className="flex-1 min-w-0 w-full sm:w-auto">
+                        <h3 className="font-bold text-base sm:text-lg md:text-xl text-gray-900 dark:text-white truncate mb-1">{place.name}</h3>
+                        <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300 mb-1">{place.visit_date || 'Próximamente'}</p>
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{place.address}</p>
                       </div>
                       
-                      <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                      <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
                         <Badge 
                           variant="secondary" 
-                          className={`text-sm px-3 py-1 rounded-full ${
+                          className={`text-xs sm:text-sm px-2.5 sm:px-3 py-1 rounded-full flex-shrink-0 ${
                             place.status === 'visitado' 
-                              ? "bg-green-100 text-green-800 border-green-200" 
-                              : "bg-yellow-100 text-yellow-800 border-yellow-200"
+                              ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800" 
+                              : "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800"
                           }`}
                         >
                           {place.status === 'visitado' ? 'Visitado' : 'Pendiente'}
                         </Badge>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2">
                           <Button 
                             size="sm" 
                             variant="ghost" 
-                            className="h-10 w-10 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all duration-300"
+                            className="h-10 w-10 sm:h-9 sm:w-9 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all duration-300 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
                             onClick={() => handleEditPlace(place)}
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                           </Button>
                           <Button 
                             size="sm" 
                             variant="ghost" 
-                            className="h-10 w-10 p-0 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20 rounded-full transition-all duration-300"
+                            className="h-10 w-10 sm:h-9 sm:w-9 p-0 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20 rounded-full transition-all duration-300 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
                             onClick={() => handleDeletePlace(place)}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                           </Button>
-                          <ChevronRight className="h-5 w-5 text-gray-400" />
+                          <ChevronRight className="h-5 w-5 text-gray-400 hidden sm:block" />
                         </div>
                       </div>
                     </div>
@@ -1120,39 +1120,40 @@ export function RecuerdosSection() {
 
       {/* Modal de Edición */}
       {isEditModalOpen && editingMilestone && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1rem)', paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)' }}>
           <motion.div 
-            className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-900">Editar Hito</h3>
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Editar Hito</h3>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleCancelEdit}
-                className="h-8 w-8 p-0"
+                className="h-9 w-9 sm:h-8 sm:w-8 p-0 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2">
                   Título
                 </label>
                 <Input
                   value={editingMilestone.title}
                   onChange={(e) => setEditingMilestone(prev => prev ? {...prev, title: e.target.value} : null)}
                   placeholder="Título del hito"
+                  className="min-h-[44px] text-sm sm:text-base"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2">
                   Fecha
                 </label>
                 <Input
@@ -1160,18 +1161,19 @@ export function RecuerdosSection() {
                   value={editingMilestone.date_taken}
                   onChange={(e) => setEditingMilestone(prev => prev ? {...prev, date_taken: e.target.value} : null)}
                   placeholder="Fecha del evento"
+                  className="min-h-[44px] text-sm sm:text-base"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2">
                   Descripción
                 </label>
                 <textarea
                   value={editingMilestone.description || ''}
                   onChange={(e) => setEditingMilestone(prev => prev ? {...prev, description: e.target.value} : null)}
                   placeholder="Descripción del evento"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg sm:rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm sm:text-base min-h-[100px]"
                   rows={3}
                 />
               </div>
@@ -1270,17 +1272,17 @@ export function RecuerdosSection() {
               </div>
             </div>
             
-            <div className="flex gap-3 mt-6">
+            <div className="flex gap-2 sm:gap-3 mt-4 sm:mt-6">
               <Button
                 variant="outline"
                 onClick={handleCancelEdit}
-                className="flex-1"
+                className="flex-1 min-h-[44px] text-sm sm:text-base"
               >
                 Cancelar
               </Button>
               <Button
                 onClick={handleSaveMilestone}
-                className="flex-1 bg-pink-500 hover:bg-pink-600"
+                className="flex-1 bg-pink-500 hover:bg-pink-600 min-h-[44px] text-sm sm:text-base"
               >
                 <Save className="h-4 w-4 mr-2" />
                 Guardar
@@ -1292,38 +1294,38 @@ export function RecuerdosSection() {
 
       {/* Modal de Confirmación de Eliminación */}
       {isDeleteModalOpen && deletingMilestone && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1rem)', paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)' }}>
           <motion.div 
-            className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <AlertCircle className="h-5 w-5 text-red-600" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900">Eliminar Hito</h3>
-                <p className="text-sm text-gray-600">Esta acción no se puede deshacer</p>
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Eliminar Hito</h3>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Esta acción no se puede deshacer</p>
               </div>
             </div>
             
-            <p className="text-gray-700 mb-6">
+            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-4 sm:mb-6">
               ¿Estás seguro de que quieres eliminar el hito <strong>"{deletingMilestone.title}"</strong>?
             </p>
             
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3">
               <Button
                 variant="outline"
                 onClick={handleCancelDelete}
-                className="flex-1"
+                className="flex-1 min-h-[44px] text-sm sm:text-base"
               >
                 Cancelar
               </Button>
               <Button
                 onClick={handleConfirmDelete}
-                className="flex-1 bg-red-500 hover:bg-red-600"
+                className="flex-1 bg-red-500 hover:bg-red-600 min-h-[44px] text-sm sm:text-base"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Eliminar
@@ -1335,39 +1337,40 @@ export function RecuerdosSection() {
 
       {/* Modal de Edición de Lugar */}
       {isEditPlaceModalOpen && editingPlace && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1rem)', paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)' }}>
           <motion.div 
-            className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-900">Editar Lugar</h3>
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Editar Lugar</h3>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleCancelEditPlace}
-                className="h-8 w-8 p-0"
+                className="h-9 w-9 sm:h-8 sm:w-8 p-0 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2">
                   Nombre del Lugar
                 </label>
                 <Input
                   value={editingPlace.name}
                   onChange={(e) => setEditingPlace(prev => prev ? {...prev, name: e.target.value} : null)}
                   placeholder="Nombre del lugar"
+                  className="min-h-[44px] text-sm sm:text-base"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2">
                   Fecha de Visita
                 </label>
                 <Input
@@ -1375,17 +1378,19 @@ export function RecuerdosSection() {
                   value={editingPlace.visit_date || ''}
                   onChange={(e) => setEditingPlace(prev => prev ? {...prev, visit_date: e.target.value} : null)}
                   placeholder="Fecha de visita o planificación"
+                  className="min-h-[44px] text-sm sm:text-base"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2">
                   Dirección
                 </label>
                 <Input
                   value={editingPlace.address || ''}
                   onChange={(e) => setEditingPlace(prev => prev ? {...prev, address: e.target.value} : null)}
                   placeholder="Dirección del lugar"
+                  className="min-h-[44px] text-sm sm:text-base"
                 />
               </div>
               
@@ -1481,17 +1486,17 @@ export function RecuerdosSection() {
               </div>
             </div>
             
-            <div className="flex gap-3 mt-6">
+            <div className="flex gap-2 sm:gap-3 mt-4 sm:mt-6">
               <Button
                 variant="outline"
                 onClick={handleCancelEditPlace}
-                className="flex-1"
+                className="flex-1 min-h-[44px] text-sm sm:text-base"
               >
                 Cancelar
               </Button>
               <Button
                 onClick={handleSavePlace}
-                className="flex-1 bg-pink-500 hover:bg-pink-600"
+                className="flex-1 bg-pink-500 hover:bg-pink-600 min-h-[44px] text-sm sm:text-base"
               >
                 <Save className="h-4 w-4 mr-2" />
                 Guardar
@@ -1503,38 +1508,38 @@ export function RecuerdosSection() {
 
       {/* Modal de Confirmación de Eliminación de Lugar */}
       {isDeletePlaceModalOpen && deletingPlace && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1rem)', paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)' }}>
           <motion.div 
-            className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <AlertCircle className="h-5 w-5 text-red-600" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900">Eliminar Lugar</h3>
-                <p className="text-sm text-gray-600">Esta acción no se puede deshacer</p>
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Eliminar Lugar</h3>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Esta acción no se puede deshacer</p>
               </div>
             </div>
             
-            <p className="text-gray-700 mb-6">
+            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-4 sm:mb-6">
               ¿Estás seguro de que quieres eliminar el lugar <strong>"{deletingPlace.name}"</strong>?
             </p>
             
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3">
               <Button
                 variant="outline"
                 onClick={handleCancelDeletePlace}
-                className="flex-1"
+                className="flex-1 min-h-[44px] text-sm sm:text-base"
               >
                 Cancelar
               </Button>
               <Button
                 onClick={handleConfirmDeletePlace}
-                className="flex-1 bg-red-500 hover:bg-red-600"
+                className="flex-1 bg-red-500 hover:bg-red-600 min-h-[44px] text-sm sm:text-base"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Eliminar
