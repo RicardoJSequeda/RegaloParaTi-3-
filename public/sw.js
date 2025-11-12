@@ -8,6 +8,9 @@ const STATIC_ASSETS = [
   '/',
   '/manifest.webmanifest',
   '/offline.html',
+  '/favicon.ico',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
 ]
 
 // Estrategia: Cache First para assets estáticos, Network First para API
