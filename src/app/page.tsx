@@ -15,7 +15,17 @@ function ClientOnly({ children }: { children: React.ReactNode }) {
   }, [])
 
   if (!hasMounted) {
-    return <div>Loading...</div>
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh',
+        fontSize: '18px'
+      }}>
+        Cargando...
+      </div>
+    )
   }
 
   return <>{children}</>
@@ -23,9 +33,8 @@ function ClientOnly({ children }: { children: React.ReactNode }) {
 
 // Deshabilitar completamente el prerendering
 export const dynamic = 'force-dynamic'
-export const revalidate = 0
-export const fetchCache = 'force-no-store'
-export const runtime = 'edge'
+// En Next.js 14.2+, con dynamic = 'force-dynamic', no necesitamos revalidate ni fetchCache
+// Remover runtime edge para evitar problemas con hooks y módulos
 
 export default function Home() {
   return (
@@ -41,7 +50,18 @@ function HomeContent() {
 
   // Mostrar loading hasta que ambos hooks estén inicializados
   if (!authInitialized || !themeInitialized) {
-    return <div>Loading...</div>
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh',
+        fontSize: '18px',
+        color: isDarkMode ? '#fff' : '#000'
+      }}>
+        Cargando...
+      </div>
+    )
   }
 
   return (
