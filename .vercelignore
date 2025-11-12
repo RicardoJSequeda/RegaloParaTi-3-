@@ -1,0 +1,6 @@
+# Archivos a ignorar en Vercel
+favicon_io/
+public/icon-base.png
+*.log
+.DS_Store
+
