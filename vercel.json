@@ -8,5 +8,6 @@
     "env": {
       "NEXT_PUBLIC_DISABLE_SSG": "true"
     }
-  }
+  },
+  "installCommand": "npm install --legacy-peer-deps"
 }

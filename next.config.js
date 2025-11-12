@@ -27,17 +27,6 @@ const nextConfig = {
   experimental: {
     // Optimizar imports de paquetes grandes
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-    // Excluir archivos del análisis de build traces para evitar stack overflow
-    outputFileTracingExcludes: {
-      '*': [
-        'node_modules/@swc/core-linux-x64-gnu',
-        'node_modules/@swc/core-linux-x64-musl',
-        'node_modules/@esbuild/linux-x64',
-        'node_modules/webpack/**/*',
-        'favicon_io/**/*',
-        'public/icon-base.png',
-      ],
-    },
   },
 
   // Configuración de compilación
