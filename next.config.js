@@ -27,7 +27,12 @@ const nextConfig = {
   experimental: {
     // Optimizar imports de paquetes grandes
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    // Deshabilitar output file tracing para evitar stack overflow en Vercel
+    outputFileTracingRoot: process.cwd(),
   },
+  
+  // Configuración para reducir el tamaño del build output
+  output: 'standalone',
 
   // Configuración de compilación
   compiler: {

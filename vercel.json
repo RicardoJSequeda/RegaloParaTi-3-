@@ -6,8 +6,8 @@
   },
   "build": {
     "env": {
-      "NEXT_PUBLIC_DISABLE_SSG": "true"
+      "NEXT_PUBLIC_DISABLE_SSG": "true",
+      "NEXT_PRIVATE_STANDALONE": "true"
     }
-  },
-  "installCommand": "npm install --legacy-peer-deps"
+  }
 }
