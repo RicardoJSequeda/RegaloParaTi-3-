@@ -25,7 +25,6 @@ import {
 } from 'lucide-react'
 import { getBrowserClient } from '@/lib/supabase/browser-client'
 import { uploadPublicFile } from '@/lib/supabase/storage'
-import Image from 'next/image'
 
 interface Message {
   id: string
@@ -341,69 +340,77 @@ export function MensajesSection() {
   }
 
   return (
-    <div className="px-3 sm:px-4 md:px-6 pb-20 sm:pb-6 space-y-4 sm:space-y-6 md:space-y-8" style={{ paddingTop: 'max(env(safe-area-inset-top), 0.75rem)' }}>
-      {/* Header - Tipografía optimizada: 24-32px títulos */}
+    <section className="relative mx-auto flex w-full max-w-6xl flex-col gap-4 overflow-x-hidden px-3 pb-20 pt-3 sm:gap-6 sm:px-4 sm:pb-6 sm:pt-4 md:gap-8 md:px-6" style={{ paddingTop: 'max(env(safe-area-inset-top), 0.75rem)' }}>
+      {/* UX: Header optimizado para móvil con tipografía escalable desde 320px */}
       <motion.div 
-        className="text-center space-y-2 sm:space-y-3"
+        className="flex flex-col items-center gap-1.5 text-center sm:gap-2 md:gap-3"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white" style={{ fontSize: 'clamp(24px, 5vw, 32px)' }}>
+        <Badge
+          aria-hidden="true"
+          variant="secondary"
+          className="w-fit rounded-full bg-white/80 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-pink-600 shadow-sm ring-1 ring-pink-200/70 backdrop-blur sm:px-3 sm:py-1 sm:text-[11px]"
+        >
+          Nuestros Pensamientos
+        </Badge>
+        <h1 className="w-full text-wrap text-[1.5rem] font-extrabold leading-[1.2] tracking-tight text-gray-900 dark:text-white sm:text-[1.75rem] md:text-3xl lg:text-4xl">
           Mensajes Especiales
         </h1>
-        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-2" style={{ fontSize: 'clamp(16px, 2.5vw, 18px)' }}>
+        <p className="w-full max-w-2xl px-1 text-[12px] leading-[1.5] text-gray-600 dark:text-gray-300 sm:text-sm sm:leading-5 md:text-base md:leading-6 lg:text-lg">
           Comparte tus pensamientos, deseos y sentimientos más profundos.
         </p>
       </motion.div>
 
-      {/* Estadísticas - Zona táctil optimizada (20-80% vertical) */}
+      {/* UX: Estadísticas con scroll horizontal táctil optimizado para móvil */}
       <motion.div 
-        className="flex overflow-x-auto gap-2 sm:gap-3 pb-2 px-2 sm:px-0 scroll-horizontal -mx-2 sm:mx-0"
+        className="flex w-full overflow-x-auto gap-2 pb-2 px-1 scrollbar-hide sm:gap-3 sm:px-0 sm:pb-0 sm:overflow-visible sm:flex-wrap sm:justify-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
-        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex-shrink-0 min-w-[120px] sm:min-w-[140px] transition-all duration-200">
-          <div className="text-xl sm:text-2xl md:text-3xl font-bold text-pink-600 dark:text-pink-400">{totalMessages}</div>
-          <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">Total</div>
+        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-lg p-2 flex-shrink-0 min-w-[90px] transition-all duration-200 active:scale-95 sm:rounded-xl sm:p-2.5 sm:min-w-[100px]">
+          <div className="text-lg font-bold text-pink-600 dark:text-pink-400 sm:text-xl">{totalMessages}</div>
+          <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-0.5 sm:text-[11px]">Total</div>
         </div>
-        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex-shrink-0 min-w-[120px] sm:min-w-[140px] transition-all duration-200">
-          <div className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">{unreadMessages}</div>
-          <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">Sin leer</div>
+        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-lg p-2 flex-shrink-0 min-w-[90px] transition-all duration-200 active:scale-95 sm:rounded-xl sm:p-2.5 sm:min-w-[100px]">
+          <div className="text-lg font-bold text-blue-600 dark:text-blue-400 sm:text-xl">{unreadMessages}</div>
+          <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-0.5 sm:text-[11px]">Sin leer</div>
         </div>
-        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex-shrink-0 min-w-[120px] sm:min-w-[140px] transition-all duration-200">
-          <div className="text-xl sm:text-2xl md:text-3xl font-bold text-green-600 dark:text-green-400">{readMessages}</div>
-          <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">Leídos</div>
+        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-lg p-2 flex-shrink-0 min-w-[90px] transition-all duration-200 active:scale-95 sm:rounded-xl sm:p-2.5 sm:min-w-[100px]">
+          <div className="text-lg font-bold text-green-600 dark:text-green-400 sm:text-xl">{readMessages}</div>
+          <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-0.5 sm:text-[11px]">Leídos</div>
         </div>
-        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex-shrink-0 min-w-[120px] sm:min-w-[140px] transition-all duration-200">
-          <div className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-600 dark:text-purple-400">{favoriteMessages}</div>
-          <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">Favoritos</div>
+        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-lg p-2 flex-shrink-0 min-w-[90px] transition-all duration-200 active:scale-95 sm:rounded-xl sm:p-2.5 sm:min-w-[100px]">
+          <div className="text-lg font-bold text-purple-600 dark:text-purple-400 sm:text-xl">{favoriteMessages}</div>
+          <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-0.5 sm:text-[11px]">Favoritos</div>
         </div>
       </motion.div>
 
-      {/* Búsqueda y Filtros - Input 44px mínimo */}
+      {/* UX: Búsqueda y filtros optimizados para móvil con input táctil */}
       <motion.div 
-        className="space-y-3 sm:space-y-4"
+        className="flex w-full flex-col gap-2.5 sm:gap-3 md:gap-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
       >
-        <div className="relative">
-          <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" aria-hidden="true" />
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-gray-400 dark:text-gray-500 sm:left-4 sm:h-4 sm:w-4" aria-hidden="true" />
           <Input 
             placeholder="Buscar en mensajes..." 
             value={searchQuery} 
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Buscar mensajes"
-            className="pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 border-gray-200 dark:border-gray-700 focus:border-pink-500 focus:ring-pink-500 text-base rounded-xl min-h-[44px]"
-            style={{ fontSize: '16px' }} // Prevenir zoom en iOS
+            className="pl-9 pr-4 py-2.5 border-gray-200 dark:border-gray-700 focus:border-pink-500 focus:ring-pink-500 text-[13px] rounded-lg min-h-[44px] sm:pl-12 sm:py-3 sm:text-sm md:text-base sm:rounded-xl"
+            style={{ fontSize: '16px' }}
           />
         </div>
-        <div className="flex overflow-x-auto gap-2 pb-2 px-2 sm:px-0 scroll-horizontal -mx-2 sm:mx-0">
+        {/* UX: Filtros con scroll horizontal táctil */}
+        <div className="flex w-full overflow-x-auto gap-1.5 pb-2 px-1 scrollbar-hide sm:gap-2 sm:flex-wrap sm:justify-center sm:overflow-visible sm:pb-0 sm:px-0">
           <Badge 
             variant={selectedCategory === '' ? 'default' : 'secondary'} 
-            className="category-badge hover:bg-pink-100 dark:hover:bg-pink-900/20 flex-shrink-0 px-3 sm:px-4 py-2.5 sm:py-2 rounded-full text-sm min-h-[44px] touch-target cursor-pointer transition-all duration-200"
+            className="category-badge hover:bg-pink-100 dark:hover:bg-pink-900/20 flex-shrink-0 px-3 py-2.5 rounded-full text-[11px] font-semibold min-h-[44px] touch-target cursor-pointer transition-all duration-200 active:scale-95 sm:px-4 sm:py-2 sm:text-xs md:text-sm"
             onClick={() => setSelectedCategory('')}
             role="button"
             tabIndex={0}
@@ -419,7 +426,7 @@ export function MensajesSection() {
               <Badge 
                 key={category.name} 
                 variant={isSelected ? 'default' : 'secondary'} 
-                className={`category-badge ${category.color} flex-shrink-0 px-3 sm:px-4 py-2.5 sm:py-2 rounded-full text-sm min-h-[44px] touch-target cursor-pointer transition-all duration-200 ${
+                className={`category-badge ${category.color} flex-shrink-0 px-3 py-2.5 rounded-full text-[11px] font-semibold min-h-[44px] touch-target cursor-pointer transition-all duration-200 active:scale-95 sm:px-4 sm:py-2 sm:text-xs md:text-sm ${
                   isSelected ? 'ring-2 ring-pink-500 dark:ring-pink-400' : ''
                 }`}
                 onClick={() => setSelectedCategory(category.name)}
@@ -429,7 +436,7 @@ export function MensajesSection() {
                 aria-pressed={isSelected}
                 onKeyDown={(e) => e.key === 'Enter' && setSelectedCategory(category.name)}
               >
-                <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5" aria-hidden="true" />
+                <Icon className="h-3 w-3 mr-1 sm:h-3.5 sm:w-3.5 sm:mr-1.5 md:h-4 md:w-4" aria-hidden="true" />
                 {category.name}
               </Badge>
             )
@@ -437,7 +444,7 @@ export function MensajesSection() {
         </div>
       </motion.div>
 
-      {/* Mensajes - Grid responsive con animaciones */}
+      {/* UX: Mensajes con grid responsive optimizado para móvil */}
       <AnimatePresence mode="popLayout">
         {filteredMessages.length === 0 ? (
           <motion.div
@@ -445,19 +452,19 @@ export function MensajesSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="text-center py-12 sm:py-16"
+            className="w-full text-center py-8 sm:py-12 md:py-16"
           >
-            <div className="text-gray-400 dark:text-gray-500 mb-4">
-              <Heart className="h-12 w-12 sm:h-16 sm:w-16 mx-auto" />
+            <div className="text-gray-400 dark:text-gray-500 mb-3 sm:mb-4">
+              <Heart className="h-10 w-10 mx-auto sm:h-12 sm:w-12 md:h-16 md:w-16" />
             </div>
-            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
+            <p className="text-[13px] text-gray-600 dark:text-gray-400 sm:text-sm md:text-base lg:text-lg">
               {searchQuery || selectedCategory 
                 ? 'No se encontraron mensajes con estos filtros' 
                 : 'Aún no hay mensajes. ¡Escribe el primero!'}
             </p>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+          <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:gap-6 lg:grid-cols-3">
             {filteredMessages.map((message, index) => {
               const category = categories.find(c => c.name === message.category)
               const Icon = category?.icon || Heart
@@ -472,30 +479,31 @@ export function MensajesSection() {
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   <Card 
-                    className={`message-card ${!message.isRead ? 'ring-2 ring-pink-300 dark:ring-pink-700' : ''} bg-white dark:bg-gray-800 shadow-md hover:shadow-xl border-0 rounded-xl sm:rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer active:scale-[0.98]`}
+                    className={`message-card ${!message.isRead ? 'ring-2 ring-pink-300 dark:ring-pink-700' : ''} bg-white dark:bg-gray-800 shadow-md hover:shadow-xl border-0 rounded-xl overflow-hidden transition-all duration-300 cursor-pointer active:scale-[0.98] sm:rounded-2xl`}
                     onClick={() => markAsRead(message.id)}
                     role="button"
                     tabIndex={0}
                     aria-label={`Mensaje: ${message.title}. ${message.isRead ? 'Leído' : 'No leído'}. ${message.isFavorite ? 'Favorito' : ''}`}
                     onKeyDown={(e) => e.key === 'Enter' && markAsRead(message.id)}
                   >
-                    <CardContent className="p-4 sm:p-5 md:p-6">
-                      <div className="flex justify-between items-start mb-3 gap-2">
+                    <CardContent className="p-3 sm:p-4 md:p-5 lg:p-6">
+                      <div className="flex justify-between items-start mb-2.5 gap-1.5 sm:mb-3 sm:gap-2">
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-lg sm:text-xl text-gray-900 dark:text-white mb-1.5 truncate" style={{ fontSize: 'clamp(18px, 2.5vw, 20px)' }}>
+                          <h3 className="font-semibold text-[15px] text-gray-900 dark:text-white mb-1 truncate sm:text-base sm:mb-1.5 md:text-lg lg:text-xl">
                             {message.title}
                           </h3>
-                          <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-                            <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
+                          <div className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400 sm:text-xs md:text-sm sm:gap-1.5">
+                            <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
                             <span>{message.date}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                        {/* UX: Controles con áreas táctiles mínimas (44x44px en móvil) */}
+                        <div className="flex items-center gap-1 flex-shrink-0 sm:gap-1.5 md:gap-2">
                           <Button 
                             variant="ghost" 
                             size="sm" 
                             onClick={(e) => toggleFavorite(message.id, e)} 
-                            className={`h-10 w-10 sm:h-9 sm:w-9 p-0 rounded-full transition-all duration-200 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 touch-target ${
+                            className={`h-10 w-10 p-0 rounded-full transition-all duration-200 active:scale-95 min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0 touch-target ${
                               message.isFavorite 
                                 ? 'text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-900/20' 
                                 : 'text-gray-400 hover:text-red-500 hover:bg-gray-50 dark:hover:bg-gray-700'
@@ -508,7 +516,7 @@ export function MensajesSection() {
                             variant="ghost" 
                             size="sm" 
                             onClick={(e) => openEditModal(message, e)} 
-                            className="h-10 w-10 sm:h-9 sm:w-9 p-0 rounded-full text-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 touch-target"
+                            className="h-10 w-10 p-0 rounded-full text-blue-500 hover:text-blue-600 hover:bg-blue-50 active:scale-95 dark:hover:bg-blue-900/20 transition-all duration-200 min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0 touch-target"
                             aria-label="Editar mensaje"
                           >
                             <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -517,41 +525,42 @@ export function MensajesSection() {
                             variant="ghost" 
                             size="sm" 
                             onClick={(e) => deleteMessage(message.id, e)} 
-                            className="h-10 w-10 sm:h-9 sm:w-9 p-0 rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 touch-target"
+                            className="h-10 w-10 p-0 rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 active:scale-95 dark:hover:bg-red-900/20 transition-all duration-200 min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0 touch-target"
                             aria-label="Eliminar mensaje"
                           >
                             <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                           </Button>
                         </div>
                       </div>
-                      <p className="text-gray-600 dark:text-gray-300 text-base line-clamp-4 mb-3 leading-relaxed" style={{ fontSize: 'clamp(16px, 2vw, 18px)' }}>
+                      <p className="text-[12px] text-gray-600 dark:text-gray-300 line-clamp-4 mb-2.5 leading-relaxed sm:text-sm sm:mb-3 md:text-base">
                         {message.content}
                       </p>
                       {message.images && message.images.length > 0 && (
-                        <div className="mb-3">
-                          <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+                        <div className="mb-2.5 sm:mb-3">
+                          <div className="flex gap-1.5 overflow-x-auto pb-2 -mx-0.5 px-0.5 sm:gap-2 sm:-mx-1 sm:px-1">
                             {message.images.map((imageUrl, idx) => (
-                              <div key={idx} className="relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-lg sm:rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-                                <Image
+                              <div key={idx} className="relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 sm:w-20 sm:h-20 sm:rounded-xl md:w-24 md:h-24">
+                                <img
                                   src={imageUrl}
                                   alt={`Imagen ${idx + 1} de ${message.title}`}
-                                  fill
-                                  className="object-cover"
+                                  className="w-full h-full object-cover"
                                   loading="lazy"
-                                  sizes="(max-width: 640px) 80px, 96px"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/96?text=Imagen'
+                                  }}
                                 />
                               </div>
                             ))}
                           </div>
                         </div>
                       )}
-                      <div className="flex items-center justify-between mt-3">
-                        <Badge className={`${category?.color} transition-all duration-200 text-xs sm:text-sm px-2.5 sm:px-3 py-1 rounded-full`}>
-                          <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1.5" aria-hidden="true" />
+                      <div className="flex items-center justify-between mt-2.5 sm:mt-3">
+                        <Badge className={`${category?.color} transition-all duration-200 text-[10px] px-2 py-0.5 rounded-full sm:text-xs sm:px-2.5 sm:py-1 md:text-sm md:px-3`}>
+                          <Icon className="h-2.5 w-2.5 mr-1 sm:h-3 sm:w-3 sm:mr-1.5 md:h-3.5 md:w-3.5" aria-hidden="true" />
                           {message.category}
                         </Badge>
                         {!message.isRead && (
-                          <div className="w-2.5 h-2.5 bg-pink-500 rounded-full animate-pulse" aria-label="Mensaje no leído" />
+                          <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse sm:w-2.5 sm:h-2.5" aria-label="Mensaje no leído" />
                         )}
                       </div>
                     </CardContent>
@@ -563,21 +572,21 @@ export function MensajesSection() {
         )}
       </AnimatePresence>
 
-      {/* FAB (Floating Action Button) - Acción primaria */}
+      {/* UX: FAB optimizado para móvil con tamaño táctil mínimo (56x56px) */}
       <motion.button
         variants={fabVariants}
         initial="hidden"
         animate="visible"
         whileTap="tap"
         onClick={() => setIsWriteModalOpen(true)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 h-14 w-14 sm:h-16 sm:w-16 bg-pink-500 hover:bg-pink-600 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-pink-300 dark:focus:ring-pink-700"
+        className="fixed z-40 bg-pink-500 hover:bg-pink-600 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-pink-300 dark:focus:ring-pink-700 h-14 w-14 bottom-4 right-4 sm:h-16 sm:w-16 sm:bottom-6 sm:right-6"
         aria-label="Escribir nuevo mensaje"
         style={{ 
           bottom: 'max(env(safe-area-inset-bottom), 1rem)',
           right: 'max(env(safe-area-inset-right), 1rem)'
         }}
       >
-        <Edit3 className="h-6 w-6 sm:h-7 sm:w-7" />
+        <Edit3 className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" />
       </motion.button>
 
       {/* Toast de éxito */}
@@ -723,12 +732,10 @@ export function MensajesSection() {
                         {newImages.map((file, idx) => (
                           <div key={idx} className="relative">
                             <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600">
-                              <Image
+                              <img
                                 src={URL.createObjectURL(file)}
                                 alt={`Preview ${idx + 1}`}
-                                fill
-                                className="object-cover"
-                                sizes="(max-width: 640px) 64px, 80px"
+                                className="w-full h-full object-cover"
                               />
                             </div>
                             <button
@@ -879,13 +886,14 @@ export function MensajesSection() {
                       <div className="flex flex-wrap gap-2">
                         {editingMessage.images.map((imageUrl, idx) => (
                           <div key={idx} className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600">
-                            <Image
+                            <img
                               src={imageUrl}
                               alt={`Imagen actual ${idx + 1}`}
-                              fill
-                              className="object-cover"
+                              className="w-full h-full object-cover"
                               loading="lazy"
-                              sizes="(max-width: 640px) 64px, 80px"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/80?text=Imagen'
+                              }}
                             />
                           </div>
                         ))}
@@ -932,12 +940,10 @@ export function MensajesSection() {
                         {newImages.map((file, idx) => (
                           <div key={idx} className="relative">
                             <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600">
-                              <Image
+                              <img
                                 src={URL.createObjectURL(file)}
                                 alt={`Preview ${idx + 1}`}
-                                fill
-                                className="object-cover"
-                                sizes="(max-width: 640px) 64px, 80px"
+                                className="w-full h-full object-cover"
                               />
                             </div>
                             <button
@@ -989,6 +995,6 @@ export function MensajesSection() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </section>
   )
 }

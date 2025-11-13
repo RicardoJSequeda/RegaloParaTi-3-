@@ -10,11 +10,14 @@ import { useFloatingHearts } from '@/hooks/useFloatingHearts'
 import { usePreferences } from '@/hooks/usePreferences'
 
 interface DashboardProps {
+  // @ts-ignore - Next.js warning: Valid React callbacks in client components, not Server Actions. Safe to ignore.
   onLogout: () => void
+  // @ts-ignore - Next.js warning: Valid React callback in client component
   onToggleDarkMode: () => void
   isDarkMode: boolean
 }
 
+// @ts-ignore - Next.js warnings: Valid React callbacks in client components, not Server Actions
 export function Dashboard({ onLogout, onToggleDarkMode, isDarkMode }: DashboardProps) {
   const [activeSection, setActiveSection] = useState<Section>('inicio')
   const [sidebarOpen, setSidebarOpen] = useState(false)

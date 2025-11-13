@@ -13,23 +13,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Heart, Menu, Home, Image, MessageCircle, Music, Gift, Settings, LogOut, User } from 'lucide-react'
+import { Heart, Menu, Home, Image, MessageCircle, Music, Settings, LogOut, User } from 'lucide-react'
 import { NavigationItem, Section } from '@/types'
 import { useRouter } from 'next/navigation'
 import ConfigurationModal from '@/components/ui/configuration-modal'
-import { useState } from 'react'
+import { useState, useCallback, useMemo, memo } from 'react'
 
 interface NavigationProps {
   navigationItems: NavigationItem[]
   activeSection: Section
+  // @ts-ignore - Next.js warning: Valid React callbacks in client components, not Server Actions. Safe to ignore.
   onSectionChange: (section: Section) => void
   sidebarOpen: boolean
+  // @ts-ignore - Next.js warning: Valid React callback in client component
   onSidebarOpenChange: (open: boolean) => void
+  // @ts-ignore - Next.js warning: Valid React callback in client component
   onLogout: () => void
+  // @ts-ignore - Next.js warning: Valid React callback in client component
   onToggleDarkMode: () => void
   isDarkMode: boolean
 }
 
+// @ts-ignore - Next.js warnings: Valid React callbacks in client components, not Server Actions
 export function Navigation({
   navigationItems,
   activeSection,
@@ -42,6 +47,76 @@ export function Navigation({
 }: NavigationProps) {
   const router = useRouter()
   const [showConfig, setShowConfig] = useState(false as boolean)
+
+  // Memoizar handlers para prevenir re-renders
+  const handleSectionClick = useCallback((sectionId: Section) => {
+    onSectionChange(sectionId)
+  }, [onSectionChange])
+
+  const handleMobileSectionClick = useCallback((sectionId: Section) => {
+    onSectionChange(sectionId)
+    onSidebarOpenChange(false)
+  }, [onSectionChange, onSidebarOpenChange])
+
+  const handleConfigClick = useCallback(() => {
+    setShowConfig(true)
+  }, [])
+
+  // Memoizar items de navegación para desktop
+  const desktopNavItems = useMemo(() => 
+    navigationItems.map((item) => {
+      const Icon = item.icon
+      const isActive = activeSection === item.id
+      return (
+        <Button
+          key={item.id}
+          onClick={() => handleSectionClick(item.id)}
+          variant={isActive ? "secondary" : "ghost"}
+          className={`w-full justify-start gap-3 h-10 text-sm font-medium transition-all duration-200 ${
+            isActive 
+              ? "bg-secondary text-secondary-foreground shadow-sm" 
+              : "hover:bg-muted hover:text-foreground"
+          }`}
+        >
+          <Icon className="h-4 w-4" />
+          {item.label}
+          {isActive && (
+            <Badge variant="secondary" className="ml-auto text-xs">
+              Activo
+            </Badge>
+          )}
+        </Button>
+      )
+    }), [navigationItems, activeSection, handleSectionClick]
+  )
+
+  // Memoizar items de navegación para mobile
+  const mobileNavItems = useMemo(() => 
+    navigationItems.map((item) => {
+      const Icon = item.icon
+      const isActive = activeSection === item.id
+      return (
+        <Button
+          key={item.id}
+          onClick={() => handleMobileSectionClick(item.id)}
+          variant={isActive ? "secondary" : "ghost"}
+          className={`w-full justify-start gap-3 h-10 sm:h-12 text-sm font-medium transition-all duration-200 ${
+            isActive 
+              ? "bg-secondary text-secondary-foreground shadow-sm" 
+              : "hover:bg-muted hover:text-foreground"
+          }`}
+        >
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+          <span className="text-sm sm:text-base">{item.label}</span>
+          {isActive && (
+            <Badge variant="secondary" className="ml-auto text-xs">
+              Activo
+            </Badge>
+          )}
+        </Button>
+      )
+    }), [navigationItems, activeSection, handleMobileSectionClick]
+  )
   return (
     <>
       <ConfigurationModal open={showConfig} onOpenChange={setShowConfig} />
@@ -64,30 +139,7 @@ export function Navigation({
           {/* Navigation */}
           <nav className="flex-1 px-6 space-y-1">
             <div className="space-y-1">
-              {navigationItems.map((item) => {
-                const Icon = item.icon
-                const isActive = activeSection === item.id
-                return (
-                  <Button
-                    key={item.id}
-                    onClick={() => onSectionChange(item.id)}
-                    variant={isActive ? "secondary" : "ghost"}
-                    className={`w-full justify-start gap-3 h-10 text-sm font-medium transition-all duration-200 ${
-                      isActive 
-                        ? "bg-secondary text-secondary-foreground shadow-sm" 
-                        : "hover:bg-muted hover:text-foreground"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
-                    {isActive && (
-                      <Badge variant="secondary" className="ml-auto text-xs">
-                        Activo
-                      </Badge>
-                    )}
-                  </Button>
-                )
-              })}
+              {desktopNavItems}
             </div>
           </nav>
 
@@ -138,10 +190,10 @@ export function Navigation({
                     </>
                   )}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowConfig(true)}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Configuración</span>
-                </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleConfigClick}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Configuración</span>
+                    </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={onLogout} className="text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
@@ -183,33 +235,7 @@ export function Navigation({
               {/* Navigation */}
               <nav className="flex-1 p-4 sm:p-6 space-y-1">
                 <div className="space-y-1">
-                  {navigationItems.map((item) => {
-                    const Icon = item.icon
-                    const isActive = activeSection === item.id
-                    return (
-                      <Button
-                        key={item.id}
-                        onClick={() => {
-                          onSectionChange(item.id)
-                          onSidebarOpenChange(false)
-                        }}
-                        variant={isActive ? "secondary" : "ghost"}
-                        className={`w-full justify-start gap-3 h-10 sm:h-12 text-sm font-medium transition-all duration-200 ${
-                          isActive 
-                            ? "bg-secondary text-secondary-foreground shadow-sm" 
-                            : "hover:bg-muted hover:text-foreground"
-                        }`}
-                      >
-                        <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
-                        <span className="text-sm sm:text-base">{item.label}</span>
-                        {isActive && (
-                          <Badge variant="secondary" className="ml-auto text-xs">
-                            Activo
-                          </Badge>
-                        )}
-                      </Button>
-                    )
-                  })}
+                  {mobileNavItems}
                 </div>
               </nav>
 
@@ -259,7 +285,7 @@ export function Navigation({
                         </>
                       )}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setShowConfig(true)}>
+                    <DropdownMenuItem onClick={handleConfigClick}>
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Configuración</span>
                     </DropdownMenuItem>

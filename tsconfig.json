@@ -28,6 +28,11 @@
       "@/*": ["./src/*"]
     }
   },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/types/**/*.d.ts", "src/types/**/*.ts", ".vscode/tsconfig.json"],
   "exclude": ["node_modules"]
 }

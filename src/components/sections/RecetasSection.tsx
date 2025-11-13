@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useDebounce } from '@/hooks/useDebounce'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -197,7 +197,7 @@ export function RecetasSection() {
     })
   }, [recipes, debouncedSearchTerm, selectedCategory])
 
-  const openAddModal = () => {
+  const openAddModal = useCallback(() => {
     setRecipeForm({
       title: '',
       description: '',
@@ -209,9 +209,9 @@ export function RecetasSection() {
       images: []
     })
     setShowAddModal(true)
-  }
+  }, [])
 
-  const openEditModal = (recipe: Recipe) => {
+  const openEditModal = useCallback((recipe: Recipe) => {
     setSelectedRecipe(recipe)
     setRecipeForm({
       title: recipe.title,
@@ -224,19 +224,19 @@ export function RecetasSection() {
       images: []
     })
     setShowEditModal(true)
-  }
+  }, [])
 
-  const openDeleteModal = (recipe: Recipe) => {
+  const openDeleteModal = useCallback((recipe: Recipe) => {
     setSelectedRecipe(recipe)
     setShowDeleteModal(true)
-  }
+  }, [])
 
-  const openInstructionsModal = (recipe: Recipe) => {
+  const openInstructionsModal = useCallback((recipe: Recipe) => {
     setSelectedRecipe(recipe)
     setShowInstructionsModal(true)
-  }
+  }, [])
 
-  const handleSaveRecipe = async () => {
+  const handleSaveRecipe = useCallback(async () => {
     if (!recipeForm.title || !recipeForm.description) {
       setNotification({ type: 'error', message: 'El título y la descripción son obligatorios' })
       return
@@ -315,9 +315,9 @@ export function RecetasSection() {
      } finally {
        setSaving(false)
      }
-  }
+  }, [recipeForm, selectedRecipe, showEditModal])
 
-  const handleDeleteRecipe = async () => {
+  const handleDeleteRecipe = useCallback(async () => {
     if (!selectedRecipe) return
 
     try {
@@ -333,9 +333,9 @@ export function RecetasSection() {
     } catch (error) {
       console.error('Error deleting recipe:', error)
     }
-  }
+  }, [selectedRecipe])
 
-  const toggleFavorite = async (recipeId: string) => {
+  const toggleFavorite = useCallback(async (recipeId: string) => {
     const recipe = recipes.find(r => r.id === recipeId)
     if (!recipe) return
 
@@ -354,7 +354,7 @@ export function RecetasSection() {
     } catch (error) {
       console.error('Error toggling favorite:', error)
     }
-  }
+  }, [recipes])
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
@@ -482,40 +482,40 @@ export function RecetasSection() {
 
       {/* Estadísticas */}
       <div className="flex overflow-x-auto gap-2 sm:gap-3 pb-2 px-3 sm:px-4 lg:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-4 scroll-horizontal">
-        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-3 sm:p-4 lg:p-6">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-lg flex-shrink-0 sm:flex-shrink min-w-[100px] sm:min-w-[110px] hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-2 sm:p-2.5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-pink-600 dark:text-pink-400 font-medium">Total Recetas</p>
-                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-pink-700 dark:text-pink-300">{stats.totalRecipes}</p>
+                <p className="text-[10px] sm:text-[11px] text-pink-600 dark:text-pink-400 font-medium">Total Recetas</p>
+                <p className="text-base sm:text-lg font-bold text-pink-700 dark:text-pink-300">{stats.totalRecipes}</p>
               </div>
-              <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-pink-500" />
+              <ChefHat className="h-4 w-4 sm:h-5 sm:w-5 text-pink-500" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-3 sm:p-4 lg:p-6">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-lg flex-shrink-0 sm:flex-shrink min-w-[100px] sm:min-w-[110px] hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-2 sm:p-2.5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-green-600 dark:text-green-400 font-medium">Promedio</p>
-                 <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-green-700 dark:text-green-300">
+                <p className="text-[10px] sm:text-[11px] text-green-600 dark:text-green-400 font-medium">Promedio</p>
+                 <p className="text-base sm:text-lg font-bold text-green-700 dark:text-green-300">
                    {stats.averageRating > 0 ? `${stats.averageRating.toFixed(1)} ⭐` : 'Sin calificaciones'}
                  </p>
               </div>
-              <Star className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
+              <Star className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[140px] sm:min-w-0 hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-3 sm:p-4 lg:p-6">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-lg flex-shrink-0 sm:flex-shrink min-w-[100px] sm:min-w-[110px] hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-2 sm:p-2.5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[clamp(0.8rem,2.5vw,0.9rem)] text-yellow-600 dark:text-yellow-400 font-medium">Favoritas</p>
-                <p className="text-[clamp(1.2rem,4vw,2rem)] font-bold text-yellow-700 dark:text-yellow-300">{stats.favoriteRecipes}</p>
+                <p className="text-[10px] sm:text-[11px] text-yellow-600 dark:text-yellow-400 font-medium">Favoritas</p>
+                <p className="text-base sm:text-lg font-bold text-yellow-700 dark:text-yellow-300">{stats.favoriteRecipes}</p>
               </div>
-              <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />
+              <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
             </div>
           </CardContent>
         </Card>
@@ -956,7 +956,7 @@ export function RecetasSection() {
               Eliminar Receta
             </DialogTitle>
             <DialogDescription className="text-[clamp(0.9rem,2.5vw,1rem)]">
-              ¿Estás seguro de que quieres eliminar "{selectedRecipe?.title}"? Esta acción no se puede deshacer.
+              ¿Estás seguro de que quieres eliminar &quot;{selectedRecipe?.title}&quot;? Esta acción no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
 

@@ -591,61 +591,70 @@ export default function MusicaSection() {
   }
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 sm:space-y-8">
-      {/* Header */}
-      <div className="text-center space-y-3">
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Nuestras Canciones</h1>
-        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+    <section className="relative mx-auto flex w-full max-w-6xl flex-col gap-4 overflow-x-hidden px-3 pb-6 pt-3 sm:gap-6 sm:px-4 sm:pb-8 sm:pt-4 md:gap-8 md:px-6">
+      {/* UX: Header optimizado para móvil con tipografía escalable desde 320px */}
+      <div className="flex flex-col items-center gap-1.5 text-center sm:gap-2 md:gap-3">
+        <Badge
+          aria-hidden="true"
+          variant="secondary"
+          className="w-fit rounded-full bg-white/80 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-pink-600 shadow-sm ring-1 ring-pink-200/70 backdrop-blur sm:px-3 sm:py-1 sm:text-[11px]"
+        >
+          Nuestra Música
+        </Badge>
+        <h1 className="w-full text-wrap text-[1.5rem] font-extrabold leading-[1.2] tracking-tight text-gray-900 dark:text-white sm:text-[1.75rem] md:text-3xl lg:text-4xl">
+          Nuestras Canciones
+        </h1>
+        <p className="w-full max-w-2xl px-1 text-[12px] leading-[1.5] text-gray-600 dark:text-gray-300 sm:text-sm sm:leading-5 md:text-base md:leading-6 lg:text-lg">
           Las canciones que cuentan nuestra historia de amor
         </p>
       </div>
 
-      {/* Estadísticas */}
-      <div className="flex overflow-x-auto gap-3 pb-2 px-4 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-4 scroll-horizontal">
-        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[200px] sm:min-w-0 hover:shadow-xl transition-all duration-300 stats-card">
-          <CardContent className="p-4 sm:p-6 text-center">
-            <div className="text-2xl sm:text-3xl font-bold text-pink-600 stats-number">{playlist.length}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Canciones</div>
-            <div className="text-xs text-pink-400 mt-1 stats-subtitle">En tu biblioteca</div>
+      {/* UX: Estadísticas con scroll horizontal táctil optimizado para móvil */}
+      <div className="flex w-full overflow-x-auto gap-2 pb-2 px-1 scrollbar-hide sm:gap-3 sm:px-0 sm:pb-0 sm:overflow-visible sm:grid sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-lg p-2 flex-shrink-0 min-w-[100px] transition-all duration-300 active:scale-95 stats-card hover:shadow-xl sm:rounded-xl sm:p-2.5 sm:min-w-[110px]">
+          <CardContent className="p-0 text-center sm:p-0">
+            <div className="text-lg font-bold text-pink-600 dark:text-pink-400 stats-number sm:text-xl">{playlist.length}</div>
+            <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-0.5 sm:text-[11px]">Canciones</div>
+            <div className="text-[9px] text-pink-400 mt-0.5 stats-subtitle sm:text-[10px]">En tu biblioteca</div>
           </CardContent>
         </Card>
-        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[200px] sm:min-w-0 hover:shadow-xl transition-all duration-300 stats-card">
-          <CardContent className="p-4 sm:p-6 text-center">
-            <div className="text-2xl sm:text-3xl font-bold text-purple-600 stats-number">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-lg p-2 flex-shrink-0 min-w-[100px] transition-all duration-300 active:scale-95 stats-card hover:shadow-xl sm:rounded-xl sm:p-2.5 sm:min-w-[110px]">
+          <CardContent className="p-0 text-center sm:p-0">
+            <div className="text-lg font-bold text-purple-600 dark:text-purple-400 stats-number sm:text-xl">
               {calculateTotalFavorites(playlist)}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Favoritas</div>
-            <div className="text-xs text-purple-400 mt-1 stats-subtitle">Con ❤️ especial</div>
+            <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-0.5 sm:text-[11px]">Favoritas</div>
+            <div className="text-[9px] text-purple-400 mt-0.5 stats-subtitle sm:text-[10px]">Con ❤️ especial</div>
           </CardContent>
         </Card>
-        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[200px] sm:min-w-0 hover:shadow-xl transition-all duration-300 stats-card">
-          <CardContent className="p-4 sm:p-6 text-center">
-            <div className="text-2xl sm:text-3xl font-bold text-blue-600 stats-number">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-lg p-2 flex-shrink-0 min-w-[100px] transition-all duration-300 active:scale-95 stats-card hover:shadow-xl sm:rounded-xl sm:p-2.5 sm:min-w-[110px]">
+          <CardContent className="p-0 text-center sm:p-0">
+            <div className="text-lg font-bold text-blue-600 dark:text-blue-400 stats-number sm:text-xl">
               {calculateTotalDuration(playlist)}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Duración Total</div>
-            <div className="text-xs text-blue-400 mt-1 stats-subtitle">De música y amor</div>
+            <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-0.5 sm:text-[11px]">Duración Total</div>
+            <div className="text-[9px] text-blue-400 mt-0.5 stats-subtitle sm:text-[10px]">De música y amor</div>
           </CardContent>
         </Card>
-        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl flex-shrink-0 sm:flex-shrink min-w-[200px] sm:min-w-0 hover:shadow-xl transition-all duration-300 stats-card">
-          <CardContent className="p-4 sm:p-6 text-center">
-            <div className="text-2xl sm:text-3xl font-bold text-green-600 stats-number">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-lg p-2 flex-shrink-0 min-w-[100px] transition-all duration-300 active:scale-95 stats-card hover:shadow-xl sm:rounded-xl sm:p-2.5 sm:min-w-[110px]">
+          <CardContent className="p-0 text-center sm:p-0">
+            <div className="text-lg font-bold text-green-600 dark:text-green-400 stats-number sm:text-xl">
               {calculateTotalPlays(playlist)}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Reproducciones</div>
-            <div className="text-xs text-green-400 mt-1 stats-subtitle">Momentos compartidos</div>
+            <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-0.5 sm:text-[11px]">Reproducciones</div>
+            <div className="text-[9px] text-green-400 mt-0.5 stats-subtitle sm:text-[10px]">Momentos compartidos</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Reproductor Global Info */}
+      {/* UX: Reproductor Global Info optimizado para móvil */}
       {currentSong && (
-        <Card className="bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg border-0 rounded-2xl overflow-hidden">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden ring-2 ring-white/20 song-cover flex-shrink-0 ${
-                isActuallyPlaying ? 'animate-spin song-cover-playing' : ''
-              }`} style={{ 
+        <Card className="bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg border-0 rounded-xl overflow-hidden sm:rounded-2xl">
+          <CardContent className="p-3 sm:p-4 md:p-6">
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+              <div className={`w-14 h-14 rounded-xl overflow-hidden ring-2 ring-white/20 song-cover flex-shrink-0 transition-all ${
+                isActuallyPlaying ? 'animate-spin song-cover-playing shadow-lg' : ''
+              } sm:w-16 sm:h-16 md:w-20 md:h-20`} style={{ 
                 animationDuration: '20s', 
                 animationPlayState: isActuallyPlaying ? 'running' : 'paused' 
               }}>
@@ -657,16 +666,18 @@ export default function MusicaSection() {
                   />
                 ) : (
                   <div className="w-full h-full bg-white/20 flex items-center justify-center">
-                    <Music className="h-6 w-6 sm:h-8 sm:w-8" />
+                    <Music className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8" />
                   </div>
                 )}
               </div>
               <div className="flex-1 text-center sm:text-left">
-                <h3 className="font-bold text-lg sm:text-xl">{currentSong.title}</h3>
-                <p className="text-white/80 text-sm sm:text-base">{currentSong.artist}</p>
-                <p className="text-sm text-white/60">{currentSong.album}</p>
+                <h3 className="font-bold text-base sm:text-lg md:text-xl">{currentSong.title}</h3>
+                <p className="text-white/80 text-[13px] sm:text-sm md:text-base">{currentSong.artist}</p>
+                {currentSong.album && (
+                  <p className="text-[12px] text-white/60 sm:text-sm">{currentSong.album}</p>
+                )}
               </div>
-              <Badge variant="secondary" className="bg-white/20 text-white text-xs sm:text-sm px-3 py-1 rounded-full">
+              <Badge variant="secondary" className="bg-white/20 text-white text-[10px] px-2.5 py-1 rounded-full sm:text-xs sm:px-3 md:text-sm">
                 Reproduciendo Globalmente
               </Badge>
             </div>
@@ -674,37 +685,43 @@ export default function MusicaSection() {
         </Card>
       )}
 
-      {/* Playlist */}
-      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden">
-        <CardHeader className="p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Nuestra Playlist</CardTitle>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
+      {/* UX: Playlist optimizada para móvil con mejor layout */}
+      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-xl overflow-hidden sm:rounded-2xl">
+        <CardHeader className="p-3 sm:p-4 md:p-6">
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            <div className="w-full sm:w-auto">
+              <CardTitle className="text-lg font-bold text-gray-900 dark:text-white sm:text-xl md:text-2xl">Nuestra Playlist</CardTitle>
+              <p className="text-[12px] text-gray-600 dark:text-gray-300 mt-0.5 sm:text-sm sm:mt-1 md:text-base">
                 {playlist.length} canciones • {calculateTotalDuration(playlist)} de duración
               </p>
             </div>
             <Button
               onClick={openAddSongModal}
-              className="bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-full w-full sm:w-auto"
+              className="bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 px-4 py-2.5 rounded-full w-full min-h-[44px] text-[12px] font-semibold sm:w-auto sm:px-6 sm:py-3 sm:text-sm"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-3.5 w-3.5 mr-1.5 sm:h-4 sm:w-4 sm:mr-2" />
               Agregar Canción
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="p-4 sm:p-6">
-            <div className="h-80 sm:h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-pink-300 scrollbar-track-gray-100 hover:scrollbar-thumb-pink-400">
-              <div className="space-y-3 pr-2">
+        <CardContent className="p-3 sm:p-4 md:p-6">
+            {/* UX: Lista de canciones con altura responsive y scroll optimizado */}
+            <div className="h-72 overflow-y-auto scrollbar-thin scrollbar-thumb-pink-300 scrollbar-track-gray-100 hover:scrollbar-thumb-pink-400 sm:h-80 md:h-96">
+              <div className="space-y-2 pr-1 sm:space-y-3 sm:pr-2">
                 {playlist.map((song, index) => (
                   <div
                     key={song.id}
-                    className={`group flex items-center gap-3 sm:gap-5 p-3 sm:p-4 rounded-xl cursor-pointer transition-all duration-300 bg-white/70 dark:bg-gray-700/70 backdrop-blur border border-transparent hover:border-pink-200 hover:bg-white dark:hover:bg-gray-700 shadow-sm hover:shadow-md song-item ${
+                    className={`group flex items-center gap-2 p-2.5 rounded-lg cursor-pointer transition-all duration-300 bg-white/70 dark:bg-gray-700/70 backdrop-blur border border-transparent hover:border-pink-200 hover:bg-white dark:hover:bg-gray-700 shadow-sm hover:shadow-md active:scale-[0.98] song-item sm:gap-3 sm:p-3 md:gap-5 md:p-4 md:rounded-xl ${
                     currentSong?.id === song.id ? 'ring-2 ring-pink-300 bg-pink-50 dark:bg-pink-900/20' : ''
                     }`}
                     onClick={() => selectSong(song)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Reproducir ${song.title} de ${song.artist}`}
+                    onKeyDown={(e) => e.key === 'Enter' && selectSong(song)}
                   >
-                    <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-lg flex items-center justify-center text-white font-bold text-sm relative flex-shrink-0 overflow-hidden ring-1 ring-black/5 song-cover ${
+                    {/* UX: Portada con tamaño responsive */}
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xs relative flex-shrink-0 overflow-hidden ring-1 ring-black/5 song-cover sm:w-12 sm:h-12 sm:text-sm md:w-16 md:h-16 ${
                       currentSong?.id === song.id && isActuallyPlaying ? 'song-cover-playing' : ''
                     }`}>
                       {song.cover && song.cover !== '/api/placeholder/200/200' ? (
@@ -715,110 +732,120 @@ export default function MusicaSection() {
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
-                          <span className="text-lg font-bold">{index + 1}</span>
-                  </div>
-                )}
-                    {currentSong?.id === song.id && isActuallyPlaying && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                        <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                  </div>
+                          <span className="text-sm font-bold sm:text-base md:text-lg">{index + 1}</span>
+                        </div>
                       )}
-                </div>
+                      {currentSong?.id === song.id && isActuallyPlaying && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse sm:w-2 sm:h-2" />
+                        </div>
+                      )}
+                    </div>
+                    {/* UX: Información de la canción con tipografía escalable */}
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-gray-900 dark:text-white truncate group-hover:text-pink-700 transition-colors text-sm sm:text-base">
+                      <h4 className="font-medium text-gray-900 dark:text-white truncate group-hover:text-pink-700 transition-colors text-[13px] sm:text-sm md:text-base">
                         {song.title}
                       </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{song.artist}</p>
-                      <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
-                  <span className="truncate">{song.genre}</span>
-                  <span>•</span>
-                  <span>{song.year}</span>
-                  <span>•</span>
-                  <span>{song.plays} reproducciones</span>
-                  {song.fileName && (
-                    <>
-                      <span>•</span>
-                      <span className="text-blue-600 truncate">{song.fileName}</span>
-                    </>
-                  )}
-                  {song.dedication && (
-                    <>
-                      <span>•</span>
-                      <span className="text-pink-500 flex items-center gap-1">
-                        <MessageCircle className="h-3 w-3" />
-                        Dedicatoria
-                      </span>
-                    </>
-                  )}
-                  {/* Indicador de canción recientemente actualizada */}
-                  {recentlyUpdatedSong === song.id && (
-                    <>
-                      <span>•</span>
-                      <span className="text-green-500 flex items-center gap-1 animate-pulse">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        Actualizada
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{song.duration}</span>
-                        {/* Botón de edición */}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            openEditSongModal(song)
-                          }}
-                          className="h-8 w-8 p-0 text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors edit-button rounded-full"
-                          title="Editar canción"
-                        >
-                          <Upload className="h-4 w-4" />
-                        </Button>
-                        {/* Botón de dedicatoria */}
-                        {song.dedication && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              showDedication(song)
-                            }}
-                            className="h-8 w-8 p-0 text-blue-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors dedication-button rounded-full"
-                            title="Ver dedicatoria"
-                          >
-                            <MessageCircle className="h-4 w-4" />
-                          </Button>
+                      <p className="text-[11px] text-gray-600 dark:text-gray-400 truncate sm:text-xs md:text-sm">{song.artist}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-gray-500 dark:text-gray-400 flex-wrap sm:gap-2 sm:mt-1 sm:text-xs">
+                        {song.genre && (
+                          <>
+                            <span className="truncate">{song.genre}</span>
+                            <span>•</span>
+                          </>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            toggleFavorite(song.id)
-                          }}
-                          className={`h-8 w-8 p-0 transition-all duration-200 rounded-full ${
-                            song.isFavorite 
-                              ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20' 
-                              : 'text-gray-400 hover:text-red-500 hover:bg-gray-50 dark:hover:bg-gray-700'
-                          }`}
-                        >
-                          <Heart className={`h-4 w-4 ${song.isFavorite ? 'fill-current animate-pulse' : ''}`} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            deleteSong(song.id)
-                          }}
-                          className="h-8 w-8 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors rounded-full"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <span>{song.year}</span>
+                        <span>•</span>
+                        <span>{song.plays} reproducciones</span>
+                        {song.fileName && (
+                          <>
+                            <span>•</span>
+                            <span className="text-blue-600 truncate">{song.fileName}</span>
+                          </>
+                        )}
+                        {song.dedication && (
+                          <>
+                            <span>•</span>
+                            <span className="text-pink-500 flex items-center gap-0.5 sm:gap-1">
+                              <MessageCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                              Dedicatoria
+                            </span>
+                          </>
+                        )}
+                        {/* Indicador de canción recientemente actualizada */}
+                        {recentlyUpdatedSong === song.id && (
+                          <>
+                            <span>•</span>
+                            <span className="text-green-500 flex items-center gap-0.5 animate-pulse sm:gap-1">
+                              <div className="w-1.5 h-1.5 bg-green-500 rounded-full sm:w-2 sm:h-2"></div>
+                              Actualizada
+                            </span>
+                          </>
+                        )}
                       </div>
+                    </div>
+                    {/* UX: Controles con áreas táctiles mínimas (44x44px en móvil) */}
+                    <div className="flex items-center gap-1 flex-shrink-0 sm:gap-1.5 md:gap-2">
+                      <span className="text-[11px] text-gray-500 dark:text-gray-400 sm:text-xs md:text-sm">{song.duration}</span>
+                      {/* Botón de edición */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          openEditSongModal(song)
+                        }}
+                        className="h-10 w-10 p-0 text-green-500 hover:text-green-600 hover:bg-green-50 active:scale-95 dark:hover:bg-green-900/20 transition-colors edit-button rounded-full min-h-[44px] min-w-[44px] sm:h-8 sm:w-8 sm:min-h-0 sm:min-w-0"
+                        title="Editar canción"
+                        aria-label="Editar canción"
+                      >
+                        <Upload className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                      </Button>
+                      {/* Botón de dedicatoria */}
+                      {song.dedication && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            showDedication(song)
+                          }}
+                          className="h-10 w-10 p-0 text-blue-400 hover:text-blue-600 hover:bg-blue-50 active:scale-95 dark:hover:bg-blue-900/20 transition-colors dedication-button rounded-full min-h-[44px] min-w-[44px] sm:h-8 sm:w-8 sm:min-h-0 sm:min-w-0"
+                          title="Ver dedicatoria"
+                          aria-label="Ver dedicatoria"
+                        >
+                          <MessageCircle className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                        </Button>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleFavorite(song.id)
+                        }}
+                        className={`h-10 w-10 p-0 transition-all duration-200 rounded-full active:scale-95 min-h-[44px] min-w-[44px] sm:h-8 sm:w-8 sm:min-h-0 sm:min-w-0 ${
+                          song.isFavorite 
+                            ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20' 
+                            : 'text-gray-400 hover:text-red-500 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        }`}
+                        aria-label={song.isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                      >
+                        <Heart className={`h-4 w-4 sm:h-3.5 sm:w-3.5 ${song.isFavorite ? 'fill-current animate-pulse' : ''}`} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          deleteSong(song.id)
+                        }}
+                        className="h-10 w-10 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50 active:scale-95 dark:hover:bg-red-900/20 transition-colors rounded-full min-h-[44px] min-w-[44px] sm:h-8 sm:w-8 sm:min-h-0 sm:min-w-0"
+                        aria-label="Eliminar canción"
+                      >
+                        <Trash2 className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -826,65 +853,72 @@ export default function MusicaSection() {
         </CardContent>
       </Card>
 
-      {/* Modal para agregar canción */}
+      {/* UX: Modal para agregar canción optimizado para móvil */}
       <Dialog open={showAddSongModal} onOpenChange={(open) => {
         if (!open) {
           clearForm()
         }
         setShowAddSongModal(open)
       }}>
-        <DialogContent className="max-w-2xl bg-white dark:bg-gray-800 border-0 rounded-2xl shadow-2xl">
+        <DialogContent className="max-w-2xl bg-white dark:bg-gray-800 border-0 rounded-xl shadow-2xl sm:rounded-2xl" style={{ 
+          paddingTop: 'max(env(safe-area-inset-top), 1rem)',
+          paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)'
+        }}>
           <DialogHeader>
-            <DialogTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+            <DialogTitle className="text-lg font-bold text-gray-900 dark:text-white sm:text-xl md:text-2xl">
               Agregar Nueva Canción
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               <div>
-                <Label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">Título *</Label>
+                <Label htmlFor="title" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Título *</Label>
                 <Input 
                   id="title" 
                   name="title" 
                   value={formData.title}
                   onChange={handleInputChange}
                   required 
-                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
+                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-xl sm:text-sm md:text-base"
+                  style={{ fontSize: '16px' }}
                 />
               </div>
               <div>
-                <Label htmlFor="artist" className="text-sm font-medium text-gray-700 dark:text-gray-300">Artista *</Label>
+                <Label htmlFor="artist" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Artista *</Label>
                 <Input 
                   id="artist" 
                   name="artist" 
                   value={formData.artist}
                   onChange={handleInputChange}
                   required 
-                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
+                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-xl sm:text-sm md:text-base"
+                  style={{ fontSize: '16px' }}
                 />
               </div>
               <div>
-                <Label htmlFor="album" className="text-sm font-medium text-gray-700 dark:text-gray-300">Álbum</Label>
+                <Label htmlFor="album" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Álbum</Label>
                 <Input 
                   id="album" 
                   name="album" 
                   value={formData.album}
                   onChange={handleInputChange}
-                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
+                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-xl sm:text-sm md:text-base"
+                  style={{ fontSize: '16px' }}
                 />
               </div>
               <div>
-                <Label htmlFor="genre" className="text-sm font-medium text-gray-700 dark:text-gray-300">Género</Label>
+                <Label htmlFor="genre" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Género</Label>
                 <Input 
                   id="genre" 
                   name="genre" 
                   value={formData.genre}
                   onChange={handleInputChange}
-                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
+                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-xl sm:text-sm md:text-base"
+                  style={{ fontSize: '16px' }}
                 />
               </div>
               <div>
-                <Label htmlFor="year" className="text-sm font-medium text-gray-700 dark:text-gray-300">Año</Label>
+                <Label htmlFor="year" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Año</Label>
                 <Input 
                   id="year" 
                   name="year" 
@@ -893,26 +927,28 @@ export default function MusicaSection() {
                   max={new Date().getFullYear()}
                   value={formData.year}
                   onChange={handleInputChange}
-                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
+                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-xl sm:text-sm md:text-base"
+                  style={{ fontSize: '16px' }}
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="dedication" className="text-sm font-medium text-gray-700 dark:text-gray-300">Dedicatoria</Label>
+              <Label htmlFor="dedication" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Dedicatoria</Label>
               <Input 
                 id="dedication" 
                 name="dedication" 
                 placeholder="¿Por qué es especial esta canción?"
                 value={formData.dedication}
                 onChange={handleInputChange}
-                className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-xl"
+                className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-xl sm:text-sm md:text-base"
+                style={{ fontSize: '16px' }}
               />
             </div>
             
-            {/* Archivos */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* UX: Archivos con inputs táctiles optimizados */}
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               <div>
-                <Label htmlFor="audio" className="text-sm font-medium text-gray-700 dark:text-gray-300">Archivo de Audio *</Label>
+                <Label htmlFor="audio" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Archivo de Audio *</Label>
                 <input
                   id="audio"
                   name="audio"
@@ -920,27 +956,27 @@ export default function MusicaSection() {
                   accept="audio/*"
                   onChange={handleAudioSelect}
                   required
-                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl hover:border-pink-400 transition-colors file-input-hover bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-pink-400 transition-colors file-input-hover bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-[13px] min-h-[44px] sm:p-3 sm:rounded-xl sm:text-sm md:text-base"
                 />
                 {/* Preview del archivo de audio */}
                 {audioPreview && (
-                  <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-xl upload-preview">
+                  <div className="mt-2 p-2.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg upload-preview sm:p-3 sm:rounded-xl">
                     <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
-                      <Music className="h-4 w-4" />
-                      <span className="text-sm font-medium">{audioPreview}</span>
+                      <Music className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <span className="text-[12px] font-medium sm:text-sm">{audioPreview}</span>
                     </div>
                   </div>
                 )}
               </div>
               <div>
-                <Label htmlFor="cover" className="text-sm font-medium text-gray-700 dark:text-gray-300">Portada (opcional)</Label>
+                <Label htmlFor="cover" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Portada (opcional)</Label>
                 <input
                   id="cover"
                   name="cover"
                   type="file"
                   accept="image/*"
                   onChange={handleCoverSelect}
-                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl hover:border-pink-400 transition-colors file-input-hover bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-pink-400 transition-colors file-input-hover bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-[13px] min-h-[44px] sm:p-3 sm:rounded-xl sm:text-sm md:text-base"
                 />
                 {/* Preview de la portada */}
                 {coverPreview && (
@@ -948,25 +984,26 @@ export default function MusicaSection() {
                     <img 
                       src={coverPreview} 
                       alt="Preview de portada" 
-                      className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl border border-gray-200 dark:border-gray-600"
+                      className="w-16 h-16 object-cover rounded-lg border border-gray-200 dark:border-gray-600 sm:w-20 sm:h-20 sm:rounded-xl md:w-24 md:h-24"
                     />
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Barra de progreso */}
+            {/* UX: Barra de progreso con tipografía responsive */}
             {isUploading && (
               <div className="space-y-2">
-                <div className="flex justify-between text-sm text-gray-600">
+                <div className="flex justify-between text-[12px] text-gray-600 dark:text-gray-400 sm:text-sm">
                   <span>Subiendo canción...</span>
-                  <span>{uploadProgress}%</span>
+                  <span className="font-semibold">{uploadProgress}%</span>
                 </div>
-                <Progress value={uploadProgress} className="h-2" />
+                <Progress value={uploadProgress} className="h-2 sm:h-2.5" />
               </div>
             )}
 
-            <div className="flex justify-end gap-3">
+            {/* UX: Botones con tamaños táctiles */}
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
               <Button
                 type="button"
                 variant="outline"
@@ -975,35 +1012,45 @@ export default function MusicaSection() {
                   clearForm()
                 }}
                 disabled={isUploading}
-                className="border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl"
+                className="border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 rounded-lg min-h-[44px] text-[12px] sm:rounded-xl sm:text-sm md:text-base"
               >
                 Cancelar
               </Button>
               <Button
                 type="submit"
                 disabled={isUploading}
-                className="bg-pink-500 hover:bg-pink-600 rounded-xl"
+                className="bg-pink-500 hover:bg-pink-600 active:scale-95 rounded-lg min-h-[44px] text-[12px] font-semibold sm:rounded-xl sm:text-sm md:text-base"
               >
-                {isUploading ? 'Subiendo...' : 'Agregar Canción'}
+                {isUploading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white sm:h-4 sm:w-4"></div>
+                    Subiendo...
+                  </div>
+                ) : (
+                  'Agregar Canción'
+                )}
               </Button>
             </div>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Modal para mostrar dedicatoria */}
+      {/* UX: Modal para mostrar dedicatoria optimizado para móvil */}
       <Dialog open={showDedicationModal} onOpenChange={setShowDedicationModal}>
-        <DialogContent className="max-w-md dedication-modal bg-white dark:bg-gray-800 border-0 rounded-2xl shadow-2xl">
+        <DialogContent className="max-w-md dedication-modal bg-white dark:bg-gray-800 border-0 rounded-xl shadow-2xl sm:rounded-2xl" style={{ 
+          paddingTop: 'max(env(safe-area-inset-top), 1rem)',
+          paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)'
+        }}>
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white text-center">
+            <DialogTitle className="text-lg font-bold text-gray-900 dark:text-white text-center sm:text-xl">
               💝 Dedicatoria Especial
             </DialogTitle>
           </DialogHeader>
           {selectedDedication && (
-            <div className="space-y-4">
-              {/* Portada y información */}
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-lg overflow-hidden ring-2 ring-pink-200 flex-shrink-0">
+            <div className="space-y-3 sm:space-y-4">
+              {/* UX: Portada y información con layout responsive */}
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-14 h-14 rounded-lg overflow-hidden ring-2 ring-pink-200 dark:ring-pink-700 flex-shrink-0 sm:w-16 sm:h-16">
                   {selectedDedication.cover && selectedDedication.cover !== '/api/placeholder/200/200' ? (
                     <img 
                       src={selectedDedication.cover} 
@@ -1011,35 +1058,35 @@ export default function MusicaSection() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-full h-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm sm:text-base">
                       🎵
-                  </div>
+                    </div>
                   )}
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-800">{selectedDedication.title}</h3>
-                  <p className="text-sm text-gray-600">{selectedDedication.artist}</p>
-            </div>
-          </div>
-
-              {/* Dedicatoria */}
-              <div className="bg-gradient-to-r from-pink-50 to-purple-50 p-4 rounded-lg border border-pink-200">
-                <div className="flex items-start gap-3">
-                  <div className="text-2xl">💌</div>
-                <div>
-                    <h4 className="font-medium text-gray-800 mb-2">¿Por qué es especial esta canción?</h4>
-                    <p className="text-gray-700 leading-relaxed italic">
-                      "{selectedDedication.dedication}"
-                    </p>
-                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-gray-800 dark:text-white text-[14px] truncate sm:text-base">{selectedDedication.title}</h3>
+                  <p className="text-[12px] text-gray-600 dark:text-gray-400 truncate sm:text-sm">{selectedDedication.artist}</p>
                 </div>
               </div>
 
-              {/* Botón de cerrar */}
-              <div className="flex justify-center">
+              {/* UX: Dedicatoria con tipografía legible */}
+              <div className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 p-3 rounded-lg border border-pink-200 dark:border-pink-800 sm:p-4">
+                <div className="flex items-start gap-2.5 sm:gap-3">
+                  <div className="text-xl sm:text-2xl flex-shrink-0">💌</div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-1.5 text-[13px] sm:text-sm sm:mb-2">¿Por qué es especial esta canción?</h4>
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed italic text-[12px] sm:text-sm">
+                      &quot;{selectedDedication.dedication}&quot;
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* UX: Botón de cerrar con tamaño táctil */}
+              <div className="flex justify-center pt-1 sm:pt-2">
                 <Button
                   onClick={() => setShowDedicationModal(false)}
-                  className="bg-pink-500 hover:bg-pink-600"
+                  className="bg-pink-500 hover:bg-pink-600 active:scale-95 rounded-lg min-h-[44px] px-6 text-[12px] font-semibold sm:rounded-xl sm:text-sm md:text-base"
                 >
                   Cerrar
                 </Button>
@@ -1049,62 +1096,69 @@ export default function MusicaSection() {
         </DialogContent>
       </Dialog>
 
-      {/* Modal para editar canción */}
+      {/* UX: Modal para editar canción optimizado para móvil */}
       <Dialog open={showEditSongModal} onOpenChange={setShowEditSongModal}>
-        <DialogContent className="max-w-2xl edit-modal bg-white dark:bg-gray-800 border-0 rounded-2xl shadow-2xl">
+        <DialogContent className="max-w-2xl edit-modal bg-white dark:bg-gray-800 border-0 rounded-xl shadow-2xl sm:rounded-2xl" style={{ 
+          paddingTop: 'max(env(safe-area-inset-top), 1rem)',
+          paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)'
+        }}>
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white text-center">
+            <DialogTitle className="text-lg font-bold text-gray-900 dark:text-white text-center sm:text-xl">
               ✏️ Editar Canción
             </DialogTitle>
           </DialogHeader>
           {editingSong && (
-            <form onSubmit={handleEditSubmit} className="space-y-4">
-              {/* Información básica */}
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleEditSubmit} className="space-y-3 sm:space-y-4">
+              {/* UX: Información básica con grid responsive */}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                 <div>
-                  <Label htmlFor="edit-title">Título *</Label>
+                  <Label htmlFor="edit-title" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Título *</Label>
                   <Input
                     id="edit-title"
                     name="title"
                     value={editFormData.title}
                     onChange={handleEditInputChange}
                     required
-                    className="file-input-hover edit-form-input"
+                    className="file-input-hover edit-form-input border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring-green-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-md sm:text-sm md:text-base"
+                    style={{ fontSize: '16px' }}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="edit-artist">Artista *</Label>
+                  <Label htmlFor="edit-artist" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Artista *</Label>
                   <Input
                     id="edit-artist"
                     name="artist"
                     value={editFormData.artist}
                     onChange={handleEditInputChange}
                     required
-                    className="file-input-hover edit-form-input"
+                    className="file-input-hover edit-form-input border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring-green-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-md sm:text-sm md:text-base"
+                    style={{ fontSize: '16px' }}
                   />
-              </div>
+                </div>
                 <div>
-                  <Label htmlFor="edit-album">Álbum</Label>
+                  <Label htmlFor="edit-album" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Álbum</Label>
                   <Input
                     id="edit-album"
                     name="album"
                     value={editFormData.album}
                     onChange={handleEditInputChange}
-                    className="file-input-hover edit-form-input"
+                    className="file-input-hover edit-form-input border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring-green-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-md sm:text-sm md:text-base"
+                    style={{ fontSize: '16px' }}
                   />
-            </div>
+                </div>
                 <div>
-                  <Label htmlFor="edit-genre">Género</Label>
+                  <Label htmlFor="edit-genre" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Género</Label>
                   <Input
                     id="edit-genre"
                     name="genre"
                     value={editFormData.genre}
                     onChange={handleEditInputChange}
-                    className="file-input-hover edit-form-input"
+                    className="file-input-hover edit-form-input border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring-green-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-md sm:text-sm md:text-base"
+                    style={{ fontSize: '16px' }}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="edit-year">Año</Label>
+                  <Label htmlFor="edit-year" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Año</Label>
                   <Input
                     id="edit-year"
                     name="year"
@@ -1113,88 +1167,90 @@ export default function MusicaSection() {
                     type="number"
                     min="1900"
                     max={new Date().getFullYear()}
-                    className="file-input-hover edit-form-input"
+                    className="file-input-hover edit-form-input border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring-green-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-md sm:text-sm md:text-base"
+                    style={{ fontSize: '16px' }}
                   />
                 </div>
               </div>
 
-              {/* Dedicatoria */}
+              {/* UX: Dedicatoria con textarea táctil */}
               <div>
-                <Label htmlFor="edit-dedication">Dedicatoria</Label>
+                <Label htmlFor="edit-dedication" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Dedicatoria</Label>
                 <textarea
                   id="edit-dedication"
                   name="dedication"
                   value={editFormData.dedication}
                   onChange={handleEditInputChange}
                   rows={3}
-                  className="w-full p-2 border border-gray-300 rounded-md hover:border-green-400 transition-colors file-input-hover edit-form-input resize-none"
+                  className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-green-400 focus:border-green-500 focus:ring-green-500 transition-colors file-input-hover edit-form-input resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-[13px] min-h-[100px] sm:rounded-md sm:text-sm md:text-base"
+                  style={{ fontSize: '16px' }}
                   placeholder="¿Por qué es especial esta canción para ti?"
                 />
               </div>
 
-              {/* Archivos */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* UX: Archivos con inputs táctiles */}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                 <div>
-                  <Label htmlFor="edit-audio">Archivo de Audio (opcional)</Label>
+                  <Label htmlFor="edit-audio" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Archivo de Audio (opcional)</Label>
                   <input
                     id="edit-audio"
                     name="audio"
                     type="file"
                     accept="audio/*"
                     onChange={handleEditAudioSelect}
-                    className="w-full p-2 border border-gray-300 rounded-md hover:border-green-400 transition-colors file-input-hover"
+                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-green-400 transition-colors file-input-hover bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-[13px] min-h-[44px] sm:p-2 sm:rounded-md sm:text-sm md:text-base"
                   />
                   {editAudioPreview && (
-                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md upload-preview">
-                      <div className="flex items-center gap-2 text-green-700">
-                  <Music className="h-4 w-4" />
-                        <span className="text-sm font-medium">{editAudioPreview}</span>
-              </div>
-              </div>
+                    <div className="mt-2 p-2.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg upload-preview sm:p-2 sm:rounded-md">
+                      <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                        <Music className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        <span className="text-[12px] font-medium sm:text-sm">{editAudioPreview}</span>
+                      </div>
+                    </div>
                   )}
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 sm:text-xs">
                     Solo sube un nuevo archivo si quieres reemplazar el actual
                   </p>
-            </div>
+                </div>
                 <div>
-                  <Label htmlFor="edit-cover">Portada (opcional)</Label>
+                  <Label htmlFor="edit-cover" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Portada (opcional)</Label>
                   <input
                     id="edit-cover"
                     name="cover"
                     type="file"
                     accept="image/*"
                     onChange={handleEditCoverSelect}
-                    className="w-full p-2 border border-gray-300 rounded-md hover:border-green-400 transition-colors file-input-hover"
+                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-green-400 transition-colors file-input-hover bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-[13px] min-h-[44px] sm:p-2 sm:rounded-md sm:text-sm md:text-base"
                   />
                   {editCoverPreview && (
                     <div className="mt-2">
                       <img 
                         src={editCoverPreview} 
                         alt="Preview de nueva portada" 
-                        className="w-20 h-20 object-cover rounded-md border border-gray-200"
+                        className="w-16 h-16 object-cover rounded-lg border border-gray-200 dark:border-gray-600 sm:w-20 sm:h-20 sm:rounded-md"
                       />
-                        </div>
-                      )}
-                  <p className="text-xs text-gray-500 mt-1">
+                    </div>
+                  )}
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 sm:text-xs">
                     Solo sube una nueva imagen si quieres reemplazar la actual
                   </p>
-                        </div>
-                    </div>
+                </div>
+              </div>
 
-              {/* Progreso de upload */}
+              {/* UX: Progreso de upload con tipografía responsive */}
               {isEditUploading && (
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm text-gray-600">
+                  <div className="flex justify-between text-[12px] text-gray-600 dark:text-gray-400 sm:text-sm">
                     <span>Actualizando canción...</span>
-                    <span>{editUploadProgress}%</span>
-                      </div>
-                  <Progress value={editUploadProgress} className="h-2 progress-animate" />
-                    </div>
+                    <span className="font-semibold">{editUploadProgress}%</span>
+                  </div>
+                  <Progress value={editUploadProgress} className="h-2 progress-animate sm:h-2.5" />
+                </div>
               )}
 
-              {/* Botones */}
-              <div className="flex justify-end gap-3 pt-4">
-                      <Button
+              {/* UX: Botones con tamaños táctiles */}
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3 sm:pt-4">
+                <Button
                   type="button"
                   variant="outline"
                   onClick={() => {
@@ -1202,31 +1258,45 @@ export default function MusicaSection() {
                     clearEditForm()
                   }}
                   disabled={isEditUploading}
+                  className="border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 rounded-lg min-h-[44px] text-[12px] sm:rounded-md sm:text-sm md:text-base"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-green-500 hover:bg-green-600"
+                  className="bg-green-500 hover:bg-green-600 active:scale-95 rounded-lg min-h-[44px] text-[12px] font-semibold sm:rounded-md sm:text-sm md:text-base"
                   disabled={isEditUploading}
                 >
-                  {isEditUploading ? 'Actualizando...' : 'Actualizar Canción'}
-                      </Button>
+                  {isEditUploading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white sm:h-4 sm:w-4"></div>
+                      Actualizando...
                     </div>
+                  ) : (
+                    'Actualizar Canción'
+                  )}
+                </Button>
+              </div>
             </form>
           )}
         </DialogContent>
       </Dialog>
 
-      {/* Notificación de éxito */}
+      {/* UX: Notificación de éxito optimizada para móvil con safe areas */}
       {showSuccessNotification && (
-        <div className="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg success-notification">
+        <div 
+          className="fixed z-50 bg-green-500 text-white px-4 py-2.5 rounded-lg shadow-xl success-notification backdrop-blur-sm border border-green-400 top-3 right-3 sm:top-4 sm:right-4 sm:px-6 sm:py-3"
+          style={{ 
+            top: 'max(env(safe-area-inset-top), 0.75rem)',
+            right: 'max(env(safe-area-inset-right), 0.75rem)'
+          }}
+        >
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-white rounded-full notification-pulse"></div>
-            <span className="font-medium">{successMessage}</span>
-              </div>
-            </div>
+            <div className="w-2 h-2 bg-white rounded-full notification-pulse sm:w-2.5 sm:h-2.5"></div>
+            <span className="font-medium text-[12px] sm:text-sm">{successMessage}</span>
+          </div>
+        </div>
       )}
-    </div>
+    </section>
   )
 }

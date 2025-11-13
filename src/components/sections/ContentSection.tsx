@@ -1,24 +1,18 @@
 'use client'
 
-import { lazy, Suspense, memo } from 'react'
+import { lazy, Suspense, memo, useEffect } from 'react'
 import { Section } from '@/types'
 import { InicioSection } from './InicioSection'
 import { CardSkeleton, ListSkeleton } from '@/components/ui/loading-skeleton'
 import { ErrorBoundary } from '@/components/ui/error-boundary'
 
-// Lazy load de secciones pesadas para code splitting
+// Lazy load de secciones pesadas para code splitting con prefetching
 // Usar importaciones directas más simples y robustas
 const RecuerdosSection = lazy(() => 
   import('./RecuerdosSection').then(mod => ({ default: mod.RecuerdosSection }))
 )
 const MensajesSection = lazy(() => 
   import('./MensajesSection').then(mod => ({ default: mod.MensajesSection }))
-)
-const RegalosSection = lazy(() => 
-  import('./RegalosSection').then(mod => ({ default: mod.RegalosSection }))
-)
-const DiarioSection = lazy(() => 
-  import('./DiarioSection').then(mod => ({ default: mod.DiarioSection }))
 )
 const RecetasSection = lazy(() => 
   import('./RecetasSection').then(mod => ({ default: mod.RecetasSection }))
@@ -32,13 +26,24 @@ const PeliculasSection = lazy(() =>
 const MascotasSection = lazy(() => 
   import('./MascotasSection').then(mod => ({ default: mod.MascotasSection }))
 )
-const MetasSection = lazy(() => 
-  import('./MetasSection').then(mod => ({ default: mod.MetasSection }))
-)
 // Default exports (sin transformación necesaria)
 const MusicaSection = lazy(() => import('./MusicaSection'))
-const SorpresaSection = lazy(() => import('./SorpresaSection'))
 const FotosSection = lazy(() => import('./FotosSection'))
+
+// Prefetching de módulos para mejorar rendimiento de navegación
+const prefetchModule = (moduleLoader: () => Promise<any>) => {
+  // Prefetch en idle time para no bloquear la UI
+  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    requestIdleCallback(() => {
+      moduleLoader()
+    }, { timeout: 2000 })
+  } else {
+    // Fallback para navegadores sin requestIdleCallback
+    setTimeout(() => {
+      moduleLoader()
+    }, 100)
+  }
+}
 
 // Componente de loading optimizado
 const SectionSkeleton = () => (
@@ -54,6 +59,15 @@ interface ContentSectionProps {
 
 // Memoizar el componente para prevenir re-renders innecesarios
 export const ContentSection = memo(function ContentSection({ section }: ContentSectionProps) {
+  // Prefetch módulos adyacentes para mejorar navegación
+  useEffect(() => {
+    // Prefetch módulos comunes cuando el usuario está en inicio
+    if (section === 'inicio') {
+      prefetchModule(() => import('./MensajesSection'))
+      prefetchModule(() => import('./RecuerdosSection'))
+    }
+  }, [section])
+
   return (
     <ErrorBoundary>
       <Suspense fallback={<SectionSkeleton />}>
@@ -74,12 +88,6 @@ function renderSection(section: Section) {
       return <MensajesSection />
     case 'musica':
       return <MusicaSection />
-    case 'sorpresa':
-      return <SorpresaSection />
-    case 'regalos':
-      return <RegalosSection />
-    case 'diario':
-      return <DiarioSection />
     case 'recetas':
       return <RecetasSection />
     case 'planes':
@@ -90,8 +98,6 @@ function renderSection(section: Section) {
       return <FotosSection />
     case 'mascotas':
       return <MascotasSection />
-    case 'metas':
-      return <MetasSection />
     default:
       return <InicioSection />
   }

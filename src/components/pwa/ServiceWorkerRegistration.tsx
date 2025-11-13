@@ -4,11 +4,13 @@ import { useEffect } from 'react'
 
 export function ServiceWorkerRegistration() {
   useEffect(() => {
+    // Registrar el Service Worker SOLO en producción. Registrar en dev puede
+    // interferir con el servidor de desarrollo (HMR, cambios de chunks) y
+    // causar errores de carga de chunks (ChunkLoadError).
     if (
       typeof window !== 'undefined' &&
-      'serviceWorker' in navigator
-      // Permitir en desarrollo para testing, pero solo en HTTPS o localhost
-      // && (process.env.NODE_ENV === 'production' || window.location.hostname === 'localhost')
+      'serviceWorker' in navigator &&
+      process.env.NODE_ENV === 'production'
     ) {
       // Registrar el service worker
       navigator.serviceWorker
@@ -52,6 +54,12 @@ export function ServiceWorkerRegistration() {
         console.log('[Service Worker] Controller changed')
         window.location.reload()
       })
+    } else {
+      // En entorno de desarrollo evitamos registrar el SW. Si ya existe uno
+      // registrado (p. ej. por pruebas anteriores), intentamos no romper la
+      // sesión del desarrollador y dejamos que sea el devtools quien lo
+      // gestione. Se recomienda ir a Application > Service Workers y
+      // desregistrarlo cuando se haga debugging.
     }
   }, [])
 

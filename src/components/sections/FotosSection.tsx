@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useDebounce } from '@/hooks/useDebounce'
 import { 
   Card, 
@@ -59,7 +59,7 @@ import {
   ChevronLeft,
   ChevronRight,
   PlayCircle,
-  Heart
+  Heart,
 } from 'lucide-react'
 import { getBrowserClient } from '@/lib/supabase/browser-client'
 
@@ -147,6 +147,7 @@ export default function FotosSection() {
   const [videoDurations, setVideoDurations] = useState<Record<string, number>>({})
   const [videoPosters, setVideoPosters] = useState<Record<string, string>>({})
   const [modalSize, setModalSize] = useState<'default' | 'wide' | 'tall'>('default')
+  const [mediaDimensions, setMediaDimensions] = useState<{ width: number; height: number; aspectRatio: number } | null>(null)
   const [toast, setToast] = useState<{
     show: boolean
     title: string
@@ -314,17 +315,25 @@ export default function FotosSection() {
   }, [photos])
 
   const handleCreatePhoto = async () => {
-    if (!photoForm.title || !photoForm.date || !photoForm.image) {
+    if (!photoForm.image) {
       setToast({
         show: true,
         title: 'Error',
-        description: 'Por favor completa todos los campos requeridos',
+        description: 'Por favor selecciona un archivo para subir',
         variant: 'destructive'
       })
       return
     }
 
     try {
+      // Generar título automático si no existe
+      const finalTitle = photoForm.title || 
+        (photoForm.image ? photoForm.image.name.replace(/\.[^/.]+$/, '') : '') || 
+        `Foto ${new Date().toLocaleDateString('es-ES')}`
+      
+      // Asegurar que la fecha esté establecida (debería estar automáticamente)
+      const finalDate = photoForm.date || new Date().toISOString().split('T')[0]
+
       // Subir imagen a Supabase Storage
       const imageFile = photoForm.image
       const safeName = imageFile.name.replace(/[^a-zA-Z0-9.\-_]/g, '-').toLowerCase()
@@ -382,7 +391,7 @@ export default function FotosSection() {
 
       // Crear registro en la base de datos
       const photoData: any = {
-        title: photoForm.title,
+        title: finalTitle,
         description: photoForm.description || null,
         image_url: urlData.publicUrl,
         thumbnail_url: thumbnailUrl,
@@ -390,7 +399,7 @@ export default function FotosSection() {
         category: 'otro', // Por defecto
         tags: photoForm.tags,
         location: null,
-        date_taken: photoForm.date,
+        date_taken: finalDate,
         favorite: false
       }
 
@@ -571,30 +580,105 @@ export default function FotosSection() {
     }
   }
 
-  const handleViewPhoto = (photo: Photo) => {
+  const handleViewPhoto = useCallback((photo: Photo) => {
     setSelectedPhoto(photo)
     setCurrentPhotoIndex(filteredPhotos.findIndex(p => p.id === photo.id))
     setModalSize('default') // Reset modal size
+    setMediaDimensions(null)
     setShowDetailModal(true)
-  }
+  }, [filteredPhotos])
 
-  const handlePreviousPhoto = () => {
+  // Función mejorada para calcular el tamaño del modal basado en dimensiones reales y viewport
+  const calculateModalSize = useCallback((width: number, height: number, aspectRatio: number) => {
+    const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920
+    const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1080
+    const isMobile = viewportWidth < 768
+    
+    // Considerar el espacio para controles y padding
+    const availableWidth = viewportWidth * (isMobile ? 0.95 : 0.9)
+    const availableHeight = viewportHeight * (isMobile ? 0.85 : 0.8)
+    
+    // Calcular dimensiones ideales manteniendo aspect ratio
+    let idealWidth = width
+    let idealHeight = height
+    
+    // Si es más ancho que alto, limitar por ancho
+    if (aspectRatio > 1) {
+      idealWidth = Math.min(width, availableWidth)
+      idealHeight = idealWidth / aspectRatio
+      
+      // Si aún es muy alto, limitar por altura
+      if (idealHeight > availableHeight) {
+        idealHeight = availableHeight
+        idealWidth = idealHeight * aspectRatio
+      }
+    } else {
+      // Si es más alto que ancho, limitar por altura
+      idealHeight = Math.min(height, availableHeight)
+      idealWidth = idealHeight * aspectRatio
+      
+      // Si aún es muy ancho, limitar por ancho
+      if (idealWidth > availableWidth) {
+        idealWidth = availableWidth
+        idealHeight = idealWidth / aspectRatio
+      }
+    }
+    
+    // Determinar el tamaño del modal basado en aspect ratio y dimensiones
+    if (aspectRatio > 2.0) {
+      return 'wide' // Panoramas muy anchos
+    } else if (aspectRatio < 0.5) {
+      return 'tall' // Imágenes muy verticales (selfies, etc.)
+    } else if (aspectRatio > 1.3) {
+      return 'wide' // Imágenes horizontales
+    } else if (aspectRatio < 0.75) {
+      return 'tall' // Imágenes verticales
+    }
+    
+    return 'default'
+  }, [])
+
+
+  const handlePreviousPhoto = useCallback(() => {
     if (currentPhotoIndex > 0) {
-      setCurrentPhotoIndex(currentPhotoIndex - 1)
-      setSelectedPhoto(filteredPhotos[currentPhotoIndex - 1])
+      const newIndex = currentPhotoIndex - 1
+      setCurrentPhotoIndex(newIndex)
+      setSelectedPhoto(filteredPhotos[newIndex])
       setModalSize('default') // Reset modal size for new photo
+      setMediaDimensions(null) // Reset dimensions
     }
-  }
+  }, [currentPhotoIndex, filteredPhotos])
 
-  const handleNextPhoto = () => {
+  const handleNextPhoto = useCallback(() => {
     if (currentPhotoIndex < filteredPhotos.length - 1) {
-      setCurrentPhotoIndex(currentPhotoIndex + 1)
-      setSelectedPhoto(filteredPhotos[currentPhotoIndex + 1])
+      const newIndex = currentPhotoIndex + 1
+      setCurrentPhotoIndex(newIndex)
+      setSelectedPhoto(filteredPhotos[newIndex])
       setModalSize('default') // Reset modal size for new photo
+      setMediaDimensions(null) // Reset dimensions
     }
-  }
+  }, [currentPhotoIndex, filteredPhotos])
 
-  const handleDownload = (photo: Photo) => {
+  // Keyboard shortcuts para navegación
+  useEffect(() => {
+    if (!showDetailModal) return
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Navegación con flechas
+      if (e.key === 'ArrowLeft' && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) {
+        e.preventDefault()
+        handlePreviousPhoto()
+      } else if (e.key === 'ArrowRight' && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) {
+        e.preventDefault()
+        handleNextPhoto()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [showDetailModal, handlePreviousPhoto, handleNextPhoto])
+
+  const handleDownload = useCallback((photo: Photo) => {
     const link = document.createElement('a')
           link.href = photo.image_url
           link.download = `${photo.title}.${photo.file_type === 'video' ? 'mp4' : 'jpg'}`
@@ -607,9 +691,9 @@ export default function FotosSection() {
       title: 'Descarga iniciada',
       description: 'El archivo se está descargando'
     })
-  }
+  }, [])
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setPhotoForm({
       title: '',
       date: '',
@@ -618,16 +702,16 @@ export default function FotosSection() {
       file_type: 'image',
       image: null
     })
-  }
+  }, [])
 
-  const handleTagToggle = (tag: string) => {
+  const handleTagToggle = useCallback((tag: string) => {
     setPhotoForm(prev => ({
       ...prev,
       tags: prev.tags.includes(tag) 
         ? prev.tags.filter(t => t !== tag)
         : [...prev.tags, tag]
     }))
-  }
+  }, [])
 
   const handleAddCustomTag = (customTag: string) => {
     const trimmedTag = customTag.trim()
@@ -704,7 +788,20 @@ export default function FotosSection() {
               {filteredPhotos.length} de {photos.length} fotos
             </p>
           </div>
-          <Button onClick={() => setShowCreateModal(true)} className="w-full sm:w-auto">
+          <Button onClick={() => {
+            // Establecer fecha automáticamente al abrir el modal
+            const today = new Date().toISOString().split('T')[0]
+            setPhotoForm({
+              title: '',
+              date: today,
+              description: '',
+              tags: [],
+              file_type: 'image',
+              image: null
+            })
+            setSelectedPhoto(null)
+            setShowCreateModal(true)
+          }} className="w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />
             Agregar Nueva Foto
           </Button>
@@ -877,133 +974,138 @@ export default function FotosSection() {
                 {selectedPhoto ? 'Editar Foto' : 'Agregar Nueva Foto'}
               </DialogTitle>
               <DialogDescription>
-                {selectedPhoto ? 'Modifica los detalles de la foto' : 'Sube una nueva foto o video y agrega los detalles'}
+                {selectedPhoto ? 'Modifica los detalles de la foto' : 'Sube una nueva foto o video'}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Título *</label>
-                  <Input
-                    value={photoForm.title}
-                    onChange={(e) => setPhotoForm(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="Título de la foto"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Fecha *</label>
-                  <Input
-                    type="date"
-                    value={photoForm.date}
-                    onChange={(e) => setPhotoForm(prev => ({ ...prev, date: e.target.value }))}
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">Descripción</label>
-                <Input
-                  value={photoForm.description}
-                  onChange={(e) => setPhotoForm(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Describe el momento..."
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">Tipo</label>
-                <Select
-                  value={photoForm.file_type}
-                                      onValueChange={(value: 'image' | 'video' | 'gif') => setPhotoForm(prev => ({ ...prev, file_type: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="photo">Foto</SelectItem>
-                    <SelectItem value="video">Video</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">Etiquetas</label>
-                <div className="space-y-3">
-                  {/* Selected tags display */}
-                  {photoForm.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {photoForm.tags.map((tag, index) => (
-                        <Badge 
-                          key={index} 
-                          variant="default" 
-                          className="cursor-pointer hover:bg-red-100 hover:text-red-800"
-                          onClick={() => handleRemoveTag(tag)}
-                        >
-                          <Tag className="w-3 h-3 mr-1" />
-                          {tag}
-                          <span className="ml-1 text-xs">×</span>
-                        </Badge>
-                      ))}
+              {/* Solo mostrar campos adicionales cuando se está editando */}
+              {selectedPhoto ? (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Título *</label>
+                      <Input
+                        value={photoForm.title}
+                        onChange={(e) => setPhotoForm(prev => ({ ...prev, title: e.target.value }))}
+                        placeholder="Título de la foto"
+                      />
                     </div>
-                  )}
-                  
-                  {/* Tags dropdown */}
-                  <div className="relative">
-                    <Select onValueChange={(value) => handleTagToggle(value)}>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Fecha *</label>
+                      <Input
+                        type="date"
+                        value={photoForm.date}
+                        onChange={(e) => setPhotoForm(prev => ({ ...prev, date: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Descripción</label>
+                    <Input
+                      value={photoForm.description}
+                      onChange={(e) => setPhotoForm(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Describe el momento..."
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Tipo</label>
+                    <Select
+                      value={photoForm.file_type}
+                      onValueChange={(value: 'image' | 'video' | 'gif') => setPhotoForm(prev => ({ ...prev, file_type: value }))}
+                    >
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar etiquetas..." />
+                        <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="max-h-60">
-                        <div className="grid grid-cols-1 gap-1 p-2">
-                          {predefinedTags.map((tag) => (
-                            <SelectItem 
-                              key={tag} 
-                              value={tag}
-                              className={`cursor-pointer ${
-                                photoForm.tags.includes(tag) 
-                                  ? 'bg-primary/10 text-primary' 
-                                  : ''
-                              }`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <Tag className="w-3 h-3" />
-                                <span>{tag}</span>
-                                {photoForm.tags.includes(tag) && (
-                                  <span className="text-xs text-primary">✓</span>
-                                )}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </div>
+                      <SelectContent>
+                        <SelectItem value="photo">Foto</SelectItem>
+                        <SelectItem value="video">Video</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  
-                  {/* Custom tag input */}
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Agregar etiqueta personalizada..."
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault()
-                          const input = e.target as HTMLInputElement
-                          handleAddCustomTag(input.value)
-                          input.value = ''
-                        }
-                      }}
-                      className="flex-1"
-                    />
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={(e) => {
-                        const input = e.currentTarget.previousElementSibling as HTMLInputElement
-                        handleAddCustomTag(input.value)
-                        input.value = ''
-                      }}
-                    >
-                      Agregar
-                    </Button>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Etiquetas</label>
+                    <div className="space-y-3">
+                      {/* Selected tags display */}
+                      {photoForm.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {photoForm.tags.map((tag, index) => (
+                            <Badge 
+                              key={index} 
+                              variant="default" 
+                              className="cursor-pointer hover:bg-red-100 hover:text-red-800"
+                              onClick={() => handleRemoveTag(tag)}
+                            >
+                              <Tag className="w-3 h-3 mr-1" />
+                              {tag}
+                              <span className="ml-1 text-xs">×</span>
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Tags dropdown */}
+                      <div className="relative">
+                        <Select onValueChange={(value) => handleTagToggle(value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Seleccionar etiquetas..." />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-60">
+                            <div className="grid grid-cols-1 gap-1 p-2">
+                              {predefinedTags.map((tag) => (
+                                <SelectItem 
+                                  key={tag} 
+                                  value={tag}
+                                  className={`cursor-pointer ${
+                                    photoForm.tags.includes(tag) 
+                                      ? 'bg-primary/10 text-primary' 
+                                      : ''
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <Tag className="w-3 h-3" />
+                                    <span>{tag}</span>
+                                    {photoForm.tags.includes(tag) && (
+                                      <span className="text-xs text-primary">✓</span>
+                                    )}
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </div>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      {/* Custom tag input */}
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Agregar etiqueta personalizada..."
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault()
+                              const input = e.target as HTMLInputElement
+                              handleAddCustomTag(input.value)
+                              input.value = ''
+                            }
+                          }}
+                          className="flex-1"
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            const input = e.currentTarget.previousElementSibling as HTMLInputElement
+                            handleAddCustomTag(input.value)
+                            input.value = ''
+                          }}
+                        >
+                          Agregar
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </>
+              ) : null}
               <div>
                 <label className="text-sm font-medium mb-2 block">
                   {selectedPhoto ? 'Nueva imagen (opcional)' : 'Imagen/Video *'}
@@ -1020,10 +1122,14 @@ export default function FotosSection() {
                         if (file && file.size <= 100 * 1024 * 1024) { // 100MB max
                           const detectedType = file.type.startsWith('video/') ? 'video' : 
                                              file.type === 'image/gif' ? 'gif' : 'image'
+                          // Generar título automático basado en el nombre del archivo
+                          const fileName = file.name.replace(/\.[^/.]+$/, '') // Remover extensión
                           setPhotoForm(prev => ({ 
                             ...prev, 
                             image: file, 
-                            file_type: detectedType 
+                            file_type: detectedType,
+                            // Solo establecer título si no hay uno (para nuevas fotos)
+                            title: prev.title || fileName || `Foto ${new Date().toLocaleDateString('es-ES')}`
                           }))
                         } else if (file) {
                           alert('El archivo es demasiado grande. Máximo 100MB.')
@@ -1124,132 +1230,108 @@ export default function FotosSection() {
           </DialogContent>
         </Dialog>
 
-        {/* Detail Modal */}
+        {/* Detail Modal - Simplificado */}
         <Dialog open={showDetailModal} onOpenChange={(open) => {
           setShowDetailModal(open)
           if (!open) {
-            // Resetear el tamaño del modal cuando se cierre
+            // Resetear estados cuando se cierre
             setModalSize('default')
+            setMediaDimensions(null)
           }
         }}>
-          <DialogContent className={`transition-all duration-300 ease-in-out ${
-            modalSize === 'wide' ? 'max-w-[95vw] w-auto' :
-            modalSize === 'tall' ? 'max-w-[50vw] w-auto' :
-            'max-w-4xl'
+          <DialogContent className={`transition-all duration-300 ease-in-out p-0 gap-0 ${
+            modalSize === 'wide' 
+              ? 'max-w-[95vw] w-auto sm:max-w-[90vw]' 
+              : modalSize === 'tall' 
+                ? 'max-w-[50vw] w-auto sm:max-w-[85vw]' 
+                : 'max-w-4xl w-full sm:max-w-[90vw]'
           }`}>
             {selectedPhoto && (
-              <div className="space-y-4">
-                                <div className="relative">
+              <div className="space-y-0">
+                {/* Contenedor de media - Mejorado */}
+                <div className="relative bg-gray-50 dark:bg-gray-900 rounded-t-lg overflow-hidden">
                   {selectedPhoto.file_type === 'video' ? (
                     <video
                       src={selectedPhoto.image_url}
                       controls
                       autoPlay
-                      className="w-full h-auto max-h-[70vh] rounded-lg object-contain"
-                                              onLoadedMetadata={(e) => {
-                          // Asegurar que el video se reproduzca correctamente
-                          const video = e.target as HTMLVideoElement
-                          video.volume = 0.5
-                          // Ajustar el modal al aspect ratio del video
-                          const aspectRatio = video.videoWidth / video.videoHeight
-                          if (aspectRatio > 1.5) {
-                            setModalSize('wide') // Video muy horizontal
-                          } else if (aspectRatio < 0.7) {
-                            setModalSize('tall') // Video muy vertical
-                          } else {
-                            setModalSize('default') // Aspect ratio normal
-                          }
-                        }}
+                      className="w-full h-auto max-h-[75vh] sm:max-h-[80vh] object-contain"
+                      onLoadedMetadata={(e) => {
+                        const video = e.target as HTMLVideoElement
+                        video.volume = 0.5
+                        const aspectRatio = video.videoWidth / video.videoHeight
+                        const calculatedSize = calculateModalSize(video.videoWidth, video.videoHeight, aspectRatio)
+                        setModalSize(calculatedSize)
+                        setMediaDimensions({
+                          width: video.videoWidth,
+                          height: video.videoHeight,
+                          aspectRatio
+                        })
+                      }}
                     />
                   ) : (
                     <img
                       src={selectedPhoto.image_url}
-                      alt={selectedPhoto.title}
-                      className="w-full h-auto max-h-[70vh] rounded-lg object-contain"
+                      alt=""
+                      className="w-full h-auto max-h-[75vh] sm:max-h-[80vh] object-contain"
                       onLoad={(e) => {
-                        // Ajustar el modal al aspect ratio de la imagen
                         const img = e.target as HTMLImageElement
                         const aspectRatio = img.naturalWidth / img.naturalHeight
-                        if (aspectRatio > 1.5) {
-                          setModalSize('wide') // Imagen muy horizontal
-                        } else if (aspectRatio < 0.7) {
-                          setModalSize('tall') // Imagen muy vertical
-                        } else {
-                          setModalSize('default') // Aspect ratio normal
-                        }
+                        const calculatedSize = calculateModalSize(img.naturalWidth, img.naturalHeight, aspectRatio)
+                        setModalSize(calculatedSize)
+                        setMediaDimensions({
+                          width: img.naturalWidth,
+                          height: img.naturalHeight,
+                          aspectRatio
+                        })
                       }}
                     />
                   )}
-                  <div className="absolute top-4 right-4 flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => handleDownload(selectedPhoto)}
-                    >
-                      <Download className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => handleEditPhoto(selectedPhoto)}
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                  </div>
+                </div>
+                
+                {/* Navegación y fecha - Barra inferior mejorada */}
+                <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 rounded-b-lg p-3 sm:p-4">
+                  {/* Navegación entre fotos */}
                   {filteredPhotos.length > 1 && (
-                    <div className="absolute top-1/2 left-4 transform -translate-y-1/2">
+                    <div className="flex items-center justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
                       <Button
                         size="sm"
                         variant="secondary"
                         onClick={handlePreviousPhoto}
                         disabled={currentPhotoIndex === 0}
+                        className="h-11 w-11 sm:h-12 sm:w-12 p-0 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 active:scale-95 rounded-full"
+                        title="Anterior (←)"
                       >
-                        <ChevronLeft className="w-4 h-4" />
+                        <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
                       </Button>
-                    </div>
-                  )}
-                  {filteredPhotos.length > 1 && (
-                    <div className="absolute top-1/2 right-4 transform -translate-y-1/2">
+                      
+                      {/* Indicador de posición en galería */}
+                      <div className="flex-1 text-center">
+                        <span className="text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-3 py-1.5 rounded-full">
+                          {currentPhotoIndex + 1} / {filteredPhotos.length}
+                        </span>
+                      </div>
+                      
                       <Button
                         size="sm"
                         variant="secondary"
                         onClick={handleNextPhoto}
                         disabled={currentPhotoIndex === filteredPhotos.length - 1}
+                        className="h-11 w-11 sm:h-12 sm:w-12 p-0 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 active:scale-95 rounded-full"
+                        title="Siguiente (→)"
                       >
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
                       </Button>
                     </div>
                   )}
-                </div>
-                <div className="space-y-4">
-                  <div>
-                    <h2 className="text-2xl font-bold">{selectedPhoto.title}</h2>
-                    <div className="flex items-center text-sm text-gray-500 mt-1">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      {formatDate(selectedPhoto.date_taken || '')}
+                
+                  {/* Panel de información - Solo fecha */}
+                  <div className="flex items-center justify-center">
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 px-4 py-2 rounded-lg">
+                      <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-pink-500" />
+                      <span className="font-medium">{formatDate(selectedPhoto.date_taken || '')}</span>
                     </div>
                   </div>
-                  {selectedPhoto.description && (
-                    <p className="text-gray-600 dark:text-gray-400">
-                      {selectedPhoto.description}
-                    </p>
-                  )}
-                  {selectedPhoto.tags.length > 0 && (
-                    <div>
-                      <h3 className="text-sm font-medium mb-2">Etiquetas</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedPhoto.tags.map((tag, index) => (
-                          <Badge key={index} variant="outline">
-                            <Tag className="w-3 h-3 mr-1" />
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                                  <div className="text-sm text-gray-500">
-                  Tipo: {selectedPhoto.file_type === 'video' ? 'Video' : selectedPhoto.file_type === 'gif' ? 'GIF' : 'Imagen'}
-                </div>
                 </div>
               </div>
             )}

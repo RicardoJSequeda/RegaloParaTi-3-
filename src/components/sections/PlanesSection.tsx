@@ -591,62 +591,62 @@ export function PlanesSection() {
       {/* Statistics */}
       <div className="overflow-x-auto pb-2 px-4 sm:px-0">
         <div className="flex gap-4 sm:gap-4 min-w-max">
-          <Card className="stats-card min-w-[110px] sm:min-w-[160px]">
-            <CardContent className="p-4 sm:p-4">
+          <Card className="stats-card min-w-[90px] sm:min-w-[100px]">
+            <CardContent className="p-2 sm:p-2.5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[clamp(0.8rem,2.5vw,0.8rem)] text-gray-600 dark:text-gray-400">Total</p>
-                  <p className="text-[clamp(1.6rem,4.5vw,2rem)] font-bold text-gray-900 dark:text-white">{stats.total}</p>
+                  <p className="text-[10px] sm:text-[11px] text-gray-600 dark:text-gray-400">Total</p>
+                  <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{stats.total}</p>
                 </div>
-                <Calendar className="h-7 w-7 sm:h-8 sm:w-8 text-pink-500" />
+                <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-pink-500" />
               </div>
             </CardContent>
           </Card>
           
-          <Card className="stats-card min-w-[110px] sm:min-w-[160px]">
-            <CardContent className="p-4 sm:p-4">
+          <Card className="stats-card min-w-[90px] sm:min-w-[100px]">
+            <CardContent className="p-2 sm:p-2.5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[clamp(0.8rem,2.5vw,0.8rem)] text-gray-600 dark:text-gray-400">Pendientes</p>
-                  <p className="text-[clamp(1.6rem,4.5vw,2rem)] font-bold text-yellow-600">{stats.pending}</p>
+                  <p className="text-[10px] sm:text-[11px] text-gray-600 dark:text-gray-400">Pendientes</p>
+                  <p className="text-base sm:text-lg font-bold text-yellow-600">{stats.pending}</p>
                 </div>
-                <Clock className="h-7 w-7 sm:h-8 sm:w-8 text-yellow-500" />
+                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="stats-card min-w-[110px] sm:min-w-[160px]">
-            <CardContent className="p-4 sm:p-4">
+          <Card className="stats-card min-w-[90px] sm:min-w-[100px]">
+            <CardContent className="p-2 sm:p-2.5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[clamp(0.8rem,2.5vw,0.8rem)] text-gray-600 dark:text-gray-400">En Progreso</p>
-                  <p className="text-[clamp(1.6rem,4.5vw,2rem)] font-bold text-blue-600">{stats.inProgress}</p>
+                  <p className="text-[10px] sm:text-[11px] text-gray-600 dark:text-gray-400">En Progreso</p>
+                  <p className="text-base sm:text-lg font-bold text-blue-600">{stats.inProgress}</p>
                 </div>
-                <PlayCircle className="h-7 w-7 sm:h-8 sm:w-8 text-blue-500" />
+                <PlayCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="stats-card min-w-[110px] sm:min-w-[160px]">
-            <CardContent className="p-4 sm:p-4">
+          <Card className="stats-card min-w-[90px] sm:min-w-[100px]">
+            <CardContent className="p-2 sm:p-2.5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[clamp(0.8rem,2.5vw,0.8rem)] text-gray-600 dark:text-gray-400">Completados</p>
-                  <p className="text-[clamp(1.6rem,4.5vw,2rem)] font-bold text-green-600">{stats.completed}</p>
+                  <p className="text-[10px] sm:text-[11px] text-gray-600 dark:text-gray-400">Completados</p>
+                  <p className="text-base sm:text-lg font-bold text-green-600">{stats.completed}</p>
                 </div>
-                <CheckCircle className="h-7 w-7 sm:h-8 sm:w-8 text-green-500" />
+                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="stats-card min-w-[110px] sm:min-w-[160px]">
-            <CardContent className="p-4 sm:p-4">
+          <Card className="stats-card min-w-[90px] sm:min-w-[100px]">
+            <CardContent className="p-2 sm:p-2.5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[clamp(0.8rem,2.5vw,0.8rem)] text-gray-600 dark:text-gray-400">Cancelados</p>
-                  <p className="text-[clamp(1.6rem,4.5vw,2rem)] font-bold text-red-600">{stats.cancelled}</p>
+                  <p className="text-[10px] sm:text-[11px] text-gray-600 dark:text-gray-400">Cancelados</p>
+                  <p className="text-base sm:text-lg font-bold text-red-600">{stats.cancelled}</p>
                 </div>
-                <XCircle className="h-7 w-7 sm:h-8 sm:w-8 text-red-500" />
+                <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
               </div>
             </CardContent>
           </Card>

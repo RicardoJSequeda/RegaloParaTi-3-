@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -150,114 +150,121 @@ export function InicioSection() {
     }
   }
 
+  // UX: el grid de métricas se genera dinámicamente para mantener consistencia tipográfica y de spacing
+  const counterItems = useMemo(
+    () => [
+      {
+        id: 'years',
+        label: 'AÑOS',
+        value: timeTogether.years,
+        gradient: 'from-pink-500 to-pink-600',
+        delay: 0,
+      },
+      {
+        id: 'months',
+        label: 'MESES',
+        value: timeTogether.months,
+        gradient: 'from-pink-500 to-pink-600',
+        delay: 0.03,
+      },
+      {
+        id: 'days',
+        label: 'DÍAS',
+        value: timeTogether.days,
+        gradient: 'from-pink-500 to-pink-600',
+        delay: 0.06,
+      },
+      {
+        id: 'hours',
+        label: 'HORAS',
+        value: timeTogether.hours,
+        gradient: 'from-purple-500 to-purple-600',
+        delay: 0.09,
+      },
+      {
+        id: 'minutes',
+        label: 'MIN',
+        value: timeTogether.minutes,
+        gradient: 'from-purple-500 to-purple-600',
+        delay: 0.12,
+      },
+      {
+        id: 'seconds',
+        label: 'SEG',
+        value: timeTogether.seconds,
+        gradient: 'from-purple-500 to-purple-600',
+        delay: 0.15,
+      },
+    ],
+    [timeTogether]
+  )
+
   return (
-    <div className="space-y-2 sm:space-y-3 animate-in fade-in duration-500">
-      {/* Header Ultra Compacto */}
+    <section className="relative mx-auto flex w-full max-w-6xl flex-col gap-4 overflow-x-hidden px-3 pb-6 pt-3 sm:gap-6 sm:px-6 sm:pb-8 sm:pt-4 md:px-8 lg:pt-6 animate-in fade-in duration-500">
+      {/* UX: encabezado centrado con tipografía escalable para jerarquía clara en mobile (320px+) */}
       <motion.div 
-        className="text-center py-1"
+        className="flex flex-col items-center gap-1.5 text-center sm:gap-2"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight bg-gradient-to-r from-pink-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">
+        <Badge
+          aria-hidden="true"
+          variant="secondary"
+          className="w-fit rounded-full bg-white/80 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-pink-600 shadow-sm ring-1 ring-pink-200/70 backdrop-blur sm:px-3 sm:py-1 sm:text-[11px]"
+        >
+          Nuestra Historia
+        </Badge>
+        <h1 className="w-full text-wrap text-[1.5rem] font-extrabold leading-[1.2] tracking-tight text-gray-900 dark:text-white sm:text-[1.75rem] md:text-3xl">
           ¡Bienvenida a tu espacio especial!
         </h1>
-        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 max-w-xl mx-auto leading-tight">
+        <p className="w-full max-w-xl px-1 text-[12px] leading-[1.5] text-gray-600 dark:text-gray-300 sm:text-[13px] sm:leading-5 md:text-sm md:leading-6">
           Aquí encontrarás todos nuestros recuerdos, mensajes y momentos especiales juntos.
         </p>
       </motion.div>
 
-      <Separator className="my-1.5" />
+      <Separator className="mx-auto w-full max-w-md opacity-60" />
 
-      {/* Contador de Tiempo Juntos Ultra Compacto */}
+      {/* UX: tarjeta full-width optimizada para tacto y lectura en mobile (320px+) */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.05 }}
       >
-        <Card className="bg-gradient-to-br from-white to-pink-50/30 dark:from-gray-800 dark:to-gray-900/50 shadow-md border border-pink-100 dark:border-pink-900/30 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200">
-          <CardHeader className="text-center pb-2 pt-3 px-3">
-            <CardTitle className="flex items-center justify-center gap-1.5 text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-              <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-pink-500 fill-pink-500" />
-              Nuestro Tiempo Juntos
+        <Card className="overflow-hidden rounded-xl border border-pink-100/70 bg-gradient-to-br from-white via-pink-50/50 to-white shadow-md transition-shadow duration-200 hover:shadow-lg dark:border-pink-900/30 dark:from-gray-900 dark:via-gray-950/30 dark:to-gray-950 sm:rounded-2xl">
+          <CardHeader className="flex flex-col gap-2 px-3 pb-2.5 pt-3 text-center sm:gap-3 sm:px-4 sm:pb-3 sm:pt-4 md:px-6">
+            <CardTitle className="flex items-center justify-center gap-1.5 text-[15px] font-semibold text-gray-900 dark:text-white sm:gap-2 sm:text-base md:text-lg">
+              <Heart aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-pink-500 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+              <span className="whitespace-nowrap">Nuestro Tiempo Juntos</span>
             </CardTitle>
+            <CardDescription className="text-[11px] text-gray-500 dark:text-gray-400 sm:text-xs md:text-sm">
+              Cada segundo contigo suma a nuestra historia de amor.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="px-2 sm:px-3 pb-3 pt-1">
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 sm:gap-2 text-center">
-              <motion.div 
-                className="space-y-0.5"
-                variants={counterVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                <div className="text-xl sm:text-2xl font-bold bg-gradient-to-br from-pink-500 to-pink-600 bg-clip-text text-transparent leading-none">
-                  <AnimatedCounter value={timeTogether.years} />
-                </div>
-                <div className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">AÑOS</div>
-              </motion.div>
-              <motion.div 
-                className="space-y-0.5"
-                variants={counterVariants}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 0.03 }}
-              >
-                <div className="text-xl sm:text-2xl font-bold bg-gradient-to-br from-pink-500 to-pink-600 bg-clip-text text-transparent leading-none">
-                  <AnimatedCounter value={timeTogether.months} />
-                </div>
-                <div className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">MESES</div>
-              </motion.div>
-              <motion.div 
-                className="space-y-0.5"
-                variants={counterVariants}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 0.06 }}
-              >
-                <div className="text-xl sm:text-2xl font-bold bg-gradient-to-br from-pink-500 to-pink-600 bg-clip-text text-transparent leading-none">
-                  <AnimatedCounter value={timeTogether.days} />
-                </div>
-                <div className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">DÍAS</div>
-              </motion.div>
-              <motion.div 
-                className="space-y-0.5"
-                variants={counterVariants}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 0.09 }}
-              >
-                <div className="text-xl sm:text-2xl font-bold bg-gradient-to-br from-purple-500 to-purple-600 bg-clip-text text-transparent leading-none">
-                  <AnimatedCounter value={timeTogether.hours} />
-                </div>
-                <div className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">HORAS</div>
-              </motion.div>
-              <motion.div 
-                className="space-y-0.5"
-                variants={counterVariants}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 0.12 }}
-              >
-                <div className="text-xl sm:text-2xl font-bold bg-gradient-to-br from-purple-500 to-purple-600 bg-clip-text text-transparent leading-none">
-                  <AnimatedCounter value={timeTogether.minutes} />
-                </div>
-                <div className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">MIN</div>
-              </motion.div>
-              <motion.div 
-                className="space-y-0.5"
-                variants={counterVariants}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 0.15 }}
-              >
-                <div className="text-xl sm:text-2xl font-bold bg-gradient-to-br from-purple-500 to-purple-600 bg-clip-text text-transparent leading-none">
-                  <AnimatedCounter value={timeTogether.seconds} />
-                </div>
-                <div className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">SEG</div>
-              </motion.div>
+          <CardContent className="space-y-3 px-3 pb-3 pt-0 sm:space-y-4 sm:px-4 sm:pb-4 md:px-6 md:pb-6">
+            {/* UX: Grid responsive que se adapta desde 320px - 3 columnas en móvil, 6 en desktop */}
+            <div className="grid grid-cols-3 gap-x-1.5 gap-y-2.5 text-center sm:grid-cols-6 sm:gap-x-2 md:gap-x-3 md:gap-y-3">
+              {counterItems.map((item) => (
+                <motion.div
+                  key={item.id}
+                  className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-white/80 px-1 py-1.5 shadow-sm ring-1 ring-pink-100/80 backdrop-blur transition-all hover:shadow-md active:scale-95 dark:bg-gray-900/60 dark:ring-pink-900/30 sm:gap-1 sm:px-2 sm:py-2"
+                  variants={counterVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ delay: item.delay }}
+                >
+                  <span className={`bg-gradient-to-br ${item.gradient} bg-clip-text text-lg font-bold leading-none text-transparent sm:text-xl md:text-2xl`}>
+                    <AnimatedCounter value={item.value} />
+                  </span>
+                  <span className="text-[9px] font-semibold uppercase leading-tight tracking-wide text-gray-500 dark:text-gray-400 sm:text-[10px] md:text-[11px]">
+                    {item.label}
+                  </span>
+                </motion.div>
+              ))}
             </div>
-            <div className="text-center mt-2 space-y-0.5">
-              <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-medium">
+            {/* UX: Mensaje de aniversario con tipografía legible en móviles pequeños */}
+            <div className="flex flex-col items-center gap-1 text-center">
+              <p className="text-[12px] font-medium leading-relaxed text-gray-700 dark:text-gray-200 sm:text-sm">
                 {timeTogether.nextAnniversary.daysUntil === 0 ? (
                   <span className="text-pink-600 dark:text-pink-400">
                     ¡Hoy es nuestro aniversario! 🎉❤️
@@ -268,65 +275,77 @@ export function InicioSection() {
                   </span>
                 ) : (
                   <>
-                    Faltan <span className="text-pink-600 dark:text-pink-400 font-bold text-base">{timeTogether.nextAnniversary.daysUntil}</span> días para nuestro próximo aniversario ❤️
+                    Faltan <span className="text-sm font-bold text-pink-600 dark:text-pink-400 sm:text-base">{timeTogether.nextAnniversary.daysUntil}</span> días para nuestro próximo aniversario ❤️
                   </>
                 )}
               </p>
-              <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
-                Próximo: {formatNextAnniversary()}
+              <p className="text-[10px] text-gray-500 dark:text-gray-400 sm:text-[11px] md:text-xs">
+                Próximo: <span className="font-semibold text-gray-700 dark:text-gray-200">{formatNextAnniversary()}</span>
               </p>
             </div>
           </CardContent>
         </Card>
       </motion.div>
 
-      {/* Carrusel de Fotos Especiales Compacto */}
+      {/* UX: carrusel optimizado para touch gestures con botones táctiles (mínimo 44x44px según Apple HIG) */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1 }}
       >
-        <Card className="bg-white dark:bg-gray-800 shadow-md border-0 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200">
-          <CardHeader className="pb-2 pt-3 px-3 bg-gradient-to-r from-pink-500/5 to-purple-500/5">
-            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-              <Image className="h-5 w-5 sm:h-6 sm:w-6 text-pink-500" />
-              Nuestros Momentos Especiales
+        <Card className="overflow-hidden rounded-xl border border-pink-100/80 bg-white shadow-md transition-shadow duration-200 hover:shadow-lg dark:border-pink-900/40 dark:bg-gray-900/80 sm:rounded-2xl">
+          <CardHeader className="flex flex-col gap-1.5 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-pink-500/10 px-3 pb-2.5 pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:px-4 sm:pb-3 sm:pt-4 md:px-6">
+            <CardTitle className="flex items-center gap-1.5 text-base font-semibold text-gray-900 dark:text-white sm:gap-2 sm:text-lg md:text-xl">
+              <Image aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-pink-500 sm:h-5 sm:w-5 md:h-6 md:w-6" />
+              <span className="whitespace-nowrap">Nuestros Momentos Especiales</span>
             </CardTitle>
+            <CardDescription className="text-[11px] text-gray-500 dark:text-gray-400 sm:text-xs md:text-sm">
+              Desliza para revivirlos uno a uno.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="px-1 sm:px-2 pb-3 pt-2">
+          <CardContent className="px-0.5 pb-3 pt-2 sm:px-1 sm:pb-4 sm:pt-3 md:px-2 md:pb-6">
             <div className="relative">
               <Carousel
                 setApi={setApi}
                 plugins={[autoplayPlugin()]}
                 opts={{
-                  align: "start",
+                  align: 'start',
                   loop: true,
+                  slidesToScroll: 1,
+                  dragFree: false,
                 }}
-                className="w-full"
+                className="w-full touch-pan-y"
               >
-                <CarouselContent className="-ml-1 md:-ml-2">
+                <CarouselContent className="-ml-0.5 min-h-[280px] snap-x snap-mandatory sm:-ml-1 sm:min-h-[320px] md:-ml-2">
                   {carouselImages.map((item, index) => (
-                    <CarouselItem key={item.id} className="pl-1 md:pl-2 basis-full sm:basis-1/2 lg:basis-1/4">
+                    <CarouselItem
+                      key={item.id}
+                      className="basis-full snap-center pl-0.5 sm:basis-1/2 sm:pl-1 md:pl-2 lg:basis-1/3 xl:basis-1/4"
+                    >
                       <motion.div
-                        className="p-1"
+                        className="p-0.5 sm:p-1"
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.3, delay: index * 0.05 }}
                       >
-                        <div className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group cursor-pointer">
-                          <div className="aspect-[4/5] sm:aspect-[3/4] relative overflow-hidden">
+                        <div className="group relative cursor-pointer overflow-hidden rounded-xl border border-white/60 bg-white shadow-md ring-1 ring-gray-950/5 transition-all duration-300 active:scale-[0.98] hover:-translate-y-1 hover:shadow-xl dark:border-gray-800/80 dark:bg-gray-900/80 dark:ring-white/10 sm:rounded-2xl">
+                          <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[3/4]">
                             <ImageWithFallback
                               src={item.image}
                               alt={item.title}
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                               showLoading={true}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                            <div className="absolute bottom-0 left-0 right-0 p-2 flex items-center justify-center">
-                              <Badge variant="secondary" className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-gray-900 dark:text-white border-white/30 text-[10px] sm:text-xs px-2 py-1 shadow-md hover:bg-white dark:hover:bg-gray-700 transition-colors">
-                                <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1.5" />
-                                {item.date}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                            <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 p-2 sm:gap-2 sm:p-3 md:p-4">
+                              <Badge variant="secondary" className="inline-flex items-center gap-1 self-center rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-gray-900 shadow-sm backdrop-blur transition-colors hover:bg-white active:scale-95 dark:bg-gray-950/90 dark:text-white dark:hover:bg-gray-900 sm:gap-1.5 sm:px-3 sm:py-1 sm:text-[11px]">
+                                <Calendar aria-hidden="true" className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                                <span className="whitespace-nowrap">{item.date}</span>
                               </Badge>
+                              <div className="text-center text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                                <p className="text-xs font-semibold sm:text-sm">{item.title}</p>
+                                <p className="text-[10px] font-medium text-white/80 sm:text-xs">{item.description}</p>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -334,20 +353,21 @@ export function InicioSection() {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 h-8 w-8 sm:h-10 sm:w-10 bg-white/95 dark:bg-gray-800/95 hover:bg-white dark:hover:bg-gray-700 shadow-md border-0 rounded-full transition-all duration-200 z-10 hover:scale-105" />
-                <CarouselNext className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 h-8 w-8 sm:h-10 sm:w-10 bg-white/95 dark:bg-gray-800/95 hover:bg-white dark:hover:bg-gray-700 shadow-md border-0 rounded-full transition-all duration-200 z-10 hover:scale-105" />
+                {/* UX: Botones táctiles con tamaño mínimo 44x44px (Apple HIG) para accesibilidad móvil */}
+                <CarouselPrevious className="absolute left-1 top-1/2 z-10 h-11 w-11 -translate-y-1/2 rounded-full border border-pink-100/80 bg-white/95 p-0 shadow-lg backdrop-blur transition-all duration-200 active:scale-95 hover:scale-105 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 sm:left-2 sm:h-10 sm:w-10 md:left-3 dark:border-pink-900/40 dark:bg-gray-900/95 dark:hover:bg-gray-900" />
+                <CarouselNext className="absolute right-1 top-1/2 z-10 h-11 w-11 -translate-y-1/2 rounded-full border border-pink-100/80 bg-white/95 p-0 shadow-lg backdrop-blur transition-all duration-200 active:scale-95 hover:scale-105 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 sm:right-2 sm:h-10 sm:w-10 md:right-3 dark:border-pink-900/40 dark:bg-gray-900/95 dark:hover:bg-gray-900" />
               </Carousel>
               <CarouselIndicators
                 total={carouselImages.length}
                 current={current}
                 onSelect={(index) => api?.scrollTo(index)}
-                className="mt-2"
+                className="mt-2 sm:mt-3"
               />
             </div>
           </CardContent>
         </Card>
       </motion.div>
 
-    </div>
+    </section>
   )
 }

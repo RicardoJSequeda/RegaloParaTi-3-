@@ -689,42 +689,51 @@ export function RecuerdosSection() {
   return (
     <>
       <motion.div 
-        className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-10"
+        className="relative mx-auto flex w-full max-w-6xl flex-col gap-4 overflow-x-hidden px-3 pb-6 pt-3 sm:gap-6 sm:px-4 sm:pb-8 sm:pt-4 md:gap-8 md:px-6 lg:gap-10 lg:px-8"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        {/* Header */}
-        <motion.div className="space-y-2 sm:space-y-3 text-center" variants={itemVariants}>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white px-2">Recuerdos</h1>
-          <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-2">
+        {/* UX: Header optimizado para móvil con tipografía escalable desde 320px */}
+        <motion.div className="flex flex-col items-center gap-1.5 text-center sm:gap-2 md:gap-3" variants={itemVariants}>
+          <Badge
+            aria-hidden="true"
+            variant="secondary"
+            className="w-fit rounded-full bg-white/80 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-pink-600 shadow-sm ring-1 ring-pink-200/70 backdrop-blur sm:px-3 sm:py-1 sm:text-[11px]"
+          >
+            Nuestra Historia
+          </Badge>
+          <h1 className="w-full text-wrap text-[1.5rem] font-extrabold leading-[1.2] tracking-tight text-gray-900 dark:text-white sm:text-[1.75rem] md:text-3xl lg:text-4xl">
+            Recuerdos
+          </h1>
+          <p className="w-full max-w-2xl px-1 text-[12px] leading-[1.5] text-gray-600 dark:text-gray-300 sm:text-sm sm:leading-5 md:text-base md:leading-6 lg:text-lg">
             Revive los momentos más especiales de nuestra historia juntos
           </p>
         </motion.div>
 
-        {/* Sección "Hitos de Nuestro Amor" - Rediseñada */}
-        <motion.div className="space-y-4 sm:space-y-6 md:space-y-8" variants={itemVariants}>
-          {/* Header con estadísticas */}
-          <div className="text-center space-y-3 sm:space-y-4 px-2">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-pink-700">
+        {/* UX: Sección de hitos optimizada para móvil con filtros táctiles */}
+        <motion.div className="flex w-full flex-col gap-4 sm:gap-6 md:gap-8" variants={itemVariants}>
+          {/* Header con estadísticas responsive */}
+          <div className="flex flex-col items-center gap-2 text-center sm:gap-3 md:gap-4">
+            <h2 className="w-full text-wrap text-lg font-bold text-pink-700 dark:text-pink-400 sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">
               Hitos de Nuestro Amor 💖
             </h2>
-            <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400">
+            <p className="text-[12px] text-gray-600 dark:text-gray-400 sm:text-sm md:text-base lg:text-lg">
               {filteredMilestones.length} de {milestones.length} hitos especiales
             </p>
             
-            {/* Filtros mejorados con scroll horizontal en móvil */}
-            <div className="flex overflow-x-auto gap-2 sm:gap-3 pb-2 px-2 sm:px-0 sm:flex-wrap sm:justify-center sm:overflow-visible scroll-horizontal -mx-2 sm:mx-0">
+            {/* UX: Filtros con scroll horizontal táctil optimizado para móvil (320px+) */}
+            <div className="flex w-full overflow-x-auto gap-1.5 pb-2 px-1 scrollbar-hide sm:gap-2 sm:flex-wrap sm:justify-center sm:overflow-visible sm:pb-0 sm:px-0">
               {["Todos", "Aniversario", "Viajes", "Eventos", "Otros"].map((filter) => (
                 <Button
                   key={filter}
                   variant={selectedFilter === filter ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedFilter(filter)}
-                  className={`text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-2 rounded-full flex-shrink-0 sm:flex-shrink min-h-[44px] touch-target ${
+                  className={`flex-shrink-0 rounded-full border-2 px-3 py-2.5 text-[11px] font-semibold transition-all active:scale-95 sm:flex-shrink sm:px-4 sm:py-2 sm:text-xs md:text-sm min-h-[44px] touch-target ${
                     selectedFilter === filter 
-                      ? "bg-pink-500 hover:bg-pink-600 text-white shadow-lg" 
-                      : "border-2 border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400 dark:border-pink-600 dark:text-pink-400 dark:hover:bg-pink-900/20"
+                      ? "bg-pink-500 text-white shadow-lg hover:bg-pink-600 border-pink-500" 
+                      : "border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400 dark:border-pink-600 dark:text-pink-400 dark:hover:bg-pink-900/20"
                   }`}
                 >
                   {filter}
@@ -733,32 +742,32 @@ export function RecuerdosSection() {
             </div>
           </div>
 
-          {/* Timeline Rediseñado */}
+          {/* UX: Timeline optimizado para móvil con mejor espaciado y legibilidad */}
           <motion.div 
-            className="relative timeline-container"
+            className="relative w-full timeline-container"
             variants={timelineVariants}
           >
-            {/* Línea central mejorada */}
+            {/* Línea central mejorada - solo visible en desktop */}
             <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-1 timeline-line transform -translate-x-1/2"></div>
             
-            <div className="space-y-6 sm:space-y-8 md:space-y-12 lg:space-y-16">
+            <div className="flex w-full flex-col gap-4 sm:gap-6 md:gap-8 lg:gap-12 xl:gap-16">
               {filteredMilestones.length === 0 ? (
                 <motion.div 
-                  className="text-center py-8 sm:py-12 md:py-16 timeline-empty rounded-2xl sm:rounded-3xl px-4"
+                  className="w-full text-center rounded-xl py-6 timeline-empty px-3 sm:rounded-2xl sm:py-8 md:rounded-3xl md:py-12 lg:py-16 sm:px-4"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6 }}
                 >
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 timeline-empty-icon rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                    <Heart className="w-8 h-8 sm:w-10 sm:h-10 text-pink-500" />
+                  <div className="w-14 h-14 timeline-empty-icon rounded-full flex items-center justify-center mx-auto mb-3 sm:w-16 sm:h-16 sm:mb-4 md:w-20 md:h-20 md:mb-6">
+                    <Heart className="w-7 h-7 text-pink-500 sm:w-8 sm:h-8 md:w-10 md:h-10" />
                   </div>
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1.5 sm:text-lg sm:mb-2 md:text-xl md:mb-3 lg:text-2xl">
                     {selectedFilter !== 'Todos' 
                       ? 'No hay hitos con este filtro'
                       : '¡Comienza tu historia de amor!'
                     }
                   </h3>
-                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 max-w-md mx-auto">
+                  <p className="text-[12px] text-gray-600 dark:text-gray-400 mb-3 max-w-md mx-auto leading-relaxed sm:text-sm sm:mb-4 md:text-base md:mb-6">
                     {selectedFilter !== 'Todos' 
                       ? 'Intenta cambiar los filtros para ver más hitos especiales'
                       : 'Agrega tu primer hito para comenzar a documentar los momentos más especiales de vuestra relación'
@@ -766,10 +775,10 @@ export function RecuerdosSection() {
                   </p>
                   {selectedFilter === 'Todos' && (
                     <Button 
-                      className="bg-pink-500 hover:bg-pink-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full shadow-lg min-h-[44px] text-sm sm:text-base"
+                      className="bg-pink-500 text-white rounded-full shadow-lg min-h-[44px] px-4 py-2.5 text-[12px] font-semibold active:scale-95 hover:bg-pink-600 sm:px-5 sm:py-3 sm:text-sm md:text-base"
                       onClick={() => {/* Aquí podrías abrir un modal para agregar hito */}}
                     >
-                      <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                      <Plus className="w-3.5 h-3.5 mr-1.5 sm:w-4 sm:h-4 sm:mr-2 md:w-5 md:h-5" />
                       Agregar Primer Hito
                     </Button>
                   )}
@@ -802,23 +811,24 @@ export function RecuerdosSection() {
                           <div className="w-5 h-5 rounded-full timeline-dot"></div>
                         </motion.div>
 
-                        {/* Número en móvil */}
-                        <div className="md:hidden mb-4 sm:mb-6 text-center">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold text-base sm:text-lg mx-auto shadow-lg">
+                        {/* UX: Número en móvil con tamaño táctil */}
+                        <div className="mb-3 text-center md:hidden sm:mb-4 md:mb-6">
+                          <div className="w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold text-sm mx-auto shadow-lg sm:w-12 sm:h-12 sm:text-base md:text-lg">
                             {String(index + 1).padStart(2, '0')}
                           </div>
                         </div>
 
-                        {/* Tarjeta del hito */}
+                        {/* UX: Tarjeta del hito optimizada para móvil con feedback táctil */}
                         <motion.div
-                          className="group"
+                          className="group w-full"
                           whileHover={{ scale: 1.02 }}
-                          transition={{ duration: 0.3 }}
+                          whileTap={{ scale: 0.98 }}
+                          transition={{ duration: 0.2 }}
                         >
-                          <div className="timeline-card rounded-xl sm:rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
-                            {/* Imagen del hito */}
-                            <div className="relative">
-                              <div className="w-full h-40 sm:h-48 md:h-56 overflow-hidden">
+                          <div className="timeline-card w-full overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl sm:rounded-2xl">
+                            {/* Imagen del hito con altura responsive */}
+                            <div className="relative w-full">
+                              <div className="w-full h-36 overflow-hidden sm:h-44 md:h-52 lg:h-56">
                                 <img
                                   src={milestone.image_url || 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=600&h=400&fit=crop&crop=center'}
                                   alt={milestone.title}
@@ -826,32 +836,34 @@ export function RecuerdosSection() {
                                 />
                               </div>
                               
-                              {/* Overlay con controles - siempre visible en móvil */}
-                              <div className="absolute inset-0 timeline-overlay opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
-                                <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex gap-1.5 sm:gap-2">
+                              {/* UX: Overlay con controles táctiles - siempre visible en móvil para mejor UX */}
+                              <div className="absolute inset-0 timeline-overlay opacity-100 transition-opacity duration-300 sm:opacity-0 sm:group-hover:opacity-100">
+                                <div className="absolute top-1.5 right-1.5 flex gap-1.5 sm:top-2 sm:right-2 sm:gap-2">
                                   <Button 
                                     size="sm" 
                                     variant="ghost" 
-                                    className="h-9 w-9 sm:h-10 sm:w-10 p-0 timeline-controls bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
+                                    className="h-10 w-10 p-0 timeline-controls bg-white/95 hover:bg-white active:scale-95 dark:bg-gray-800/95 dark:hover:bg-gray-800 min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0"
                                     onClick={() => handleEditMilestone(milestone)}
+                                    aria-label="Editar hito"
                                   >
                                     <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                                   </Button>
                                   <Button 
                                     size="sm" 
                                     variant="ghost" 
-                                    className="h-9 w-9 sm:h-10 sm:w-10 p-0 timeline-controls bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
+                                    className="h-10 w-10 p-0 timeline-controls bg-white/95 hover:bg-white active:scale-95 dark:bg-gray-800/95 dark:hover:bg-gray-800 min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0"
                                     onClick={() => handleDeleteMilestone(milestone)}
+                                    aria-label="Eliminar hito"
                                   >
                                     <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                                   </Button>
                                 </div>
                               </div>
 
-                              {/* Badge de fecha */}
-                              <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3">
-                                <Badge className="timeline-date-badge text-gray-800 dark:text-gray-200 border-0 shadow-md text-xs sm:text-sm px-2 sm:px-3 py-1">
-                                  <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
+                              {/* Badge de fecha con tipografía responsive */}
+                              <div className="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 md:bottom-3 md:left-3">
+                                <Badge className="timeline-date-badge text-gray-800 dark:text-gray-200 border-0 shadow-md text-[10px] px-1.5 py-0.5 sm:text-xs sm:px-2 sm:py-1 md:text-sm md:px-3">
+                                  <Calendar className="h-2.5 w-2.5 mr-0.5 sm:h-3 sm:w-3 sm:mr-1 md:h-3.5 md:w-3.5" />
                                   {new Date(milestone.date_taken).toLocaleDateString('es-ES', {
                                     year: 'numeric',
                                     month: 'short',
@@ -861,42 +873,42 @@ export function RecuerdosSection() {
                               </div>
                             </div>
 
-                            {/* Contenido del hito */}
-                            <div className="p-4 sm:p-5 md:p-6 timeline-card-content">
-                              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-white mb-2 timeline-title">
+                            {/* UX: Contenido del hito con padding responsive y tipografía escalable */}
+                            <div className="p-3 timeline-card-content sm:p-4 md:p-5 lg:p-6">
+                              <h3 className="text-base font-bold text-gray-800 dark:text-white mb-1.5 timeline-title sm:text-lg sm:mb-2 md:text-xl md:mb-2.5 lg:text-2xl">
                                 {milestone.title}
                               </h3>
-                              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-3">
+                              <p className="text-[12px] text-gray-600 dark:text-gray-400 leading-relaxed mb-2.5 line-clamp-2 sm:text-sm sm:mb-3 sm:line-clamp-3 md:text-base md:mb-4">
                                 {milestone.description}
                               </p>
                               
-                              {/* Tags del hito */}
+                              {/* Tags del hito con tamaño responsive */}
                               {milestone.tags && milestone.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4 timeline-tags">
+                                <div className="flex flex-wrap gap-1 mb-2.5 timeline-tags sm:gap-1.5 sm:mb-3 md:gap-2 md:mb-4">
                                   {milestone.tags.slice(0, 3).map((tag, tagIndex) => (
                                     <Badge 
                                       key={tagIndex} 
                                       variant="secondary" 
-                                      className="text-[10px] sm:text-xs timeline-tag px-2 py-0.5"
+                                      className="text-[9px] timeline-tag px-1.5 py-0.5 sm:text-[10px] sm:px-2 md:text-xs"
                                     >
                                       {tag}
                                     </Badge>
                                   ))}
                                   {milestone.tags.length > 3 && (
-                                    <Badge variant="secondary" className="text-[10px] sm:text-xs px-2 py-0.5">
+                                    <Badge variant="secondary" className="text-[9px] px-1.5 py-0.5 sm:text-[10px] sm:px-2 md:text-xs">
                                       +{milestone.tags.length - 3}
                                     </Badge>
                                   )}
                                 </div>
                               )}
 
-                              {/* Botón ver más */}
+                              {/* UX: Botón ver más con área táctil mínima */}
                               <Button 
                                 variant="link" 
-                                className="p-0 h-auto text-pink-600 hover:text-pink-700 dark:text-pink-400 dark:hover:text-pink-300 font-medium text-sm sm:text-base min-h-[44px] sm:min-h-0"
+                                className="p-0 h-auto text-pink-600 hover:text-pink-700 dark:text-pink-400 dark:hover:text-pink-300 font-medium text-[12px] active:scale-95 min-h-[44px] sm:text-sm sm:min-h-0 md:text-base"
                               >
                                 Ver más detalles
-                                <ChevronRight className="h-4 w-4 ml-1" />
+                                <ChevronRight className="h-3.5 w-3.5 ml-0.5 sm:h-4 sm:w-4 sm:ml-1" />
                               </Button>
                             </div>
                           </div>
@@ -915,10 +927,10 @@ export function RecuerdosSection() {
           </motion.div>
         </motion.div>
 
-        {/* Sección "Mapa de Lugares Especiales" */}
-        <motion.div className="space-y-3 sm:space-y-4 max-w-6xl mx-auto" variants={itemVariants}>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 px-2">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-pink-700 dark:text-pink-400">
+        {/* UX: Sección del mapa optimizada para móvil con altura responsive */}
+        <motion.div className="flex w-full max-w-6xl flex-col gap-3 mx-auto sm:gap-4" variants={itemVariants}>
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+            <h2 className="w-full text-wrap text-base font-bold text-pink-700 dark:text-pink-400 sm:text-lg md:text-xl lg:text-2xl">
               {showMapResults ? 'Resultados de Búsqueda en el Mapa' : 'Mapa de Lugares Especiales'}
             </h2>
             {showMapResults && (
@@ -929,31 +941,31 @@ export function RecuerdosSection() {
                   setShowMapResults(false)
                   setSearchResults([])
                 }}
-                className="text-pink-600 border-pink-300 hover:bg-pink-50 dark:border-pink-600 dark:text-pink-400 dark:hover:bg-pink-900/20 text-xs sm:text-sm min-h-[44px] px-3 sm:px-4"
+                className="text-pink-600 border-pink-300 hover:bg-pink-50 active:scale-95 dark:border-pink-600 dark:text-pink-400 dark:hover:bg-pink-900/20 text-[11px] min-h-[44px] px-3 sm:text-xs sm:px-4 md:text-sm"
               >
-                <X className="h-4 w-4 mr-1" />
+                <X className="h-3.5 w-3.5 mr-1 sm:h-4 sm:w-4" />
                 Limpiar búsqueda
               </Button>
             )}
           </div>
           
-          {/* Información de resultados */}
+          {/* UX: Información de resultados con tipografía responsive */}
           {showMapResults && (
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg sm:rounded-xl p-3 mx-2 sm:mx-0">
-              <div className="flex items-center gap-2 text-blue-800 dark:text-blue-300">
-                <Search className="h-4 w-4 flex-shrink-0" />
-                <span className="font-medium text-sm sm:text-base">
-                  {searchResults.length} resultado{searchResults.length !== 1 ? 's' : ''} encontrado{searchResults.length !== 1 ? 's' : ''} para "{searchTerm}"
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-2.5 sm:rounded-xl sm:p-3">
+              <div className="flex items-center gap-1.5 text-blue-800 dark:text-blue-300 sm:gap-2">
+                <Search className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" />
+                <span className="font-medium text-[12px] sm:text-sm md:text-base">
+                  {searchResults.length} resultado{searchResults.length !== 1 ? 's' : ''} encontrado{searchResults.length !== 1 ? 's' : ''} para &quot;{searchTerm}&quot;
                 </span>
               </div>
-              <p className="text-blue-600 dark:text-blue-400 text-xs sm:text-sm mt-1.5">
+              <p className="text-blue-600 dark:text-blue-400 text-[11px] mt-1 sm:text-xs md:text-sm sm:mt-1.5">
                 Los resultados se muestran en el mapa. Haz clic en los marcadores para ver detalles.
               </p>
             </div>
           )}
           
-          {/* Mapa con altura mejorada para móvil */}
-          <div className="relative max-w-6xl mx-auto px-2 sm:px-0">
+          {/* UX: Mapa con altura optimizada para móvil (320px+) */}
+          <div className="relative w-full max-w-6xl mx-auto">
             <LeafletMap 
               places={showMapResults ? searchResults.map(place => ({
                 id: parseInt(place.id.replace(/\D/g, '') || '0'),
@@ -964,26 +976,29 @@ export function RecuerdosSection() {
                 type: place.type,
                 visited: place.status === 'visitado'
               })) : mapPlaces} 
-              className="h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] w-full rounded-xl sm:rounded-2xl border-0 shadow-lg" 
+              className="h-[280px] w-full rounded-xl border-0 shadow-lg sm:h-[350px] sm:rounded-2xl md:h-[450px] lg:h-[550px] xl:h-[600px]" 
               onAddPlace={handleAddPlaceFromMap}
             />
           </div>
         </motion.div>
 
-        {/* Sección "Lista de Lugares Guardados" */}
-        <motion.div className="space-y-3 sm:space-y-4 max-w-5xl mx-auto" variants={itemVariants}>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 px-2">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-pink-700 dark:text-pink-400">Lista de Lugares Guardados</h2>
-            <div className="flex overflow-x-auto gap-2 pb-2 px-2 sm:px-0 sm:flex-wrap sm:overflow-visible scroll-horizontal -mx-2 sm:mx-0">
+        {/* UX: Sección de lugares optimizada para móvil con buscador táctil */}
+        <motion.div className="flex w-full max-w-5xl flex-col gap-3 mx-auto sm:gap-4" variants={itemVariants}>
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3 md:gap-4">
+            <h2 className="w-full text-wrap text-base font-bold text-pink-700 dark:text-pink-400 sm:text-lg md:text-xl lg:text-2xl">
+              Lista de Lugares Guardados
+            </h2>
+            {/* UX: Filtros con scroll horizontal táctil */}
+            <div className="flex w-full overflow-x-auto gap-1.5 pb-2 px-1 scrollbar-hide sm:w-auto sm:flex-wrap sm:justify-center sm:overflow-visible sm:pb-0 sm:px-0">
               {["Todos", "Visitados", "Pendientes", "Eventos"].map((filter) => (
                 <Button
                   key={filter}
                   variant={selectedPlaceFilter === filter ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedPlaceFilter(filter)}
-                  className={`text-xs sm:text-sm flex-shrink-0 sm:flex-shrink px-3 sm:px-4 py-2.5 sm:py-2 rounded-full min-h-[44px] touch-target ${
+                  className={`flex-shrink-0 rounded-full border-2 px-3 py-2.5 text-[11px] font-semibold transition-all active:scale-95 sm:flex-shrink sm:px-4 sm:py-2 sm:text-xs md:text-sm min-h-[44px] touch-target ${
                     selectedPlaceFilter === filter 
-                      ? "bg-pink-500 hover:bg-pink-600 text-white shadow-lg" 
+                      ? "bg-pink-500 text-white shadow-lg hover:bg-pink-600 border-pink-500" 
                       : "border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400 dark:border-pink-600 dark:text-pink-400 dark:hover:bg-pink-900/20"
                   }`}
                 >
@@ -993,20 +1008,20 @@ export function RecuerdosSection() {
             </div>
           </div>
           
-          {/* Buscador mejorado */}
-          <div className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 max-w-4xl mx-auto mx-2 sm:mx-auto">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+          {/* UX: Buscador optimizado para móvil con input táctil */}
+          <div className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-xl p-3 max-w-4xl mx-auto sm:rounded-2xl sm:p-4 md:p-6">
+            <div className="flex flex-col items-stretch gap-2.5 sm:flex-row sm:items-center sm:gap-3 md:gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-pink-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-pink-400 sm:left-4 sm:h-4 sm:w-4" />
                 <Input
                   placeholder="Buscar lugares... (ej: Montería, restaurante)"
-                  className="pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 border-gray-200 dark:border-gray-700 focus:border-pink-500 focus:ring-pink-500 text-sm sm:text-base rounded-lg sm:rounded-xl min-h-[44px]"
+                  className="pl-9 pr-4 py-2.5 border-gray-200 dark:border-gray-700 focus:border-pink-500 focus:ring-pink-500 text-[13px] rounded-lg min-h-[44px] sm:pl-12 sm:py-3 sm:text-sm md:text-base sm:rounded-xl"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 {isSearching && (
-                  <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-pink-500"></div>
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 sm:right-4">
+                    <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-pink-500 sm:h-4 sm:w-4"></div>
                   </div>
                 )}
               </div>
@@ -1018,33 +1033,33 @@ export function RecuerdosSection() {
                   setSearchResults([])
                   setSearchTerm('')
                 }}
-                className="border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl min-h-[44px] w-full sm:w-auto"
+                className="border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 active:scale-95 dark:hover:bg-gray-700 text-[12px] px-3 py-2.5 rounded-lg min-h-[44px] w-full sm:text-sm sm:px-4 sm:py-3 sm:rounded-xl sm:w-auto"
               >
-                <X className="h-4 w-4 mr-2" />
+                <X className="h-3.5 w-3.5 mr-1.5 sm:h-4 sm:w-4 sm:mr-2" />
                 Limpiar
               </Button>
             </div>
             {searchTerm && (
-              <div className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-pink-600 dark:text-pink-400">
-                <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 inline mr-1.5 sm:mr-2" />
-                Buscando: "{searchTerm}"
+              <div className="mt-2 text-[11px] text-pink-600 dark:text-pink-400 sm:mt-2.5 sm:text-xs md:mt-3 md:text-sm">
+                <Search className="h-3 w-3 inline mr-1 sm:h-3.5 sm:w-3.5 sm:mr-1.5 md:h-4 md:w-4 md:mr-2" />
+                Buscando: &quot;{searchTerm}&quot;
               </div>
             )}
           </div>
 
-          {/* Lista de lugares con grid responsive */}
+          {/* UX: Lista de lugares con grid responsive optimizado para móvil */}
           <motion.div 
-            className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6 max-w-6xl mx-auto px-2 sm:px-0"
+            className="grid w-full grid-cols-1 gap-3 max-w-6xl mx-auto sm:gap-4 md:gap-6 lg:grid-cols-2"
             variants={containerVariants}
           >
-            {/* Información de búsqueda */}
+            {/* Información de búsqueda con tipografía responsive */}
             {showMapResults && (
-              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg sm:rounded-xl p-3 mb-3 sm:mb-4 col-span-full">
-                <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-300">
-                  <Map className="h-4 w-4 flex-shrink-0" />
-                  <span className="font-medium text-sm sm:text-base">Búsqueda activa</span>
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-2.5 mb-2.5 col-span-full sm:rounded-xl sm:p-3 sm:mb-3 md:mb-4">
+                <div className="flex items-center gap-1.5 text-yellow-800 dark:text-yellow-300 sm:gap-2">
+                  <Map className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" />
+                  <span className="font-medium text-[12px] sm:text-sm md:text-base">Búsqueda activa</span>
                 </div>
-                <p className="text-yellow-600 dark:text-yellow-400 text-xs sm:text-sm mt-1.5">
+                <p className="text-yellow-600 dark:text-yellow-400 text-[11px] mt-1 sm:text-xs md:text-sm sm:mt-1.5">
                   Los resultados de búsqueda se muestran en el mapa arriba. Aquí puedes ver todos los lugares guardados.
                 </p>
               </div>
@@ -1058,30 +1073,38 @@ export function RecuerdosSection() {
                 transition={{ delay: index * 0.1 }}
                 className="w-full"
               >
-                <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer bg-white dark:bg-gray-800 border-0 rounded-xl sm:rounded-2xl overflow-hidden">
+                <Card className="cursor-pointer overflow-hidden rounded-xl border-0 bg-white shadow-md transition-all duration-300 hover:shadow-lg active:scale-[0.98] dark:bg-gray-800 sm:rounded-2xl">
                   <CardContent className="p-3 sm:p-4 md:p-6">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                      {/* Imagen del lugar */}
+                    <div className="flex flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:gap-3 md:gap-4">
+                      {/* UX: Imagen del lugar con tamaño responsive */}
                       {place.image_url && (
                         <div className="flex-shrink-0 w-full sm:w-auto">
                           <img 
                             src={place.image_url} 
                             alt={place.name}
-                            className="w-full sm:w-20 sm:h-20 md:w-24 md:h-24 h-32 sm:h-auto object-cover rounded-lg sm:rounded-xl border shadow-sm"
+                            className="w-full h-28 object-cover rounded-lg border shadow-sm sm:w-20 sm:h-20 sm:h-auto md:w-24 md:h-24"
                           />
                         </div>
                       )}
                       
+                      {/* UX: Contenido con tipografía escalable */}
                       <div className="flex-1 min-w-0 w-full sm:w-auto">
-                        <h3 className="font-bold text-base sm:text-lg md:text-xl text-gray-900 dark:text-white truncate mb-1">{place.name}</h3>
-                        <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300 mb-1">{place.visit_date || 'Próximamente'}</p>
-                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{place.address}</p>
+                        <h3 className="font-bold text-[15px] text-gray-900 dark:text-white truncate mb-0.5 sm:text-base sm:mb-1 md:text-lg lg:text-xl">
+                          {place.name}
+                        </h3>
+                        <p className="text-[11px] text-gray-600 dark:text-gray-300 mb-0.5 sm:text-xs sm:mb-1 md:text-sm lg:text-base">
+                          {place.visit_date || 'Próximamente'}
+                        </p>
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate sm:text-xs md:text-sm">
+                          {place.address}
+                        </p>
                       </div>
                       
-                      <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                      {/* UX: Controles con áreas táctiles mínimas */}
+                      <div className="flex items-center gap-1.5 w-full sm:w-auto sm:gap-2 md:gap-3 justify-between sm:justify-end">
                         <Badge 
                           variant="secondary" 
-                          className={`text-xs sm:text-sm px-2.5 sm:px-3 py-1 rounded-full flex-shrink-0 ${
+                          className={`text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 sm:text-xs sm:px-2.5 sm:py-1 md:text-sm md:px-3 ${
                             place.status === 'visitado' 
                               ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800" 
                               : "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800"
@@ -1089,24 +1112,26 @@ export function RecuerdosSection() {
                         >
                           {place.status === 'visitado' ? 'Visitado' : 'Pendiente'}
                         </Badge>
-                        <div className="flex items-center gap-1.5 sm:gap-2">
+                        <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
                           <Button 
                             size="sm" 
                             variant="ghost" 
-                            className="h-10 w-10 sm:h-9 sm:w-9 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all duration-300 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
+                            className="h-10 w-10 p-0 hover:bg-gray-100 active:scale-95 dark:hover:bg-gray-700 rounded-full transition-all duration-300 min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0"
                             onClick={() => handleEditPlace(place)}
+                            aria-label="Editar lugar"
                           >
                             <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                           </Button>
                           <Button 
                             size="sm" 
                             variant="ghost" 
-                            className="h-10 w-10 sm:h-9 sm:w-9 p-0 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20 rounded-full transition-all duration-300 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
+                            className="h-10 w-10 p-0 hover:bg-red-100 hover:text-red-600 active:scale-95 dark:hover:bg-red-900/20 rounded-full transition-all duration-300 min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0"
                             onClick={() => handleDeletePlace(place)}
+                            aria-label="Eliminar lugar"
                           >
                             <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                           </Button>
-                          <ChevronRight className="h-5 w-5 text-gray-400 hidden sm:block" />
+                          <ChevronRight className="h-4 w-4 text-gray-400 hidden sm:block md:h-5 md:w-5" />
                         </div>
                       </div>
                     </div>
@@ -1312,7 +1337,7 @@ export function RecuerdosSection() {
             </div>
             
             <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-4 sm:mb-6">
-              ¿Estás seguro de que quieres eliminar el hito <strong>"{deletingMilestone.title}"</strong>?
+              ¿Estás seguro de que quieres eliminar el hito <strong>&quot;{deletingMilestone.title}&quot;</strong>?
             </p>
             
             <div className="flex gap-2 sm:gap-3">
@@ -1526,7 +1551,7 @@ export function RecuerdosSection() {
             </div>
             
             <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-4 sm:mb-6">
-              ¿Estás seguro de que quieres eliminar el lugar <strong>"{deletingPlace.name}"</strong>?
+              ¿Estás seguro de que quieres eliminar el lugar <strong>&quot;{deletingPlace.name}&quot;</strong>?
             </p>
             
             <div className="flex gap-2 sm:gap-3">

@@ -46,7 +46,6 @@ import {
   Search,
   Heart,
   PawPrint,
-  Stethoscope,
   MoreHorizontal,
   ChevronLeft,
   ChevronRight,
@@ -63,11 +62,6 @@ import {
   Mouse,
   Rabbit,
   Activity,
-  Droplets,
-  Pill,
-  Syringe,
-  Scissors,
-  Bone,
   Shirt,
   Camera,
   Image,
@@ -678,6 +672,7 @@ export function MascotasSection() {
   const [showAddTaskDialog, setShowAddTaskDialog] = useState(false)
   const [showAddHealthDialog, setShowAddHealthDialog] = useState(false)
   const [showAddPhotoDialog, setShowAddPhotoDialog] = useState(false)
+  const [selectedPhotoView, setSelectedPhotoView] = useState<PetPhoto | null>(null)
   // Dialog de medicamentos eliminado
 
   const [isEditingTask, setIsEditingTask] = useState(false)
@@ -707,32 +702,9 @@ export function MascotasSection() {
     otro: PawPrint
   }
 
-  const taskTypeIcons = {
-    alimentacion: Bone,
-    ejercicio: Activity,
-    limpieza: Droplets,
-    veterinario: Stethoscope,
-    medicina: Pill,
-    otro: PawPrint
-  }
-
   const getPetTypeIcon = (type: string) => {
     const IconComponent = petTypeIcons[type as keyof typeof petTypeIcons] || PawPrint
     return <IconComponent className="h-4 w-4" />
-  }
-
-  const getTaskTypeIcon = (type: string) => {
-    const IconComponent = taskTypeIcons[type as keyof typeof taskTypeIcons] || PawPrint
-    return <IconComponent className="h-4 w-4" />
-  }
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'Alta': return 'bg-red-100 text-red-800 border-red-200'
-      case 'Media': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      case 'Baja': return 'bg-green-100 text-green-800 border-green-200'
-      default: return 'bg-gray-100 text-gray-800 border-gray-200'
-    }
   }
 
   const getStatusColor = (status: string) => {
@@ -756,11 +728,13 @@ export function MascotasSection() {
 
   const getPetById = (id: any) => pets.find(pet => `${pet.id}` === `${id}`)
 
-  // Función de validación para mascotas
+  // Función de validación para mascotas - Solo campos obligatorios
   const validatePet = (pet: Partial<Pet>) => {
     const rules = {
       name: [validators.required],
-      type: [validators.required]
+      type: [validators.required],
+      birthDate: [validators.required],
+      image: [validators.required]
     }
     return validateForm(pet, rules)
   }
@@ -775,8 +749,8 @@ export function MascotasSection() {
       return
     }
 
-    if (!newPet.name || !newPet.type) {
-      console.log('❌ Datos faltantes:', { name: newPet.name, type: newPet.type })
+    if (!newPet.name || !newPet.type || !newPet.birthDate || !newPet.image) {
+      console.log('❌ Datos faltantes:', { name: newPet.name, type: newPet.type, birthDate: newPet.birthDate, image: newPet.image })
       return
     }
 
@@ -788,11 +762,8 @@ export function MascotasSection() {
           .update({
             name: newPet.name,
             type: newPet.type,
-            breed: newPet.breed || null,
-            birth_date: newPet.birthDate || null,
-            color: newPet.color || null,
-            image: newPet.image || null,
-            notes: newPet.notes || null,
+            birth_date: newPet.birthDate,
+            image: newPet.image,
             updated_at: new Date().toISOString()
           })
           .eq('id', selectedPet.id)
@@ -815,11 +786,8 @@ export function MascotasSection() {
           .insert([{
             name: newPet.name,
             type: newPet.type,
-            breed: newPet.breed || null,
-            birth_date: newPet.birthDate || null,
-            color: newPet.color || null,
-            image: newPet.image || null,
-            notes: newPet.notes || null
+            birth_date: newPet.birthDate,
+            image: newPet.image
           }])
           .select()
         
@@ -845,7 +813,7 @@ export function MascotasSection() {
   }
 
   const addTask = async () => {
-    if (!(newTask.title && newTask.petId && newTask.type)) return
+    if (!(newTask.title && newTask.petId)) return
     const petId = typeof newTask.petId === 'string' ? newTask.petId : `${newTask.petId}`
 
     if (isEditingTask && newTask.id) {
@@ -855,10 +823,7 @@ export function MascotasSection() {
           pet_id: petId,
           title: newTask.title || '',
           description: newTask.description || '',
-          type: newTask.type as any,
-          frequency: (newTask.frequency as any) || 'diario',
           next_due: newTask.nextDue || new Date().toISOString(),
-          priority: (newTask.priority as any) || 'Media',
           reminder: newTask.reminder || null,
           notes: newTask.notes || null,
           updated_at: new Date().toISOString()
@@ -880,10 +845,7 @@ export function MascotasSection() {
           pet_id: petId,
           title: newTask.title,
           description: newTask.description || '',
-          type: newTask.type as any,
-          frequency: (newTask.frequency as any) || 'diario',
           next_due: newTask.nextDue || new Date().toISOString(),
-          priority: (newTask.priority as any) || 'Media',
           status: 'pendiente',
           reminder: newTask.reminder || null,
           notes: newTask.notes || null
@@ -1064,10 +1026,7 @@ export function MascotasSection() {
         petId: task.petId,
         title: task.title,
         description: task.description,
-        type: task.type,
-        frequency: task.frequency,
         nextDue: task.nextDue,
-        priority: task.priority,
         reminder: task.reminder,
         notes: task.notes
       })
@@ -1084,11 +1043,8 @@ export function MascotasSection() {
         id: pet.id as any,
         name: pet.name,
         type: pet.type,
-        breed: pet.breed,
         birthDate: pet.birthDate,
-        color: pet.color,
-        image: pet.image,
-        notes: pet.notes
+        image: pet.image
       } as any)
       setShowAddPetDialog(true)
     }
@@ -1121,8 +1077,8 @@ export function MascotasSection() {
           .from('pet_photos')
           .update({
             pet_id: petId,
-            title: newPhoto.description ? `Foto: ${newPhoto.description}` : 'Nueva Foto',
-            description: newPhoto.description,
+            title: 'Nueva Foto',
+            description: null,
             image: newPhoto.image,
             date: newPhoto.date || new Date().toISOString().split('T')[0],
             tags: newPhoto.tags,
@@ -1136,8 +1092,8 @@ export function MascotasSection() {
         .from('pet_photos')
         .insert([{
             pet_id: petId,
-        title: newPhoto.description ? `Foto: ${newPhoto.description}` : 'Nueva Foto',
-        description: newPhoto.description,
+        title: 'Nueva Foto',
+        description: null,
         image: newPhoto.image,
           date: newPhoto.date || new Date().toISOString().split('T')[0],
           tags: newPhoto.tags
@@ -1198,50 +1154,50 @@ export function MascotasSection() {
 
       {/* Estadísticas */}
       <div className="flex overflow-x-auto gap-4 pb-2 px-4 sm:px-0 sm:grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 sm:gap-4">
-        <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 min-w-[140px] sm:min-w-0">
-          <CardContent className="p-4 sm:p-6">
+        <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 min-w-[90px] sm:min-w-[100px]">
+          <CardContent className="p-2 sm:p-2.5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[clamp(0.8rem,2.5vw,0.875rem)] font-medium text-muted-foreground">Mascotas</p>
-                <p className="text-[clamp(1.6rem,4.5vw,1.5rem)] font-bold text-primary">{pets.length}</p>
+                <p className="text-[10px] sm:text-[11px] font-medium text-muted-foreground">Mascotas</p>
+                <p className="text-base sm:text-lg font-bold text-primary">{pets.length}</p>
               </div>
-              <PawPrint className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
+              <PawPrint className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 min-w-[140px] sm:min-w-0">
-          <CardContent className="p-4 sm:p-6">
+        <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 min-w-[90px] sm:min-w-[100px]">
+          <CardContent className="p-2 sm:p-2.5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[clamp(0.8rem,2.5vw,0.875rem)] font-medium text-muted-foreground">Tareas Pendientes</p>
-                <p className="text-[clamp(1.6rem,4.5vw,1.5rem)] font-bold text-blue-600">{pendingTasks}</p>
+                <p className="text-[10px] sm:text-[11px] font-medium text-muted-foreground">Pendientes</p>
+                <p className="text-base sm:text-lg font-bold text-blue-600">{pendingTasks}</p>
               </div>
-              <Clock className="h-7 w-7 sm:h-8 sm:w-8 text-blue-600" />
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200 min-w-[140px] sm:min-w-0">
-          <CardContent className="p-4 sm:p-6">
+        <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200 min-w-[90px] sm:min-w-[100px]">
+          <CardContent className="p-2 sm:p-2.5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Tareas Completadas</p>
-                <p className="text-[clamp(1.6rem,4.5vw,1.5rem)] font-bold text-green-600">{completedTasks}</p>
+                <p className="text-[10px] sm:text-[11px] font-medium text-muted-foreground">Completadas</p>
+                <p className="text-base sm:text-lg font-bold text-green-600">{completedTasks}</p>
               </div>
-              <CheckCircle className="h-7 w-7 sm:h-8 sm:w-8 text-green-600" />
+              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 min-w-[140px] sm:min-w-0">
-          <CardContent className="p-4 sm:p-6">
+        <Card className="bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 min-w-[90px] sm:min-w-[100px]">
+          <CardContent className="p-2 sm:p-2.5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[clamp(0.8rem,2.5vw,0.875rem)] font-medium text-muted-foreground">Fotos</p>
-                <p className="text-[clamp(1.6rem,4.5vw,1.5rem)] font-bold text-purple-600">{totalPhotos}</p>
+                <p className="text-[10px] sm:text-[11px] font-medium text-muted-foreground">Fotos</p>
+                <p className="text-base sm:text-lg font-bold text-purple-600">{totalPhotos}</p>
               </div>
-              <Camera className="h-7 w-7 sm:h-8 sm:w-8 text-purple-600" />
+              <Camera className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
             </div>
           </CardContent>
         </Card>
@@ -1320,45 +1276,35 @@ export function MascotasSection() {
                       </div>
                     </div>
                   )}
-                  <div className="absolute top-2 right-2">
-                    <Badge variant="secondary" className="flex items-center gap-1 bg-white/90 backdrop-blur-sm text-[clamp(0.7rem,1.8vw,0.75rem)] px-2 py-1">
-                      {getPetTypeIcon(pet.type)}
-                      {pet.type}
-                    </Badge>
-                  </div>
-                  <div className="absolute top-2 left-2">
-                    <Button size="sm" variant="outline" onClick={() => editPet(pet.id)} className="bg-white/80 h-7 w-7 p-0">
-                      <Edit className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                  <div className="absolute bottom-2 left-2">
-                    <Badge variant="outline" className="bg-white/90 backdrop-blur-sm text-[clamp(0.7rem,1.8vw,0.75rem)] px-2 py-1">
-                    {pet.name}
-                    </Badge>
-                  </div>
                 </div>
                 <CardHeader className="pb-2 px-4 py-3">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <CardTitle className="text-[clamp(1rem,2.5vw,1rem)]">{pet.name}</CardTitle>
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" onClick={() => editPet(pet.id)} className="py-1.5 px-2 text-[clamp(0.75rem,2vw,0.75rem)] h-7">
-                        <Edit className="h-3.5 w-3.5" />
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => editPet(pet.id)} 
+                        className="min-h-[44px] min-w-[44px] p-0 active:scale-95 transition-transform"
+                        aria-label="Editar mascota"
+                      >
+                        <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => deletePet(pet.id)} className="text-red-500 hover:text-red-700 py-1.5 px-2 text-[clamp(0.75rem,2vw,0.75rem)] h-7">
-                        <Trash2 className="h-3.5 w-3.5" />
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => deletePet(pet.id)} 
+                        className="text-red-500 hover:text-red-700 dark:hover:text-red-600 min-h-[44px] min-w-[44px] p-0 active:scale-95 transition-transform"
+                        aria-label="Eliminar mascota"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                   </div>
                   </div>
                   <CardDescription className="text-[clamp(0.8rem,2vw,0.75rem)]">
-                    {pet.breed && `${pet.breed} • `}
-                    {pet.birthDate && `Nacido: ${new Date(pet.birthDate).toLocaleDateString()}`}
+                    {pet.birthDate && `Nacido: ${new Date(pet.birthDate).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}`}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="px-4 pb-4 pt-0">
-                  {pet.notes && (
-                    <p className="text-[clamp(0.8rem,2vw,0.75rem)] text-muted-foreground">{pet.notes}</p>
-                  )}
-                </CardContent>
               </Card>
             ))}
           </div>
@@ -1379,49 +1325,56 @@ export function MascotasSection() {
             </Button>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {filteredTasks.map((task) => {
               const pet = getPetById(task.petId)
               return (
-                <Card key={task.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="p-2 bg-primary/10 rounded-lg">
-                          {getTaskTypeIcon(task.type)}
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">{task.title}</h3>
-                          <p className="text-sm text-muted-foreground">{task.description}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className="text-xs">
-                              {pet?.name}
+                <Card key={task.id} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-primary/50 hover:border-l-primary">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-[clamp(1rem,2.5vw,1.125rem)] font-semibold text-foreground mb-2 leading-tight">
+                          {task.title}
+                        </h3>
+                        {task.description && (
+                          <p className="text-[clamp(0.875rem,2vw,0.9375rem)] text-muted-foreground mb-3 leading-relaxed">
+                            {task.description}
+                          </p>
+                        )}
+                        <div className="flex flex-wrap items-center gap-2">
+                          {pet?.name && (
+                            <Badge variant="outline" className="text-[clamp(0.75rem,1.8vw,0.8125rem)] px-2.5 py-1 border-primary/30 bg-primary/5">
+                              {pet.name}
                             </Badge>
-                            <Badge className={`text-xs ${getPriorityColor(task.priority)}`}>
-                              {task.priority}
-                            </Badge>
-                            <Badge className={`text-xs ${getStatusColor(task.status)}`}>
-                              {task.status}
-                            </Badge>
-                          </div>
+                          )}
+                          <Badge className={`text-[clamp(0.75rem,1.8vw,0.8125rem)] px-2.5 py-1 font-medium ${getStatusColor(task.status)}`}>
+                            {task.status === 'pendiente' ? 'Pendiente' : 'Completado'}
+                          </Badge>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
                         <Button
                           size="sm"
                           onClick={() => toggleTaskStatus(task.id)}
-                          className={task.status === 'pendiente' ? 'bg-green-500 hover:bg-green-600' : 'bg-yellow-500 hover:bg-yellow-600'}
+                          className={`min-h-[44px] min-w-[44px] p-0 rounded-full active:scale-95 transition-transform ${
+                            task.status === 'pendiente' 
+                              ? 'bg-green-500 hover:bg-green-600 text-white shadow-md hover:shadow-lg' 
+                              : 'bg-yellow-500 hover:bg-yellow-600 text-white shadow-md hover:shadow-lg'
+                          }`}
+                          aria-label={task.status === 'pendiente' ? 'Marcar como completado' : 'Marcar como pendiente'}
                         >
                           {task.status === 'pendiente' ? (
-                            <CheckCircle className="h-4 w-4" />
+                            <CheckCircle className="h-5 w-5" />
                           ) : (
-                            <Clock className="h-4 w-4" />
+                            <Clock className="h-5 w-5" />
                           )}
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => editTask(task.id)}
+                          className="min-h-[44px] min-w-[44px] p-0 rounded-full active:scale-95 transition-transform border-2 hover:border-primary hover:bg-primary/5"
+                          aria-label="Editar tarea"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -1429,7 +1382,8 @@ export function MascotasSection() {
                           variant="ghost"
                           size="sm"
                           onClick={() => deleteTask(task.id)}
-                          className="text-red-500 hover:text-red-700"
+                          className="min-h-[44px] min-w-[44px] p-0 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20 active:scale-95 transition-transform"
+                          aria-label="Eliminar tarea"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -1466,25 +1420,30 @@ export function MascotasSection() {
             {photos.map((photo) => {
               const pet = getPetById(photo.petId)
               return (
-                <Card key={photo.id} className="overflow-hidden break-inside-avoid mb-3 inline-block w-full">
+                <Card 
+                  key={photo.id} 
+                  className="overflow-hidden break-inside-avoid mb-3 inline-block w-full group cursor-pointer hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-primary/30"
+                  onClick={() => setSelectedPhotoView(photo)}
+                >
                   <div className="relative">
                     <img
                       src={photo.image}
-                      alt={photo.description || 'Foto de mascota'}
+                      alt={pet?.name || 'Foto de mascota'}
                       loading="lazy"
-                      className="w-full h-auto object-cover"
+                      className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
                     />
-                    <div className="absolute top-2 right-2 flex gap-2">
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                    <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation()
                           const p = photos.find(ph => ph.id === photo.id)
                           if (p) {
                             setNewPhoto({
                               id: p.id,
                               petId: `${p.petId}`,
-                              description: p.description,
                               image: p.image,
                               date: p.date,
                               tags: p.tags
@@ -1493,27 +1452,32 @@ export function MascotasSection() {
                             setShowAddPhotoDialog(true)
                           }
                         }}
-                        className="bg-white/80 h-7 w-7 p-0"
+                        className="bg-white/90 backdrop-blur-sm min-h-[44px] min-w-[44px] p-0 active:scale-95 transition-transform shadow-md"
+                        aria-label="Editar foto"
                       >
-                        <Edit className="w-3.5 h-3.5" />
+                        <Edit className="h-4 w-4" />
                       </Button>
                       <Button
                         size="sm"
                         variant="destructive"
-                        onClick={() => deletePhoto(photo.id)}
-                        className="h-7 w-7 p-0"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          deletePhoto(photo.id)
+                        }}
+                        className="bg-white/90 backdrop-blur-sm min-h-[44px] min-w-[44px] p-0 active:scale-95 transition-transform shadow-md"
+                        aria-label="Eliminar foto"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <X className="h-4 w-4" />
                       </Button>
                     </div>
-                  </div>
-                  <CardContent className="p-3">
-                    {photo.description && (
-                      <p className="text-[clamp(0.8rem,2vw,0.75rem)] text-muted-foreground">
-                        {photo.description}
-                      </p>
+                    {pet?.name && (
+                      <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <Badge className="bg-white/90 backdrop-blur-sm text-[clamp(0.75rem,1.8vw,0.8125rem)] px-2.5 py-1 shadow-md">
+                          {pet.name}
+                        </Badge>
+                      </div>
                     )}
-                  </CardContent>
+                  </div>
                 </Card>
               )
             })}
@@ -1521,31 +1485,46 @@ export function MascotasSection() {
         </TabsContent>
       </Tabs>
 
-      {/* Dialog: Agregar Mascota */}
+      {/* Dialog: Agregar Mascota - Simplificado */}
       <Dialog open={showAddPetDialog} onOpenChange={setShowAddPetDialog}>
-        <DialogContent className="max-w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto mx-2 sm:mx-0 p-4 sm:p-6">
+        <DialogContent 
+          className="max-w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto mx-2 sm:mx-0 p-4 sm:p-6"
+          style={{
+            paddingTop: 'max(env(safe-area-inset-top), 1rem)',
+            paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)'
+          }}
+        >
           <DialogHeader>
             <DialogTitle className="text-[clamp(1.2rem,3vw,1.25rem)]">{selectedPet ? 'Editar Mascota' : 'Agregar Nueva Mascota'}</DialogTitle>
             <DialogDescription className="text-[clamp(0.95rem,2.5vw,1rem)]">
-              {selectedPet ? 'Modifica la información de tu mascota.' : 'Completa la información de tu nueva mascota.'}
+              {selectedPet ? 'Modifica la información de tu mascota.' : 'Completa la información básica de tu nueva mascota.'}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <FormValidation errors={validationErrors} />
+            
+            {/* Nombre - Obligatorio */}
             <div className="grid gap-2">
-              <label htmlFor="name" className="text-[clamp(0.9rem,2.5vw,0.875rem)] font-medium">Nombre</label>
+              <label htmlFor="name" className="text-[clamp(0.9rem,2.5vw,0.875rem)] font-medium">
+                Nombre <span className="text-red-500">*</span>
+              </label>
               <Input
                 id="name"
                 value={newPet.name || ''}
                 onChange={(e) => setNewPet({ ...newPet, name: e.target.value })}
                 placeholder="Nombre de la mascota"
-                className="py-3 text-[clamp(0.95rem,2.5vw,1rem)]"
+                className="min-h-[44px] py-3 text-[clamp(0.95rem,2.5vw,1rem)]"
+                style={{ fontSize: '16px' }}
               />
             </div>
+
+            {/* Tipo - Obligatorio */}
             <div className="grid gap-2">
-              <label htmlFor="type">Tipo</label>
+              <label htmlFor="type" className="text-[clamp(0.9rem,2.5vw,0.875rem)] font-medium">
+                Tipo <span className="text-red-500">*</span>
+              </label>
               <Select value={newPet.type || ''} onValueChange={(value: 'perro' | 'gato' | 'pajaro' | 'pez' | 'hamster' | 'conejo' | 'otro') => setNewPet({ ...newPet, type: value })}>
-                <SelectTrigger>
+                <SelectTrigger className="min-h-[44px]">
                   <SelectValue placeholder="Seleccionar tipo" />
                 </SelectTrigger>
                 <SelectContent>
@@ -1559,56 +1538,48 @@ export function MascotasSection() {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Fecha de Nacimiento - Obligatorio */}
             <div className="grid gap-2">
-              <label htmlFor="breed">Raza</label>
-              <Input
-                id="breed"
-                value={newPet.breed || ''}
-                onChange={(e) => setNewPet({ ...newPet, breed: e.target.value })}
-                placeholder="Raza (opcional)"
-              />
-            </div>
-            <div className="grid gap-2">
-              <label htmlFor="birthDate">Fecha de Nacimiento</label>
+              <label htmlFor="birthDate" className="text-[clamp(0.9rem,2.5vw,0.875rem)] font-medium">
+                Fecha de Nacimiento <span className="text-red-500">*</span>
+              </label>
               <Input
                 id="birthDate"
                 type="date"
                 value={newPet.birthDate || ''}
                 onChange={(e) => setNewPet({ ...newPet, birthDate: e.target.value })}
+                className="min-h-[44px]"
+                style={{ fontSize: '16px' }}
               />
             </div>
 
+            {/* Foto - Obligatorio */}
             <div className="grid gap-2">
-              <label htmlFor="notes">Notas</label>
-              <Input
-                id="notes"
-                value={newPet.notes || ''}
-                onChange={(e) => setNewPet({ ...newPet, notes: e.target.value })}
-                placeholder="Notas adicionales"
-              />
-            </div>
-            <div className="grid gap-2">
-              <label>Foto de la Mascota</label>
+              <label className="text-[clamp(0.9rem,2.5vw,0.875rem)] font-medium">
+                Foto de la Mascota <span className="text-red-500">*</span>
+              </label>
               <div className="space-y-2">
                 {newPet.image ? (
                   <div className="relative">
                     <img
                       src={newPet.image}
                       alt="Vista previa"
-                      className="w-full h-32 object-cover rounded-lg"
+                      className="w-full h-48 sm:h-56 object-cover rounded-lg"
                     />
                     <Button
                       type="button"
                       variant="destructive"
                       size="sm"
-                      className="absolute top-2 right-2 h-6 w-6 p-0"
+                      className="absolute top-2 right-2 min-h-[44px] min-w-[44px] p-0 active:scale-95 transition-transform"
                       onClick={() => setNewPet({ ...newPet, image: undefined })}
+                      aria-label="Eliminar foto"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="h-4 w-4" />
                     </Button>
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors">
+                  <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 sm:p-8 text-center hover:border-primary transition-colors cursor-pointer">
                     <input
                       type="file"
                       accept="image/*"
@@ -1625,9 +1596,16 @@ export function MascotasSection() {
                       className="hidden"
                       id="pet-image"
                     />
-                    <label htmlFor="pet-image" className="cursor-pointer">
-                      <Camera className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-sm text-gray-600">Haz clic para agregar una foto</p>
+                    <label htmlFor="pet-image" className="cursor-pointer flex flex-col items-center gap-3">
+                      <Camera className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 dark:text-gray-500" />
+                      <div>
+                        <p className="text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300">
+                          Haz clic para agregar una foto
+                        </p>
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          JPG, PNG (máx. 5MB)
+                        </p>
+                      </div>
                     </label>
                   </div>
                 )}
@@ -1635,15 +1613,22 @@ export function MascotasSection() {
             </div>
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2">
-            <Button variant="outline" onClick={() => {
-              setShowAddPetDialog(false)
-              setSelectedPet(null)
-              setNewPet({})
-              setValidationErrors([])
-            }} className="w-full sm:w-auto py-3 px-6 text-[clamp(0.95rem,2.5vw,1rem)]">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowAddPetDialog(false)
+                setSelectedPet(null)
+                setNewPet({})
+                setValidationErrors([])
+              }} 
+              className="w-full sm:w-auto min-h-[44px] py-3 px-6 text-[clamp(0.95rem,2.5vw,1rem)] active:scale-95 transition-transform"
+            >
               Cancelar
             </Button>
-            <Button onClick={addPet} className="w-full sm:w-auto py-3 px-6 text-[clamp(0.95rem,2.5vw,1rem)] bg-primary hover:bg-primary/90">
+            <Button 
+              onClick={addPet} 
+              className="w-full sm:w-auto min-h-[44px] py-3 px-6 text-[clamp(0.95rem,2.5vw,1rem)] bg-primary hover:bg-primary/90 active:scale-95 transition-transform"
+            >
               {selectedPet ? 'Guardar Cambios' : 'Agregar Mascota'}
             </Button>
           </DialogFooter>
@@ -1692,49 +1677,6 @@ export function MascotasSection() {
                 onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
                 placeholder="Descripción de la tarea"
               />
-            </div>
-            <div className="grid gap-2">
-              <label htmlFor="taskType">Tipo</label>
-              <Select value={newTask.type || ''} onValueChange={(value: 'alimentacion' | 'ejercicio' | 'limpieza' | 'veterinario' | 'medicina' | 'otro') => setNewTask({ ...newTask, type: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="alimentacion">Alimentación</SelectItem>
-                  <SelectItem value="ejercicio">Ejercicio</SelectItem>
-                  <SelectItem value="limpieza">Limpieza</SelectItem>
-                  <SelectItem value="veterinario">Veterinario</SelectItem>
-                  <SelectItem value="medicina">Medicina</SelectItem>
-                  <SelectItem value="otro">Otro</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-2">
-              <label htmlFor="taskFrequency">Frecuencia</label>
-              <Select value={newTask.frequency || ''} onValueChange={(value: 'diario' | 'semanal' | 'mensual' | 'personalizado') => setNewTask({ ...newTask, frequency: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar frecuencia" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="diario">Diario</SelectItem>
-                  <SelectItem value="semanal">Semanal</SelectItem>
-                  <SelectItem value="mensual">Mensual</SelectItem>
-                  <SelectItem value="personalizado">Personalizado</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-2">
-              <label htmlFor="taskPriority">Prioridad</label>
-              <Select value={newTask.priority || ''} onValueChange={(value: 'Alta' | 'Media' | 'Baja') => setNewTask({ ...newTask, priority: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar prioridad" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Alta">Alta</SelectItem>
-                  <SelectItem value="Media">Media</SelectItem>
-                  <SelectItem value="Baja">Baja</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
           <DialogFooter>
@@ -1844,25 +1786,53 @@ export function MascotasSection() {
 
 
 
+      {/* Dialog: Visualizar Foto */}
+      <Dialog open={!!selectedPhotoView} onOpenChange={(open) => !open && setSelectedPhotoView(null)}>
+        <DialogContent 
+          className="max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] max-h-[95vh] p-0 overflow-hidden bg-black/95"
+          style={{
+            paddingTop: 'max(env(safe-area-inset-top), 0)',
+            paddingBottom: 'max(env(safe-area-inset-bottom), 0)'
+          }}
+        >
+          {selectedPhotoView && (
+            <div className="relative w-full h-full flex items-center justify-center">
+              <img
+                src={selectedPhotoView.image}
+                alt={getPetById(selectedPhotoView.petId)?.name || 'Foto de mascota'}
+                className="max-w-full max-h-[95vh] object-contain"
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedPhotoView(null)}
+                className="absolute top-4 right-4 min-h-[44px] min-w-[44px] p-0 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white active:scale-95 transition-transform"
+                aria-label="Cerrar"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+              {getPetById(selectedPhotoView.petId)?.name && (
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-white/90 backdrop-blur-sm text-[clamp(0.875rem,2vw,1rem)] px-4 py-2 shadow-lg">
+                    {getPetById(selectedPhotoView.petId)?.name}
+                  </Badge>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Dialog: Agregar Foto */}
       <Dialog open={showAddPhotoDialog} onOpenChange={setShowAddPhotoDialog}>
         <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Agregar Nueva Foto</DialogTitle>
+            <DialogTitle>{isEditingPhoto ? 'Editar Foto' : 'Agregar Nueva Foto'}</DialogTitle>
             <DialogDescription>
-              Sube una foto de tu mascota con información adicional.
+              {isEditingPhoto ? 'Modifica la foto de tu mascota.' : 'Sube una foto de tu mascota.'}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <label htmlFor="photoDescription">Descripción</label>
-              <Input
-                id="photoDescription"
-                value={newPhoto.description || ''}
-                onChange={(e) => setNewPhoto({ ...newPhoto, description: e.target.value })}
-                placeholder="Descripción de la foto (opcional)"
-              />
-            </div>
             <div className="grid gap-2">
               <label htmlFor="photoPet">Mascota</label>
               <Select value={newPhoto.petId?.toString() || ''} onValueChange={(value) => setNewPhoto({ ...newPhoto, petId: value as any })}>
@@ -1890,10 +1860,14 @@ export function MascotasSection() {
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddPhotoDialog(false)}>
+            <Button variant="outline" onClick={() => {
+              setShowAddPhotoDialog(false)
+              setIsEditingPhoto(false)
+              setNewPhoto({})
+            }}>
               Cancelar
             </Button>
-            <Button onClick={addPhoto}>Agregar Foto</Button>
+            <Button onClick={addPhoto}>{isEditingPhoto ? 'Guardar Cambios' : 'Agregar Foto'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

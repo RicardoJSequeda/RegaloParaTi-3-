@@ -180,7 +180,7 @@ export function InstallPrompt() {
         <CardContent className="space-y-3">
           <ol className="text-sm text-gray-600 dark:text-gray-400 space-y-2 list-decimal list-inside">
             <li>Toca el botón de compartir</li>
-            <li>Selecciona "Agregar a pantalla de inicio"</li>
+            <li>Selecciona &quot;Agregar a pantalla de inicio&quot;</li>
             <li>Confirma la instalación</li>
           </ol>
           <Button

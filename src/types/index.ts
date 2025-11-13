@@ -15,7 +15,7 @@ export interface UserPreferences {
 }
 
 // Tipos de navegación
-export type Section = 'inicio' | 'recuerdos' | 'mensajes' | 'musica' | 'sorpresa' | 'regalos' | 'diario' | 'recetas' | 'planes' | 'peliculas' | 'fotos' | 'mascotas' | 'metas'
+export type Section = 'inicio' | 'recuerdos' | 'mensajes' | 'musica' | 'recetas' | 'planes' | 'peliculas' | 'fotos' | 'mascotas'
 
 export interface NavigationItem {
   id: Section
@@ -98,55 +98,6 @@ export interface GalleryPhoto {
   date: string
   image: string
 }
-
-// Tipos de sorpresas
-export interface SurpriseContent {
-  type: 'text' | 'image' | 'video' | 'invitation' | 'event' | 'mixed'
-  title: string
-  description: string
-  content: string
-  imageUrl?: string
-  videoUrl?: string
-  eventDate?: string
-  eventLocation?: string
-  eventMapLink?: string
-  blocks?: Array<{
-    type: 'text' | 'image' | 'video'
-    content: string
-    order: number
-  }>
-}
-
-export interface SurpriseBox {
-  id: string
-  title: string
-  is_unlocked: boolean
-  unlock_type: 'key' | 'date' | 'sequential' | 'free'
-  unlock_date?: string
-  unlock_time?: string
-  required_key?: string
-  depends_on?: string
-  content_type: 'text' | 'image' | 'video' | 'invitation' | 'event' | 'mixed'
-  content_title?: string
-  content_description?: string
-  content_text?: string
-  content_image_url?: string
-  content_video_url?: string
-  event_date?: string
-  event_location?: string
-  event_map_link?: string
-  content_blocks?: any
-  edit_password?: string
-  created_at: string
-  unlocked_at?: string
-  order: number
-  effects?: {
-    confetti?: boolean
-  }
-  updated_at: string
-}
-
-
 
 // Tipos de lugares
 export interface Place {

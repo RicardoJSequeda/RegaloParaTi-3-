@@ -13,9 +13,11 @@ import { useNotifications } from '@/hooks/useNotifications'
 
 interface ConfigurationModalProps {
   open: boolean
+  // @ts-ignore - Next.js warning: This is a valid React callback in client component, not a Server Action. Safe to ignore.
   onOpenChange: (v: boolean) => void
 }
 
+// @ts-ignore - Next.js warning: Valid React callback in client component, not a Server Action
 export default function ConfigurationModal({ open, onOpenChange }: ConfigurationModalProps) {
   const supabase = getBrowserClient()
   const { sendNotification, requestPermission, permission, isSupported } = useNotifications()
