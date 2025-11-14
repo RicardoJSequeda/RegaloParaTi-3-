@@ -113,13 +113,21 @@ export function MensajesSection() {
   // Debounce para búsqueda
   const debouncedSearchQuery = useDebounce(searchQuery, 300)
 
-  // Cargar mensajes
+  // Cargar mensajes directamente desde Supabase
   useEffect(() => {
     const load = async () => {
       try {
-        const response = await fetch('/api/messages')
-        if (response.ok) {
-          const data = await response.json()
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*')
+          .order('date', { ascending: false })
+        
+        if (error) {
+          console.error('Error loading messages:', error)
+          return
+        }
+        
+        if (data) {
           setMessages(
             data.map((m: any) => ({
               id: m.id,
@@ -295,27 +303,60 @@ export function MensajesSection() {
   // Agregar nuevo mensaje
   const addNewMessage = async () => {
     if (!newMessage.title || !newMessage.content) return
+    
+    const messageDate = new Date().toISOString().slice(0, 10)
+    
+    // Crear URLs temporales para las imágenes (actualización optimista)
+    const tempImageUrls = newImages.map(file => URL.createObjectURL(file))
+    
+    // Crear mensaje temporal para actualización optimista
+    const tempMessage: Message = {
+      id: `temp-${Date.now()}`,
+      title: newMessage.title,
+      content: newMessage.content,
+      date: messageDate,
+      category: newMessage.category,
+      isRead: false,
+      isFavorite: false,
+      images: tempImageUrls
+    }
+    
+    // ACTUALIZACIÓN OPTIMISTA: Mostrar el mensaje inmediatamente
+    setMessages(prev => [tempMessage, ...prev])
+    
+    // Cerrar modal y limpiar formulario inmediatamente
+    setNewMessage({ title: '', content: '', category: 'Amor' })
+    const imagesToUpload = [...newImages]
+    setNewImages([])
+    setIsWriteModalOpen(false)
+    setShowSuccess(true)
+    setTimeout(() => setShowSuccess(false), 2000)
+    
+    // Subir imágenes a Supabase Storage en segundo plano
     try {
-      setSaving(true)
       let images: string[] = []
-      if (newImages.length > 0) {
+      if (imagesToUpload.length > 0) {
         const uploads = await Promise.all(
-          newImages.map((file, idx) => uploadPublicFile('message-images', file, `messages/new-${Date.now()}-${idx}/`))
+          imagesToUpload.map((file, idx) => uploadPublicFile('message-images', file, `messages/new-${Date.now()}-${idx}/`))
         )
         images = uploads.map(u => u.url)
       }
+      
       const payload = {
-        title: newMessage.title,
-        content: newMessage.content,
-        date: new Date().toISOString().slice(0, 10),
-        category: newMessage.category,
+        title: tempMessage.title,
+        content: tempMessage.content,
+        date: messageDate,
+        category: tempMessage.category,
         is_read: false,
         is_favorite: false,
         images
       }
+      
       const { data, error } = await supabase.from('messages').insert(payload).select('id').single()
+      
       if (!error && data) {
-        setMessages(prev => [{
+        // Actualizar con el mensaje real de la base de datos
+        const realMessage: Message = {
           id: data.id,
           title: payload.title,
           content: payload.content,
@@ -324,18 +365,23 @@ export function MensajesSection() {
           isRead: false,
           isFavorite: false,
           images
-        }, ...prev])
+        }
+        
+        // Reemplazar el mensaje temporal con el real
+        setMessages(prev => prev.map(m => m.id === tempMessage.id ? realMessage : m))
+        
+        // Limpiar URLs temporales
+        tempImageUrls.forEach(url => URL.revokeObjectURL(url))
+      } else {
+        throw error || new Error('Error al guardar el mensaje')
       }
-      setNewMessage({ title: '', content: '', category: 'Amor' })
-      setNewImages([])
-      setIsWriteModalOpen(false)
-      setShowSuccess(true)
-      setTimeout(() => setShowSuccess(false), 2000)
     } catch (error) {
       console.error('Error adding message:', error)
+      // Revertir actualización optimista
+      setMessages(prev => prev.filter(m => m.id !== tempMessage.id))
+      // Limpiar URLs temporales
+      tempImageUrls.forEach(url => URL.revokeObjectURL(url))
       alert('Error al agregar el mensaje')
-    } finally {
-      setSaving(false)
     }
   }
 

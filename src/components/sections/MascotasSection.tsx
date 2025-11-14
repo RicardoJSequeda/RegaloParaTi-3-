@@ -11,6 +11,7 @@ import {
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { getBrowserClient } from '@/lib/supabase/browser-client'
 import { useNotifications } from '@/hooks/useNotifications'
+import { uploadPublicFile } from '@/lib/supabase/storage'
 import { FormValidation, validators, validateForm } from '@/components/ui/form-validation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -689,6 +690,7 @@ export function MascotasSection() {
   const [newTask, setNewTask] = useState<any>({})
   const [newHealthRecord, setNewHealthRecord] = useState<any>({})
   const [newPhoto, setNewPhoto] = useState<any>({})
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
   // Estado de medicamentos eliminado
 
 
@@ -1069,56 +1071,138 @@ export function MascotasSection() {
   // Edición de medicamentos eliminada
 
   const addPhoto = async () => {
-    if (newPhoto.image && newPhoto.petId) {
+    if ((newPhoto.image || photoFile) && newPhoto.petId) {
       const petId = typeof newPhoto.petId === 'string' ? newPhoto.petId : `${newPhoto.petId}`
-      let data: any, error: any
-      if (isEditingPhoto && newPhoto.id) {
-        ({ data, error } = await supabase
-          .from('pet_photos')
-          .update({
-            pet_id: petId,
-            title: 'Nueva Foto',
-            description: null,
-            image: newPhoto.image,
-            date: newPhoto.date || new Date().toISOString().split('T')[0],
-            tags: newPhoto.tags,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', newPhoto.id)
-          .select()
-          .single())
-      } else {
-        ({ data, error } = await supabase
-        .from('pet_photos')
-        .insert([{
-            pet_id: petId,
+      const photoDate = newPhoto.date || new Date().toISOString().split('T')[0]
+      
+      // Crear URL temporal para actualización optimista
+      const tempImageUrl = newPhoto.image || (photoFile ? URL.createObjectURL(photoFile) : '')
+      
+      // Crear foto temporal para actualización optimista
+      // Usar un ID temporal negativo que nunca será un ID real de la base de datos
+      const tempPhoto: PetPhoto = {
+        id: -Date.now(), // ID temporal negativo
+        petId: typeof petId === 'string' ? parseInt(petId) || 0 : petId,
         title: 'Nueva Foto',
-        description: null,
-        image: newPhoto.image,
-          date: newPhoto.date || new Date().toISOString().split('T')[0],
-          tags: newPhoto.tags
-        }])
-        .select()
-          .single())
+        description: undefined,
+        image: tempImageUrl,
+        date: photoDate,
+        tags: newPhoto.tags,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       }
       
-      if (!error && data) {
-        const photo = normalizePhoto(data)
-        if (isEditingPhoto && newPhoto.id) {
-          setPhotos(prev => prev.map(p => p.id === newPhoto.id ? photo : p))
-          sendNotification({ title: 'Foto actualizada', body: 'La foto se actualizó correctamente' })
-        } else {
-          setPhotos(prev => [...prev, photo])
-        sendNotification({ title: 'Nueva foto', body: 'Se ha agregado la foto correctamente' })
-        }
+      // ACTUALIZACIÓN OPTIMISTA: Mostrar la foto inmediatamente
+      if (isEditingPhoto && newPhoto.id) {
+        // Para edición, actualizar la foto existente con la nueva imagen temporal
+        setPhotos(prev => prev.map(p => p.id === newPhoto.id ? { ...p, image: tempImageUrl } : p))
       } else {
-        console.error('❌ Error creando foto:', error)
-        sendNotification({ title: 'Error', body: 'No se pudo crear la foto' })
+        // Para nueva foto, agregar inmediatamente
+        setPhotos(prev => [...prev, tempPhoto])
       }
       
+      // Cerrar modal inmediatamente
       setNewPhoto({})
+      setPhotoFile(null)
       setShowAddPhotoDialog(false)
       setIsEditingPhoto(false)
+      
+      // Subir imagen a Supabase Storage en segundo plano
+      try {
+        let imageUrl = newPhoto.image // Si ya es una URL, usarla
+        
+        // Si hay un archivo nuevo, subirlo a Storage
+        if (photoFile) {
+          const uploadResult = await uploadPublicFile('photos', photoFile, `pet-photos/${petId}/`)
+          if (uploadResult && uploadResult.url) {
+            imageUrl = uploadResult.url
+          }
+        }
+        // Si no hay photoFile, imageUrl ya tiene el valor correcto (URL existente o base64 temporal)
+        
+        // Actualizar en la base de datos
+        let data: any, error: any
+        if (isEditingPhoto && newPhoto.id) {
+          ({ data, error } = await supabase
+            .from('pet_photos')
+            .update({
+              pet_id: petId,
+              title: 'Nueva Foto',
+              description: null,
+              image: imageUrl,
+              date: photoDate,
+              tags: newPhoto.tags,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', newPhoto.id)
+            .select()
+            .single())
+        } else {
+          ({ data, error } = await supabase
+            .from('pet_photos')
+            .insert([{
+              pet_id: petId,
+              title: 'Nueva Foto',
+              description: null,
+              image: imageUrl,
+              date: photoDate,
+              tags: newPhoto.tags
+            }])
+            .select()
+            .single())
+        }
+        
+        if (!error && data) {
+          const photo = normalizePhoto(data)
+          // Actualizar con la foto real de la base de datos
+          if (isEditingPhoto && newPhoto.id) {
+            setPhotos(prev => prev.map(p => p.id === newPhoto.id ? photo : p))
+          } else {
+            // Reemplazar la foto temporal con la real
+            setPhotos(prev => prev.map(p => p.id === tempPhoto.id ? photo : p))
+          }
+          sendNotification({ 
+            title: isEditingPhoto ? 'Foto actualizada' : 'Nueva foto', 
+            body: isEditingPhoto ? 'La foto se actualizó correctamente' : 'Se ha agregado la foto correctamente' 
+          })
+        } else {
+          console.error('❌ Error guardando foto:', error)
+          // Revertir actualización optimista en caso de error
+          if (isEditingPhoto && newPhoto.id) {
+            // Recargar la foto original
+            const { data: originalData } = await supabase
+              .from('pet_photos')
+              .select('*')
+              .eq('id', newPhoto.id)
+              .single()
+            if (originalData) {
+              const originalPhoto = normalizePhoto(originalData)
+              setPhotos(prev => prev.map(p => p.id === newPhoto.id ? originalPhoto : p))
+            }
+          } else {
+            // Eliminar la foto temporal
+            setPhotos(prev => prev.filter(p => p.id !== tempPhoto.id))
+          }
+          sendNotification({ title: 'Error', body: 'No se pudo guardar la foto' })
+        }
+      } catch (error) {
+        console.error('❌ Error subiendo imagen:', error)
+        // Revertir actualización optimista
+        if (isEditingPhoto && newPhoto.id) {
+          const { data: originalData } = await supabase
+            .from('pet_photos')
+            .select('*')
+            .eq('id', newPhoto.id)
+            .single()
+          if (originalData) {
+            const originalPhoto = normalizePhoto(originalData)
+            setPhotos(prev => prev.map(p => p.id === newPhoto.id ? originalPhoto : p))
+          }
+        } else {
+          setPhotos(prev => prev.filter(p => p.id !== tempPhoto.id))
+        }
+        sendNotification({ title: 'Error', body: 'Error al subir la imagen' })
+      }
     }
   }
 
@@ -1448,6 +1532,7 @@ export function MascotasSection() {
                               date: p.date,
                               tags: p.tags
                             })
+                            setPhotoFile(null) // Limpiar archivo al editar
                             setIsEditingPhoto(true)
                             setShowAddPhotoDialog(true)
                           }
@@ -1850,6 +1935,7 @@ export function MascotasSection() {
             </div>
             <ImageUpload
               onImageSelect={(file) => {
+                setPhotoFile(file)
                 const reader = new FileReader()
                 reader.onload = (e) => {
                   setNewPhoto({ ...newPhoto, image: e.target?.result as string })
@@ -1864,6 +1950,7 @@ export function MascotasSection() {
               setShowAddPhotoDialog(false)
               setIsEditingPhoto(false)
               setNewPhoto({})
+              setPhotoFile(null)
             }}>
               Cancelar
             </Button>

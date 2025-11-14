@@ -247,11 +247,7 @@ export function PlanesSection() {
   const [planForm, setPlanForm] = useState({
     title: '',
     description: '',
-    date: '',
-    time: '',
-    location: '',
-    status: 'pendiente' as Plan['status'],
-    tags: [] as string[]
+    status: 'pendiente' as Plan['status']
   })
   const [planImage, setPlanImage] = useState<string>('')
 
@@ -266,7 +262,7 @@ export function PlanesSection() {
       const { data, error } = await supabase
         .from('plans')
         .select('*')
-        .order('date', { ascending: true })
+        .order('created_at', { ascending: false })
 
       if (error) {
         console.error('Error loading plans:', error)
@@ -320,8 +316,7 @@ export function PlanesSection() {
 
   const filteredPlans = plans.filter(plan => {
     const matchesSearch = plan.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         plan.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         plan.location?.toLowerCase().includes(searchQuery.toLowerCase())
+                         plan.description.toLowerCase().includes(searchQuery.toLowerCase())
     
     const matchesStatus = selectedStatus === 'todos' || plan.status === selectedStatus
 
@@ -353,11 +348,7 @@ export function PlanesSection() {
     setPlanForm({
       title: '',
       description: '',
-      date: '',
-      time: '',
-      location: '',
-      status: 'pendiente',
-      tags: []
+      status: 'pendiente'
     })
     setPlanImage('')
   }
@@ -367,12 +358,8 @@ export function PlanesSection() {
       const planData = {
         title: planForm.title,
         description: planForm.description,
-        date: planForm.date,
-        time: planForm.time || null,
-        location: planForm.location || null,
         status: planForm.status,
-        image: planImage || null,
-        tags: planForm.tags.length > 0 ? planForm.tags : []
+        image: planImage || null
       }
 
       const { data, error } = await supabase
@@ -403,12 +390,8 @@ export function PlanesSection() {
       const planData = {
         title: planForm.title,
         description: planForm.description,
-        date: planForm.date,
-        time: planForm.time || null,
-        location: planForm.location || null,
         status: planForm.status,
-        image: planImage || null,
-        tags: planForm.tags.length > 0 ? planForm.tags : []
+        image: planImage || null
       }
 
       const { data, error } = await supabase
@@ -463,11 +446,7 @@ export function PlanesSection() {
     setPlanForm({
       title: plan.title,
       description: plan.description,
-      date: plan.date,
-      time: plan.time || '',
-      location: plan.location || '',
-      status: plan.status,
-      tags: plan.tags || []
+      status: plan.status
     })
     setPlanImage(plan.image || '')
     setShowEditModal(true)
@@ -520,8 +499,8 @@ export function PlanesSection() {
   }
 
   const getPlansForDate = (date: Date) => {
-    const dateString = date.toISOString().split('T')[0]
-    return plans.filter(plan => plan.date === dateString)
+    // Ya no hay campo date, retornar array vacío
+    return []
   }
 
 
@@ -890,7 +869,6 @@ export function PlanesSection() {
               resetForm()
             }}
             statuses={statuses}
-            predefinedTags={predefinedTags}
           />
         </DialogContent>
       </Dialog>
@@ -923,7 +901,6 @@ export function PlanesSection() {
               resetForm()
             }}
             statuses={statuses}
-            predefinedTags={predefinedTags}
           />
         </DialogContent>
       </Dialog>
@@ -1239,12 +1216,6 @@ function CalendarView({
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-900 dark:text-white">{plan.title}</h4>
                         <p className="text-sm text-gray-600 dark:text-gray-400">{plan.description}</p>
-                        {plan.time && (
-                          <p className="text-xs text-gray-500 dark:text-gray-500">
-                            <Clock className="h-3 w-3 inline mr-1" />
-                            {plan.time}
-                          </p>
-                        )}
                       </div>
                     </div>
                     
@@ -1380,53 +1351,12 @@ function PlanCard({
       
       {/* Contenido principal */}
       <CardContent className="p-4 sm:p-4 space-y-4">
-        {/* Información organizada en 2 columnas - Estado y Fecha a la izquierda */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {/* Columna izquierda - Estado y Fecha */}
-          <div className="space-y-4">
-            {/* Estado */}
-            <div className="flex items-center">
-              <Badge className={`${getStatusColor(plan.status)} text-[clamp(0.8rem,2.5vw,0.8rem)] px-3 py-1.5`}>
-                <StatusIcon className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-2 sm:mr-1.5" />
-                {statuses.find(s => s.value === plan.status)?.label}
-              </Badge>
-            </div>
-            
-            {/* Fecha y Hora */}
-            <div className="flex items-center text-[clamp(0.9rem,2.5vw,0.85rem)] text-gray-600 dark:text-gray-400">
-              <Calendar className="h-5 w-5 sm:h-4 sm:w-4 mr-3 sm:mr-2 text-primary" />
-              <span className="font-medium">{new Date(plan.date).toLocaleDateString('es-ES')}</span>
-              {plan.time && (
-                <>
-                  <Clock className="h-5 w-5 sm:h-4 sm:w-4 mr-3 sm:mr-2 ml-4 sm:ml-3 text-primary" />
-                  <span className="font-medium">{plan.time}</span>
-                </>
-              )}
-            </div>
-          </div>
-          
-          {/* Columna derecha - Ubicación y Tags */}
-          <div className="space-y-4">
-            {/* Ubicación */}
-            {plan.location && (
-              <div className="flex items-center text-[clamp(0.9rem,2.5vw,0.85rem)] text-gray-600 dark:text-gray-400">
-                <MapPin className="h-5 w-5 sm:h-4 sm:w-4 mr-3 sm:mr-2 text-primary" />
-                <span className="line-clamp-1 font-medium">{plan.location}</span>
-              </div>
-            )}
-            
-            {/* Tags */}
-            {plan.tags && plan.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {plan.tags.map(tag => (
-                  <Badge key={tag} variant="outline" className="text-[clamp(0.8rem,2.2vw,0.75rem)] px-3 py-1.5 bg-pink-50 border-pink-200 text-pink-700">
-                    <Tag className="h-4 w-4 sm:h-3 w-3 mr-1.5 sm:mr-1" />
-                    <span className="line-clamp-1">{tag}</span>
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </div>
+        {/* Estado */}
+        <div className="flex items-center">
+          <Badge className={`${getStatusColor(plan.status)} text-[clamp(0.8rem,2.5vw,0.8rem)] px-3 py-1.5`}>
+            <StatusIcon className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-2 sm:mr-1.5" />
+            {statuses.find(s => s.value === plan.status)?.label}
+          </Badge>
         </div>
         
         {/* Descripción - Movida abajo para aprovechar el espacio */}
@@ -1533,7 +1463,6 @@ interface PlanFormProps {
   onSubmit: () => void
   onCancel: () => void
   statuses: any[]
-  predefinedTags: string[]
 }
 
 function PlanForm({
@@ -1543,35 +1472,8 @@ function PlanForm({
   setImage,
   onSubmit,
   onCancel,
-  statuses,
-  predefinedTags
+  statuses
 }: PlanFormProps) {
-  
-  const handleTagToggle = (tag: string) => {
-    setForm((prev: any) => ({
-      ...prev,
-      tags: prev.tags.includes(tag) 
-        ? prev.tags.filter((t: string) => t !== tag)
-        : [...prev.tags, tag]
-    }))
-  }
-
-  const handleAddCustomTag = (customTag: string) => {
-    const trimmedTag = customTag.trim()
-    if (trimmedTag && !form.tags.includes(trimmedTag)) {
-      setForm((prev: any) => ({
-        ...prev,
-        tags: [...prev.tags, trimmedTag]
-      }))
-    }
-  }
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setForm((prev: any) => ({
-      ...prev,
-      tags: prev.tags.filter((tag: string) => tag !== tagToRemove)
-    }))
-  }
 
   return (
     <div className="space-y-6">
@@ -1625,131 +1527,6 @@ function PlanForm({
         />
       </div>
 
-      {/* Date and Time */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Fecha *
-          </label>
-          <Input
-            type="date"
-            value={form.date}
-            onChange={(e) => setForm({ ...form, date: e.target.value })}
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Hora
-          </label>
-          <Input
-            type="time"
-            value={form.time}
-            onChange={(e) => setForm({ ...form, time: e.target.value })}
-          />
-        </div>
-      </div>
-
-      {/* Location */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Ubicación
-        </label>
-        <Input
-          value={form.location}
-          onChange={(e) => setForm({ ...form, location: e.target.value })}
-          placeholder="Dirección o lugar"
-        />
-      </div>
-
-
-
-      {/* Tags */}
-      <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Etiquetas
-          </label>
-          <div className="space-y-3">
-            {/* Selected tags display */}
-            {form.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {form.tags.map((tag: string, index: number) => (
-                  <Badge 
-                    key={index} 
-                    variant="default" 
-                    className="cursor-pointer hover:bg-red-100 hover:text-red-800"
-                    onClick={() => handleRemoveTag(tag)}
-                  >
-                    <Tag className="w-3 h-3 mr-1" />
-                    {tag}
-                    <span className="ml-1 text-xs">×</span>
-                  </Badge>
-                ))}
-              </div>
-            )}
-            
-            {/* Tags dropdown */}
-            <div className="relative">
-              <Select onValueChange={(value) => handleTagToggle(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar etiquetas..." />
-                </SelectTrigger>
-                <SelectContent className="max-h-60">
-                  <div className="grid grid-cols-1 gap-1 p-2">
-                    {predefinedTags.map((tag) => (
-                      <SelectItem 
-                        key={tag} 
-                        value={tag}
-                        className={`cursor-pointer ${
-                          form.tags.includes(tag) 
-                            ? 'bg-primary/10 text-primary' 
-                            : ''
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <Tag className="w-3 h-3" />
-                          <span>{tag}</span>
-                          {form.tags.includes(tag) && (
-                            <span className="text-xs text-primary">✓</span>
-                          )}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </div>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {/* Custom tag input */}
-            <div className="flex gap-2">
-              <Input
-                placeholder="Agregar etiqueta personalizada..."
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    const input = e.target as HTMLInputElement
-                    handleAddCustomTag(input.value)
-                    input.value = ''
-                  }
-                }}
-                className="flex-1"
-              />
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={(e) => {
-                  const input = e.currentTarget.previousElementSibling as HTMLInputElement
-                  handleAddCustomTag(input.value)
-                  input.value = ''
-                }}
-              >
-                Agregar
-              </Button>
-            </div>
-          </div>
-        </div>
 
       {/* Image Upload */}
       <div>
@@ -1797,7 +1574,7 @@ function PlanForm({
           type="button"
           onClick={onSubmit}
           className="bg-pink-600 hover:bg-pink-700"
-          disabled={!form.title || !form.description || !form.date}
+          disabled={!form.title || !form.description}
         >
           Guardar Plan
         </Button>

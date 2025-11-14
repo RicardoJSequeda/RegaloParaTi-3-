@@ -256,105 +256,127 @@ export function RecetasSection() {
         imageUrls = uploads.map(u => u.url)
       }
 
-      const payload = {
+      // Preparar datos para Supabase (snake_case)
+      const recipeData: any = {
         title: recipeForm.title.trim(),
         description: recipeForm.description.trim(),
         category: recipeForm.category,
         servings: recipeForm.servings || 1,
         ingredients: recipeForm.ingredients.filter(ing => ing.trim() !== ''),
         instructions: recipeForm.instructions.filter(inst => inst.trim() !== ''),
-        "isFavorite": selectedRecipe?.isFavorite || false,
+        is_favorite: selectedRecipe?.isFavorite || false,
         rating: selectedRecipe?.rating || null,
         tags: recipeForm.tags || [],
         images: imageUrls.length > 0 ? imageUrls : (selectedRecipe?.images || [])
       }
 
-             if (showEditModal && selectedRecipe) {
-         // Editar receta existente
-         const response = await fetch(`/api/recipes/${selectedRecipe.id}`, {
-           method: 'PATCH',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify(payload)
-         })
+      if (showEditModal && selectedRecipe) {
+        // Editar receta existente
+        const { data, error } = await supabase
+          .from('recipes')
+          .update(recipeData)
+          .eq('id', selectedRecipe.id)
+          .select()
+          .single()
 
-         if (response.ok) {
-           const updatedRecipe = await response.json()
-           setRecipes(prev => prev.map(r => r.id === selectedRecipe.id ? updatedRecipe : r))
-           setShowEditModal(false)
-           setSelectedRecipe(null)
-           setNotification({ type: 'success', message: '¡Receta actualizada exitosamente!' })
-         } else {
-           const errorData = await response.json().catch(() => ({}))
-           console.error('Error response:', response.status, errorData)
-           const errorMessage = errorData.details || errorData.error || `Error ${response.status}`
-           setNotification({ type: 'error', message: `Error al actualizar la receta: ${errorMessage}` })
-         }
-       } else {
-         // Agregar nueva receta
-         const response = await fetch('/api/recipes', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify(payload)
-         })
+        if (error) {
+          const errorMessage = error.message || 'Error al actualizar la receta'
+          setNotification({ type: 'error', message: `Error al actualizar la receta: ${errorMessage}` })
+          return
+        }
 
-         if (response.ok) {
-           const newRecipe = await response.json()
-      setRecipes(prev => [newRecipe, ...prev])
-      setShowAddModal(false)
-           setNotification({ type: 'success', message: '¡Receta creada exitosamente!' })
-         } else {
-           const errorData = await response.json().catch(() => ({}))
-           console.error('Error response:', response.status, errorData)
-           const errorMessage = errorData.details || errorData.error || `Error ${response.status}`
-           setNotification({ type: 'error', message: `Error al crear la receta: ${errorMessage}` })
-         }
-       }
+        // Actualizar estado local optimísticamente
+        if (data) {
+          setRecipes(prev => prev.map(r => r.id === selectedRecipe.id ? data as Recipe : r))
+        }
+
+        setShowEditModal(false)
+        setSelectedRecipe(null)
+        setNotification({ type: 'success', message: '¡Receta actualizada exitosamente!' })
+      } else {
+        // Agregar nueva receta
+        const { data, error } = await supabase
+          .from('recipes')
+          .insert([recipeData])
+          .select()
+          .single()
+
+        if (error) {
+          const errorMessage = error.message || 'Error al crear la receta'
+          setNotification({ type: 'error', message: `Error al crear la receta: ${errorMessage}` })
+          return
+        }
+
+        // Agregar al estado local optimísticamente
+        if (data) {
+          setRecipes(prev => [data as Recipe, ...prev])
+        }
+
+        setShowAddModal(false)
+        setNotification({ type: 'success', message: '¡Receta creada exitosamente!' })
+      }
          } catch (error) {
        console.error('Error saving recipe:', error)
        setNotification({ type: 'error', message: 'Error al guardar la receta' })
      } finally {
        setSaving(false)
      }
-  }, [recipeForm, selectedRecipe, showEditModal])
+  }, [recipeForm, selectedRecipe, showEditModal, supabase])
 
   const handleDeleteRecipe = useCallback(async () => {
     if (!selectedRecipe) return
 
     try {
-      const response = await fetch(`/api/recipes/${selectedRecipe.id}`, {
-        method: 'DELETE'
-      })
+      // Eliminar de Supabase
+      const { error } = await supabase
+        .from('recipes')
+        .delete()
+        .eq('id', selectedRecipe.id)
 
-      if (response.ok) {
+      if (error) {
+        console.error('Error deleting recipe:', error)
+        setNotification({ type: 'error', message: 'Error al eliminar la receta' })
+        return
+      }
+
+      // Actualizar estado local optimísticamente
       setRecipes(prev => prev.filter(r => r.id !== selectedRecipe.id))
       setShowDeleteModal(false)
       setSelectedRecipe(null)
-      }
+      setNotification({ type: 'success', message: 'Receta eliminada exitosamente' })
     } catch (error) {
       console.error('Error deleting recipe:', error)
+      setNotification({ type: 'error', message: 'Error al eliminar la receta' })
     }
-  }, [selectedRecipe])
+  }, [selectedRecipe, supabase])
 
   const toggleFavorite = useCallback(async (recipeId: string) => {
     const recipe = recipes.find(r => r.id === recipeId)
     if (!recipe) return
 
     try {
-      const response = await fetch(`/api/recipes/${recipeId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isFavorite: !recipe.isFavorite })
-      })
+      // Actualización optimista
+      setRecipes(prev => prev.map(r => 
+        r.id === recipeId ? { ...r, isFavorite: !r.isFavorite } : r
+      ))
 
-      if (response.ok) {
-    setRecipes(prev => prev.map(r => 
-      r.id === recipeId ? { ...r, isFavorite: !r.isFavorite } : r
-    ))
+      // Actualizar en Supabase
+      const { error } = await supabase
+        .from('recipes')
+        .update({ is_favorite: !recipe.isFavorite })
+        .eq('id', recipeId)
+
+      if (error) {
+        // Revertir en caso de error
+        setRecipes(prev => prev.map(r => 
+          r.id === recipeId ? { ...r, isFavorite: recipe.isFavorite } : r
+        ))
+        throw error
       }
     } catch (error) {
       console.error('Error toggling favorite:', error)
     }
-  }, [recipes])
+  }, [recipes, supabase])
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])

@@ -48,7 +48,6 @@ import {
   Plus, 
   Search, 
   Filter, 
-  Eye, 
   Edit, 
   Trash2, 
   Download, 
@@ -218,26 +217,52 @@ export default function FotosSection() {
 
       // Generar posters estáticos (thumbnail) de forma client-side
       videoPhotos.forEach(photo => {
+        // Si ya tiene thumbnail_url en la BD, usarlo directamente
+        if (photo.thumbnail_url) {
+          setVideoPosters(prev => ({ ...prev, [photo.id]: photo.thumbnail_url! }))
+          return
+        }
+
+        // Si no tiene thumbnail, generar uno client-side
         try {
           const video = document.createElement('video')
           video.crossOrigin = 'anonymous'
           video.src = photo.image_url
           video.preload = 'metadata'
-          video.addEventListener('loadeddata', () => {
+          video.muted = true
+          
+          // Establecer tiempo para capturar un frame más representativo (no el primer frame que suele ser negro)
+          video.addEventListener('loadedmetadata', () => {
+            // Intentar capturar en 1 segundo o 10% del video, lo que sea menor
+            const seekTime = Math.min(1, video.duration * 0.1)
+            video.currentTime = seekTime
+          })
+
+          // Capturar el frame cuando el video se posicione en el tiempo deseado
+          video.addEventListener('seeked', () => {
             try {
               const canvas = document.createElement('canvas')
               canvas.width = video.videoWidth
               canvas.height = video.videoHeight
               const ctx = canvas.getContext('2d')
-              ctx?.drawImage(video, 0, 0, canvas.width, canvas.height)
-              const dataUrl = canvas.toDataURL('image/jpeg', 0.8)
-              setVideoPosters(prev => ({ ...prev, [photo.id]: dataUrl }))
+              
+              if (ctx) {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.8)
+                setVideoPosters(prev => ({ ...prev, [photo.id]: dataUrl }))
+              }
             } catch (err) {
-              // Ignorar si el navegador bloquea por CORS
+              console.warn('Error generando thumbnail del video:', err)
+              // Si falla, usar un placeholder
             }
           })
+
+          // Manejar errores de carga
+          video.addEventListener('error', () => {
+            console.warn('Error cargando video para thumbnail:', photo.id)
+          })
         } catch (err) {
-          // Silencioso si falla la generación
+          console.warn('Error inicializando generación de thumbnail:', err)
         }
       })
     } catch (error) {
@@ -325,17 +350,47 @@ export default function FotosSection() {
       return
     }
 
-    try {
-      // Generar título automático si no existe
-      const finalTitle = photoForm.title || 
-        (photoForm.image ? photoForm.image.name.replace(/\.[^/.]+$/, '') : '') || 
-        `Foto ${new Date().toLocaleDateString('es-ES')}`
-      
-      // Asegurar que la fecha esté establecida (debería estar automáticamente)
-      const finalDate = photoForm.date || new Date().toISOString().split('T')[0]
+    // Generar título automático si no existe
+    const finalTitle = photoForm.title || 
+      (photoForm.image ? photoForm.image.name.replace(/\.[^/.]+$/, '') : '') || 
+      `Foto ${new Date().toLocaleDateString('es-ES')}`
+    
+    // Asegurar que la fecha esté establecida (debería estar automáticamente)
+    const finalDate = photoForm.date || new Date().toISOString().split('T')[0]
 
-      // Subir imagen a Supabase Storage
-      const imageFile = photoForm.image
+    const imageFile = photoForm.image
+    const fileType = imageFile.type.startsWith('video/') ? 'video' : 
+                    imageFile.type === 'image/gif' ? 'gif' : 'image'
+    
+    // Crear URL temporal para actualización optimista
+    const tempImageUrl = URL.createObjectURL(imageFile)
+    
+    // Crear foto temporal para actualización optimista
+    const tempPhoto: Photo = {
+      id: `temp-${Date.now()}`,
+      title: finalTitle,
+      description: photoForm.description || undefined,
+      image_url: tempImageUrl,
+      thumbnail_url: undefined,
+      file_type: fileType,
+      category: 'otro',
+      tags: photoForm.tags,
+      location: undefined,
+      date_taken: finalDate,
+      favorite: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+    
+    // ACTUALIZACIÓN OPTIMISTA: Mostrar la foto inmediatamente
+    setPhotos(prev => [tempPhoto, ...prev])
+    
+    // Cerrar modal inmediatamente
+    setShowCreateModal(false)
+    resetForm()
+    
+    // Subir imagen a Supabase Storage en segundo plano
+    try {
       const safeName = imageFile.name.replace(/[^a-zA-Z0-9.\-_]/g, '-').toLowerCase()
       const key = `photos/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`
       
@@ -355,34 +410,34 @@ export default function FotosSection() {
         .from('photos')
         .getPublicUrl(key)
 
-      // Detectar tipo de archivo automáticamente
-      const fileType = imageFile.type.startsWith('video/') ? 'video' : 
-                      imageFile.type === 'image/gif' ? 'gif' : 'image'
-
       // Generar thumbnail para videos si es necesario
       let thumbnailUrl = null
       if (fileType === 'video') {
         try {
           const video = document.createElement('video')
-          video.src = URL.createObjectURL(imageFile)
+          video.src = tempImageUrl
           video.currentTime = 0.1
           
           const canvas = document.createElement('canvas')
           const ctx = canvas.getContext('2d')
           
-          video.addEventListener('loadeddata', () => {
-            canvas.width = video.videoWidth
-            canvas.height = video.videoHeight
-            ctx?.drawImage(video, 0, 0)
-            
-            canvas.toBlob(async (blob) => {
-              if (blob) {
-                const thumbnailKey = `thumbnails/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-thumb.jpg`
-                await supabase.storage.from('photos').upload(thumbnailKey, blob)
-                const { data: thumbData } = supabase.storage.from('photos').getPublicUrl(thumbnailKey)
-                thumbnailUrl = thumbData.publicUrl
-              }
-            }, 'image/jpeg', 0.8)
+          await new Promise<void>((resolve) => {
+            video.addEventListener('loadeddata', () => {
+              canvas.width = video.videoWidth
+              canvas.height = video.videoHeight
+              ctx?.drawImage(video, 0, 0)
+              
+              canvas.toBlob(async (blob) => {
+                if (blob) {
+                  const thumbnailKey = `thumbnails/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-thumb.jpg`
+                  await supabase.storage.from('photos').upload(thumbnailKey, blob)
+                  const { data: thumbData } = supabase.storage.from('photos').getPublicUrl(thumbnailKey)
+                  thumbnailUrl = thumbData.publicUrl
+                }
+                resolve()
+              }, 'image/jpeg', 0.8)
+            })
+            video.load()
           })
         } catch (error) {
           console.warn('No se pudo generar thumbnail del video:', error)
@@ -396,7 +451,7 @@ export default function FotosSection() {
         image_url: urlData.publicUrl,
         thumbnail_url: thumbnailUrl,
         file_type: fileType,
-        category: 'otro', // Por defecto
+        category: 'otro',
         tags: photoForm.tags,
         location: null,
         date_taken: finalDate,
@@ -413,9 +468,29 @@ export default function FotosSection() {
         throw error
       }
 
-      setShowCreateModal(false)
-      resetForm()
-      await loadPhotos() // Recargar fotos
+      // Actualizar con la foto real de la base de datos
+      const realPhoto: Photo = {
+        id: data.id,
+        title: data.title,
+        description: data.description,
+        image_url: data.image_url,
+        thumbnail_url: data.thumbnail_url,
+        file_type: data.file_type,
+        category: data.category,
+        tags: data.tags || [],
+        location: data.location,
+        date_taken: data.date_taken,
+        favorite: data.favorite,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      }
+      
+      // Reemplazar la foto temporal con la real
+      setPhotos(prev => prev.map(p => p.id === tempPhoto.id ? realPhoto : p))
+      
+      // Limpiar URL temporal
+      URL.revokeObjectURL(tempImageUrl)
+      
       setToast({
         show: true,
         title: 'Éxito',
@@ -423,6 +498,9 @@ export default function FotosSection() {
       })
     } catch (error) {
       console.error('Error creating photo:', error)
+      // Revertir actualización optimista
+      setPhotos(prev => prev.filter(p => p.id !== tempPhoto.id))
+      URL.revokeObjectURL(tempImageUrl)
       setToast({
         show: true,
         title: 'Error',
@@ -863,29 +941,64 @@ export default function FotosSection() {
                 <div className="photo-card">
                   {/* Image/Video Container */}
                   <div className="relative">
-                    {photo.file_type === 'video' ? (
-                      <video
-                        src={photo.image_url}
-                        className="w-full h-auto rounded-lg object-cover"
-                        preload="metadata"
-                        muted
-                        playsInline
-                        poster={videoPosters[photo.id] || photo.thumbnail_url || `${photo.image_url}#t=0.5`}
-                        onLoadedMetadata={(e) => {
-                          const video = e.target as HTMLVideoElement
-                          video.style.aspectRatio = `${video.videoWidth}/${video.videoHeight}`
-                        }}
-                      />
-                    ) : (
-                      <img
-                        src={photo.image_url}
-                        alt={photo.title}
-                        className="w-full h-auto rounded-lg object-cover"
-                        loading="lazy"
-                      />
-                    )}
-
-
+                    <div 
+                      className="cursor-pointer"
+                      onClick={() => handleViewPhoto(photo)}
+                    >
+                      {photo.file_type === 'video' ? (
+                        <div className="relative w-full group/video">
+                          <video
+                            src={photo.image_url}
+                            className="w-full h-auto rounded-lg object-cover"
+                            preload="metadata"
+                            muted
+                            playsInline
+                            poster={videoPosters[photo.id] || photo.thumbnail_url || undefined}
+                            onLoadedMetadata={(e) => {
+                              const video = e.target as HTMLVideoElement
+                              video.style.aspectRatio = `${video.videoWidth}/${video.videoHeight}`
+                              // Si no hay poster y no hay thumbnail_url, intentar generar uno
+                              if (!videoPosters[photo.id] && !photo.thumbnail_url) {
+                                video.currentTime = Math.min(1, video.duration * 0.1)
+                              }
+                            }}
+                            onSeeked={(e) => {
+                              const video = e.target as HTMLVideoElement
+                              // Si aún no hay poster generado, intentar generarlo ahora
+                              if (!videoPosters[photo.id] && !photo.thumbnail_url && video.readyState >= 2) {
+                                try {
+                                  const canvas = document.createElement('canvas')
+                                  canvas.width = video.videoWidth
+                                  canvas.height = video.videoHeight
+                                  const ctx = canvas.getContext('2d')
+                                  if (ctx) {
+                                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+                                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8)
+                                    setVideoPosters(prev => ({ ...prev, [photo.id]: dataUrl }))
+                                    video.poster = dataUrl
+                                  }
+                                } catch (err) {
+                                  // Silencioso si falla
+                                }
+                              }
+                            }}
+                          />
+                          {/* Indicador sutil de video - pequeño ícono en esquina superior */}
+                          <div className="absolute top-2 right-2 opacity-0 group-hover/video:opacity-100 transition-opacity duration-200 pointer-events-none">
+                            <div className="bg-black/70 backdrop-blur-sm rounded-full p-1.5">
+                              <PlayCircle className="w-4 h-4 text-white" fill="currentColor" />
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <img
+                          src={photo.image_url}
+                          alt={photo.title}
+                          className="w-full h-auto rounded-lg object-cover"
+                          loading="lazy"
+                        />
+                      )}
+                    </div>
 
                     {/* Video Duration Badge */}
                     {photo.file_type === 'video' && (
@@ -907,56 +1020,6 @@ export default function FotosSection() {
                          </div>
                        </div>
                      )}
-
-                     {/* Hover Overlay with Actions */}
-                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                       <div className="flex gap-2 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-200">
-                         <Button
-                           size="sm"
-                           variant="secondary"
-                           className="bg-white/95 backdrop-blur-sm hover:bg-white shadow-lg"
-                           onClick={() => handleViewPhoto(photo)}
-                         >
-                           <Eye className="w-4 h-4" />
-                         </Button>
-                         <Button
-                           size="sm"
-                           variant="secondary"
-                           className="bg-white/95 backdrop-blur-sm hover:bg-white shadow-lg"
-                           onClick={() => handleEditPhoto(photo)}
-                         >
-                           <Edit className="w-4 h-4" />
-                         </Button>
-                         <AlertDialog>
-                           <AlertDialogTrigger asChild>
-                             <Button 
-                               size="sm" 
-                               variant="destructive"
-                               className="bg-red-500/95 backdrop-blur-sm hover:bg-red-600 shadow-lg"
-                             >
-                               <Trash2 className="w-4 h-4" />
-                             </Button>
-                           </AlertDialogTrigger>
-                           <AlertDialogContent>
-                             <AlertDialogHeader>
-                               <AlertDialogTitle>¿Eliminar foto?</AlertDialogTitle>
-                               <AlertDialogDescription>
-                                 Esta acción no se puede deshacer. La foto se eliminará permanentemente.
-                               </AlertDialogDescription>
-                             </AlertDialogHeader>
-                             <AlertDialogFooter>
-                               <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                               <AlertDialogAction
-                                 onClick={() => handleDeletePhoto(photo)}
-                                 className="bg-red-600 hover:bg-red-700"
-                               >
-                                 Eliminar
-                               </AlertDialogAction>
-                             </AlertDialogFooter>
-                           </AlertDialogContent>
-                         </AlertDialog>
-                       </div>
-                     </div>
                   </div>
 
                   
@@ -1325,12 +1388,44 @@ export default function FotosSection() {
                     </div>
                   )}
                 
-                  {/* Panel de información - Solo fecha */}
-                  <div className="flex items-center justify-center">
+                  {/* Panel de información - Fecha y botón eliminar */}
+                  <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 px-4 py-2 rounded-lg">
                       <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-pink-500" />
                       <span className="font-medium">{formatDate(selectedPhoto.date_taken || '')}</span>
                     </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          size="sm" 
+                          variant="destructive"
+                          className="bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 min-h-[44px]"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Eliminar
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>¿Eliminar foto?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta acción no se puede deshacer. La foto se eliminará permanentemente.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              handleDeletePhoto(selectedPhoto)
+                              setShowDetailModal(false)
+                            }}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Eliminar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               </div>

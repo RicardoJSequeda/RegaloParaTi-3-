@@ -268,43 +268,58 @@ export function PeliculasSection() {
         }
       }
 
-      const movieData = {
-        ...movieForm,
-        image: imageUrl
+      // Preparar datos para Supabase (snake_case)
+      const movieData: any = {
+        title: movieForm.title,
+        description: movieForm.description || null,
+        type: movieForm.type,
+        genre: movieForm.genre,
+        image: imageUrl || null,
+        watch_link: movieForm.watchLink || null,
+        season: movieForm.season || null,
+        episode: movieForm.episode || null,
+        status: movieForm.status,
+        is_favorite: movieForm.isFavorite || false
       }
 
       if (showEditModal && selectedMovie) {
         // Actualizar película existente
-        const response = await fetch(`/api/movies/${selectedMovie.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(movieData)
-        })
+        const { data, error } = await supabase
+          .from('movies')
+          .update(movieData)
+          .eq('id', selectedMovie.id)
+          .select()
+          .single()
 
-        if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.error || 'Error al actualizar la película')
+        if (error) {
+          throw new Error(error.message || 'Error al actualizar la película')
+        }
+
+        // Actualizar estado local optimísticamente
+        if (data) {
+          setMovies(prev => prev.map(m => m.id === selectedMovie.id ? data as Movie : m))
         }
 
         setShowEditModal(false)
       } else {
         // Crear nueva película
-        const response = await fetch('/api/movies', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(movieData)
-        })
+        const { data, error } = await supabase
+          .from('movies')
+          .insert([movieData])
+          .select()
+          .single()
 
-        if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.error || 'Error al crear la película')
+        if (error) {
+          throw new Error(error.message || 'Error al crear la película')
+        }
+
+        // Agregar al estado local optimísticamente
+        if (data) {
+          setMovies(prev => [data as Movie, ...prev])
         }
 
         setShowAddModal(false)
       }
-
-      // Recargar datos para actualizar la UI
-      await loadMovies()
 
       // Limpiar formulario
       setMovieForm({
@@ -324,37 +339,43 @@ export function PeliculasSection() {
     } catch (error) {
       console.error('Error saving movie:', error)
       alert(error instanceof Error ? error.message : 'Error al guardar la película')
+      // Recargar en caso de error
+      await loadMovies()
     } finally {
       setSaving(false)
     }
-  }, [movieForm, imageFile, showEditModal, selectedMovie, loadMovies])
+  }, [movieForm, imageFile, showEditModal, selectedMovie, supabase, loadMovies])
 
   const handleDeleteMovie = useCallback(async () => {
     if (!selectedMovie) return
 
     try {
       setSaving(true)
-      const response = await fetch(`/api/movies/${selectedMovie.id}`, {
-        method: 'DELETE'
-      })
+      
+      // Eliminar de Supabase
+      const { error } = await supabase
+        .from('movies')
+        .delete()
+        .eq('id', selectedMovie.id)
 
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Error al eliminar la película')
+      if (error) {
+        throw new Error(error.message || 'Error al eliminar la película')
       }
+
+      // Actualizar estado local optimísticamente
+      setMovies(prev => prev.filter(m => m.id !== selectedMovie.id))
 
       setShowDeleteModal(false)
       setSelectedMovie(null)
-      
-      // Recargar datos para actualizar la UI
-      await loadMovies()
     } catch (error) {
       console.error('Error deleting movie:', error)
       alert(error instanceof Error ? error.message : 'Error al eliminar la película')
+      // Recargar en caso de error
+      await loadMovies()
     } finally {
       setSaving(false)
     }
-  }, [selectedMovie, loadMovies])
+  }, [selectedMovie, supabase, loadMovies])
 
   const getGenreIcon = useCallback((genre: string) => {
     return genres.find(g => g.value === genre)?.icon || '🎬'
@@ -370,43 +391,58 @@ export function PeliculasSection() {
       const movie = movies.find(m => m.id === movieId)
       if (!movie) return
 
-      const response = await fetch(`/api/movies/${movieId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isFavorite: !movie.isFavorite })
-      })
+      // Actualización optimista
+      setMovies(prev => prev.map(m => 
+        m.id === movieId ? { ...m, isFavorite: !m.isFavorite } : m
+      ))
 
-      if (!response.ok) {
+      // Actualizar en Supabase
+      const { error } = await supabase
+        .from('movies')
+        .update({ is_favorite: !movie.isFavorite })
+        .eq('id', movieId)
+
+      if (error) {
+        // Revertir en caso de error
+        setMovies(prev => prev.map(m => 
+          m.id === movieId ? { ...m, isFavorite: movie.isFavorite } : m
+        ))
         throw new Error('Error al actualizar favorito')
       }
-
-      // Recargar datos para actualizar la UI
-      await loadMovies()
     } catch (error) {
       console.error('Error toggling favorite:', error)
       alert('Error al actualizar favorito')
     }
-  }, [movies, loadMovies])
+  }, [movies, supabase])
 
   const changeStatus = useCallback(async (movieId: string, newStatus: Movie['status']) => {
     try {
-      const response = await fetch(`/api/movies/${movieId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
-      })
+      const movie = movies.find(m => m.id === movieId)
+      if (!movie) return
 
-      if (!response.ok) {
+      // Actualización optimista
+      setMovies(prev => prev.map(m => 
+        m.id === movieId ? { ...m, status: newStatus } : m
+      ))
+
+      // Actualizar en Supabase
+      const { error } = await supabase
+        .from('movies')
+        .update({ status: newStatus })
+        .eq('id', movieId)
+
+      if (error) {
+        // Revertir en caso de error
+        setMovies(prev => prev.map(m => 
+          m.id === movieId ? { ...m, status: movie.status } : m
+        ))
         throw new Error('Error al cambiar estado')
       }
-
-      // Recargar datos para actualizar la UI
-      await loadMovies()
     } catch (error) {
       console.error('Error changing status:', error)
       alert('Error al cambiar el estado')
     }
-  }, [loadMovies])
+  }, [movies, supabase])
 
   const MovieCard = ({ movie }: { movie: Movie }) => (
     <div className="relative group">
