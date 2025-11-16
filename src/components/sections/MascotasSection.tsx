@@ -1976,6 +1976,11 @@ export function MascotasSection() {
             paddingBottom: 'max(env(safe-area-inset-bottom), 0)'
           }}
         >
+          <DialogHeader className="sr-only">
+            <DialogTitle>
+              {selectedPhotoView ? `Foto de ${getPetById(selectedPhotoView.petId)?.name || 'mascota'}` : 'Vista de Foto'}
+            </DialogTitle>
+          </DialogHeader>
           {selectedPhotoView && (
             <div className="relative w-full h-full flex items-center justify-center">
               <img

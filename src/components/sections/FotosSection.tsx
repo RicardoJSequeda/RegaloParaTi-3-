@@ -1327,6 +1327,9 @@ export default function FotosSection() {
                 ? 'max-w-[50vw] w-auto sm:max-w-[85vw]' 
                 : 'max-w-4xl w-full sm:max-w-[90vw]'
           }`}>
+            <DialogHeader className="sr-only">
+              <DialogTitle>Vista de Foto</DialogTitle>
+            </DialogHeader>
             {selectedPhoto && (
               <div className="space-y-0">
                 {/* Contenedor de media - Mejorado */}

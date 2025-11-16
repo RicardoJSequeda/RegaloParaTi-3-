@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -12,14 +12,84 @@ import { ImageWithFallback } from '@/components/ui/image-with-fallback'
 import { CarouselIndicators } from '@/components/ui/carousel-indicators'
 import Autoplay from 'embla-carousel-autoplay'
 
+// Componente contador que actualiza solo el número sin re-renderizar el layout
+const CounterItem = ({ item, index }: { item: { id: string; label: string; value: number; gradient: string }; index: number }) => {
+  const numberRef = useRef<HTMLSpanElement>(null)
+  const prevValueRef = useRef<number>(item.value)
+  
+  // Actualizar solo el texto del número sin re-renderizar
+  useEffect(() => {
+    if (numberRef.current && prevValueRef.current !== item.value) {
+      numberRef.current.textContent = String(item.value)
+      prevValueRef.current = item.value
+    }
+  }, [item.value])
+  
+  return (
+    <div
+      className={`flex flex-col items-center justify-center gap-0.5 rounded-lg border border-pink-200 bg-white px-1.5 py-2 shadow-sm dark:border-pink-800 dark:bg-gray-900 overflow-hidden ${index >= 3 ? 'hidden md:flex' : ''}`}
+      style={{ 
+        minWidth: 0, 
+        maxWidth: '100%', 
+        width: '100%', 
+        contain: 'layout style paint',
+        willChange: 'auto',
+        position: 'relative',
+        flexShrink: 0
+      }}
+    >
+      <div 
+        className="w-full flex justify-center items-center overflow-hidden" 
+        style={{ 
+          minHeight: '1.5rem', 
+          maxHeight: '1.5rem',
+          maxWidth: '100%', 
+          contain: 'layout paint',
+          willChange: 'auto',
+          flexShrink: 0,
+          position: 'relative'
+        }}
+      >
+        <span 
+          ref={numberRef}
+          className={`bg-gradient-to-br ${item.gradient} bg-clip-text text-lg font-bold leading-none text-transparent tabular-nums`} 
+          style={{ 
+            display: 'inline-block', 
+            minWidth: '2ch', 
+            maxWidth: '2ch',
+            width: '2ch',
+            textAlign: 'center',
+            contain: 'layout paint',
+            willChange: 'auto',
+            position: 'relative',
+            flexShrink: 0,
+            lineHeight: '1.2',
+            height: '1.2em'
+          }}
+        >
+          {item.value}
+        </span>
+      </div>
+      <span 
+        className="text-[9px] font-semibold uppercase leading-tight tracking-wide text-gray-600 dark:text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap"
+        style={{ contain: 'layout paint' }}
+      >
+        {item.label}
+      </span>
+    </div>
+  )
+}
+
 export function InicioSection() {
   const anniversaryDate = '2023-02-03'
   const timeTogether = useTimeTogether(anniversaryDate)
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
+  const gridRef = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
   
   // Imágenes para el carrusel (10 fotos)
-  const carouselImages = [
+  const carouselImages = useMemo(() => [
     {
       id: 1,
       title: "Nuestro Primer Encuentro",
@@ -100,15 +170,16 @@ export function InicioSection() {
       image: "/images/carrucel/07.jpg",
       date: "Nuestros Sueños"
     }
-  ]
+  ], [])
 
-  // Configurar autoplay
+  // Configurar autoplay - optimizado para evitar cambios de layout
   const autoplayPlugin = useCallback(
     () =>
       Autoplay({
-        delay: 4000, // 4 segundos entre cada slide
-        stopOnInteraction: false, // Continúa después de interacción
+        delay: 6000, // 6 segundos entre cada slide
+        stopOnInteraction: true, // Se detiene después de interacción
         stopOnMouseEnter: true, // Se pausa al pasar el mouse
+        stopOnFocusIn: true, // Se detiene al enfocar
       }),
     []
   )
@@ -127,17 +198,16 @@ export function InicioSection() {
   }, [api])
 
   // Función para formatear fecha del próximo aniversario (compacto)
-  const formatNextAnniversary = () => {
+  const formatNextAnniversary = useCallback(() => {
     const date = timeTogether.nextAnniversary.date
     return date.toLocaleDateString('es-ES', {
       day: 'numeric',
       month: 'short',
       year: 'numeric'
     })
-  }
+  }, [timeTogether.nextAnniversary.date])
 
-
-  // UX: el grid de métricas se genera dinámicamente para mantener consistencia tipográfica y de spacing
+  // UX: el grid de métricas - ESTABLE: solo se recalcula cuando cambian valores significativos
   const counterItems = useMemo(
     () => [
       {
@@ -145,51 +215,83 @@ export function InicioSection() {
         label: 'AÑOS',
         value: timeTogether.years,
         gradient: 'from-pink-500 to-pink-600',
-        delay: 0,
       },
       {
         id: 'months',
         label: 'MESES',
         value: timeTogether.months,
         gradient: 'from-pink-500 to-pink-600',
-        delay: 0.03,
       },
       {
         id: 'days',
         label: 'DÍAS',
         value: timeTogether.days,
         gradient: 'from-pink-500 to-pink-600',
-        delay: 0.06,
       },
       {
         id: 'hours',
         label: 'HORAS',
         value: timeTogether.hours,
         gradient: 'from-purple-500 to-purple-600',
-        delay: 0.09,
       },
       {
         id: 'minutes',
         label: 'MIN',
         value: timeTogether.minutes,
         gradient: 'from-purple-500 to-purple-600',
-        delay: 0.12,
       },
       {
         id: 'seconds',
         label: 'SEG',
         value: timeTogether.seconds,
         gradient: 'from-purple-500 to-purple-600',
-        delay: 0.15,
       },
     ],
-    [timeTogether]
+    [timeTogether.years, timeTogether.months, timeTogether.days, timeTogether.hours, timeTogether.minutes, timeTogether.seconds]
   )
 
+  // Fijar dimensiones del section y grid después del primer render - SOLUCIÓN DEFINITIVA
+  useEffect(() => {
+    if (sectionRef.current && gridRef.current) {
+      const section = sectionRef.current
+      const grid = gridRef.current
+      
+      // Esperar a que el layout se estabilice
+      const timeoutId = setTimeout(() => {
+        // Fijar dimensiones del grid
+        const gridWidth = grid.offsetWidth
+        const gridHeight = grid.offsetHeight
+        if (gridWidth > 0 && gridHeight > 0) {
+          grid.style.width = `${gridWidth}px`
+          grid.style.minHeight = `${gridHeight}px`
+          grid.style.maxHeight = `${gridHeight}px`
+        }
+        
+        // Fijar ancho del section
+        const sectionWidth = section.offsetWidth
+        if (sectionWidth > 0) {
+          section.style.width = `${sectionWidth}px`
+          section.style.maxWidth = `${sectionWidth}px`
+        }
+      }, 100) // Pequeño delay para asegurar que el layout esté estable
+      
+      return () => clearTimeout(timeoutId)
+    }
+  }, [])
+
   return (
-    <section className="relative mx-auto flex w-full max-w-6xl flex-col gap-4 overflow-x-hidden px-0 pb-6 pt-3">
+    <section 
+      ref={sectionRef}
+      className="relative mx-auto flex w-full max-w-6xl flex-col gap-4 overflow-x-hidden px-0 pb-6 pt-3 md:px-6" 
+      style={{ 
+        minWidth: 0, 
+        contain: 'layout style', 
+        willChange: 'auto',
+        position: 'relative'
+      }}
+    >
       {/* UX: encabezado */}
-      <div className="flex flex-col items-center gap-1.5 text-center w-full px-3">
+      <div className="flex flex-col items-center gap-1.5 text-center w-full px-3" style={{ minWidth: 0, maxWidth: '100%' }}>
         <Badge
           aria-hidden="true"
           variant="secondary"
@@ -206,8 +308,8 @@ export function InicioSection() {
       </div>
 
       {/* UX: tarjeta */}
-      <div className="w-full">
-        <Card className="overflow-hidden rounded-xl border-0 bg-white shadow-lg dark:bg-gray-800">
+      <div className="w-full" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
+        <Card className="overflow-hidden rounded-xl border-0 bg-white shadow-lg dark:bg-gray-800" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
           <CardHeader className="flex flex-col gap-2 px-3 pb-2.5 pt-3">
             <CardTitle className="flex items-center gap-1.5 text-sm font-semibold text-gray-900 dark:text-white">
               <Heart aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-pink-500" />
@@ -217,24 +319,22 @@ export function InicioSection() {
               Cada segundo contigo suma a nuestra historia de amor.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 px-3 pb-3">
-            {/* UX: Grid - 6 columnas con ancho fijo */}
-            <div className="grid grid-cols-6 gap-1.5 text-center overflow-hidden" style={{ gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', maxWidth: '100%' }}>
-              {counterItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex flex-col items-center justify-center gap-0.5 rounded-lg border border-pink-200 bg-white px-1.5 py-2 shadow-sm dark:border-pink-800 dark:bg-gray-900 overflow-hidden"
-                  style={{ minWidth: 0, maxWidth: '100%', width: '100%' }}
-                >
-                  <div className="w-full flex justify-center items-center overflow-hidden" style={{ minHeight: '1.5rem', maxWidth: '100%' }}>
-                    <span className={`bg-gradient-to-br ${item.gradient} bg-clip-text text-lg font-bold leading-none text-transparent overflow-hidden`} style={{ maxWidth: '100%' }}>
-                      {item.value}
-                    </span>
-                  </div>
-                  <span className="text-[9px] font-semibold uppercase leading-tight tracking-wide text-gray-600 dark:text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap">
-                    {item.label}
-                  </span>
-                </div>
+          <CardContent className="space-y-3 px-3 pb-3" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
+            {/* UX: Grid - 3 columnas en móvil (solo primeros 3), 6 en tablet/desktop - SOLUCIÓN DEFINITIVA */}
+            <div 
+              ref={gridRef}
+              className="grid grid-cols-3 gap-1.5 text-center overflow-hidden md:grid-cols-6" 
+              style={{ 
+                maxWidth: '100%', 
+                minWidth: 0, 
+                contain: 'layout style paint', 
+                willChange: 'auto',
+                position: 'relative',
+                isolation: 'isolate'
+              }}
+            >
+              {counterItems.map((item, index) => (
+                <CounterItem key={item.id} item={item} index={index} />
               ))}
             </div>
             {/* UX: Mensaje de aniversario */}
@@ -263,8 +363,8 @@ export function InicioSection() {
       </div>
 
       {/* UX: carrusel */}
-      <div className="w-full">
-        <Card className="overflow-hidden rounded-xl border-0 bg-white shadow-lg dark:bg-gray-800">
+      <div className="w-full" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
+        <Card className="overflow-hidden rounded-xl border-0 bg-white shadow-lg dark:bg-gray-800" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
           <CardHeader className="flex flex-col gap-2 px-3 pb-2.5 pt-3">
             <CardTitle className="flex items-center gap-1.5 text-sm font-semibold text-gray-900 dark:text-white">
               <Image aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-pink-500" />
@@ -274,8 +374,8 @@ export function InicioSection() {
               Desliza para revivirlos uno a uno.
             </CardDescription>
           </CardHeader>
-          <CardContent className="px-0 pb-3 pt-0">
-            <div className="relative overflow-hidden">
+          <CardContent className="px-0 pb-3 pt-0 md:px-3" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
+            <div className="relative overflow-hidden" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
               <Carousel
                 setApi={setApi}
                 plugins={[autoplayPlugin()]}
@@ -286,16 +386,18 @@ export function InicioSection() {
                   dragFree: false,
                 }}
                 className="w-full touch-pan-y"
+                style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}
               >
-                <CarouselContent className="min-h-[350px] snap-x snap-mandatory">
+                <CarouselContent className="min-h-[350px] snap-x snap-mandatory md:min-h-[400px]" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
                   {carouselImages.map((item, index) => (
                     <CarouselItem
                       key={item.id}
-                      className="basis-full snap-center pl-0"
+                      className="basis-full snap-center pl-0 md:basis-1/3 lg:basis-1/4"
+                      style={{ minWidth: 0, contain: 'layout style', willChange: 'auto' }}
                     >
-                      <div className="w-full px-3">
-                        <div className="group relative cursor-pointer overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-900">
-                          <div className="relative aspect-[3/4] overflow-hidden rounded-lg">
+                      <div className="w-full px-3 md:px-2" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
+                        <div className="group relative cursor-pointer overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-900" style={{ contain: 'layout style', willChange: 'auto' }}>
+                          <div className="relative aspect-[3/4] overflow-hidden rounded-lg" style={{ contain: 'layout style', willChange: 'auto' }}>
                             <ImageWithFallback
                               src={item.image}
                               alt={item.title}
