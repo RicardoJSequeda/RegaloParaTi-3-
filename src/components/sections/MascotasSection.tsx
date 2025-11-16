@@ -1304,13 +1304,6 @@ export function MascotasSection() {
 
   // Creación/edición de medicamentos eliminada
 
-  
-
-  // Cálculo de estadísticas
-  const pendingTasks = tasks.filter(task => task.status === 'pendiente').length
-  const completedTasks = tasks.filter(task => task.status === 'completado').length
-  const totalPhotos = photos.length
-  // Medicamentos eliminados
 
 
 
@@ -1332,58 +1325,6 @@ export function MascotasSection() {
         </div>
       </div>
 
-      {/* Estadísticas */}
-      <div className="flex overflow-x-auto gap-4 pb-2 px-4 sm:px-0 sm:grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 sm:gap-4">
-        <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 min-w-[90px] sm:min-w-[100px]">
-          <CardContent className="p-2 sm:p-2.5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] sm:text-[11px] font-medium text-muted-foreground">Mascotas</p>
-                <p className="text-base sm:text-lg font-bold text-primary">{pets.length}</p>
-              </div>
-              <PawPrint className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 min-w-[90px] sm:min-w-[100px]">
-          <CardContent className="p-2 sm:p-2.5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] sm:text-[11px] font-medium text-muted-foreground">Pendientes</p>
-                <p className="text-base sm:text-lg font-bold text-blue-600">{pendingTasks}</p>
-              </div>
-              <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200 min-w-[90px] sm:min-w-[100px]">
-          <CardContent className="p-2 sm:p-2.5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] sm:text-[11px] font-medium text-muted-foreground">Completadas</p>
-                <p className="text-base sm:text-lg font-bold text-green-600">{completedTasks}</p>
-              </div>
-              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 min-w-[90px] sm:min-w-[100px]">
-          <CardContent className="p-2 sm:p-2.5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] sm:text-[11px] font-medium text-muted-foreground">Fotos</p>
-                <p className="text-base sm:text-lg font-bold text-purple-600">{totalPhotos}</p>
-              </div>
-              <Camera className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Tarjeta de medicamentos eliminada */}
-      </div>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 px-4 sm:px-0">

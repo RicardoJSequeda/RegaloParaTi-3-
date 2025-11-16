@@ -40,8 +40,6 @@ import {
   CheckCircle, 
   XCircle, 
   PlayCircle,
-  Filter,
-  Search,
   Heart,
   Mountain,
   Utensils,
@@ -227,8 +225,6 @@ export function PlanesSection() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedStatus, setSelectedStatus] = useState<string>('todos')
   const [activeTab, setActiveTab] = useState('todos')
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -317,14 +313,7 @@ export function PlanesSection() {
     }
   }
 
-  const filteredPlans = plans.filter(plan => {
-    const matchesSearch = plan.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         plan.description.toLowerCase().includes(searchQuery.toLowerCase())
-    
-    const matchesStatus = selectedStatus === 'todos' || plan.status === selectedStatus
-
-    return matchesSearch && matchesStatus
-  })
+  const filteredPlans = plans
 
   const getPlansByStatus = (status: string) => {
     if (status === 'todos') return filteredPlans
@@ -335,16 +324,6 @@ export function PlanesSection() {
     if (plans.length === 0) return 0
     const completed = plans.filter(plan => plan.status === 'completado').length
     return Math.round((completed / plans.length) * 100)
-  }
-
-  const getStats = () => {
-    const total = plans.length
-    const pending = plans.filter(plan => plan.status === 'pendiente').length
-    const inProgress = plans.filter(plan => plan.status === 'en_progreso').length
-    const completed = plans.filter(plan => plan.status === 'completado').length
-    const cancelled = plans.filter(plan => plan.status === 'cancelado').length
-
-    return { total, pending, inProgress, completed, cancelled }
   }
 
   const resetForm = () => {
@@ -613,7 +592,6 @@ export function PlanesSection() {
     }
   }
 
-  const stats = getStats()
 
   // Calendar functions
   const getDaysInMonth = (date: Date) => {
@@ -718,70 +696,6 @@ export function PlanesSection() {
         </div>
       </div>
 
-      {/* Statistics */}
-      <div className="overflow-x-auto pb-2 px-4 sm:px-0">
-        <div className="flex gap-4 sm:gap-4 min-w-max">
-          <Card className="stats-card min-w-[90px] sm:min-w-[100px]">
-            <CardContent className="p-2 sm:p-2.5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] sm:text-[11px] text-gray-600 dark:text-gray-400">Total</p>
-                  <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{stats.total}</p>
-                </div>
-                <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-pink-500" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="stats-card min-w-[90px] sm:min-w-[100px]">
-            <CardContent className="p-2 sm:p-2.5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] sm:text-[11px] text-gray-600 dark:text-gray-400">Pendientes</p>
-                  <p className="text-base sm:text-lg font-bold text-yellow-600">{stats.pending}</p>
-                </div>
-                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="stats-card min-w-[90px] sm:min-w-[100px]">
-            <CardContent className="p-2 sm:p-2.5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] sm:text-[11px] text-gray-600 dark:text-gray-400">En Progreso</p>
-                  <p className="text-base sm:text-lg font-bold text-blue-600">{stats.inProgress}</p>
-                </div>
-                <PlayCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="stats-card min-w-[90px] sm:min-w-[100px]">
-            <CardContent className="p-2 sm:p-2.5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] sm:text-[11px] text-gray-600 dark:text-gray-400">Completados</p>
-                  <p className="text-base sm:text-lg font-bold text-green-600">{stats.completed}</p>
-                </div>
-                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="stats-card min-w-[90px] sm:min-w-[100px]">
-            <CardContent className="p-2 sm:p-2.5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] sm:text-[11px] text-gray-600 dark:text-gray-400">Cancelados</p>
-                  <p className="text-base sm:text-lg font-bold text-red-600">{stats.cancelled}</p>
-                </div>
-                <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
 
       {/* Progress and Achievements */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 px-4 sm:px-0">
@@ -875,65 +789,56 @@ export function PlanesSection() {
         </Card>
       )}
 
-      {/* Filters */}
-      <Card className="mx-4 sm:mx-0">
-        <CardContent className="p-5 sm:p-6">
-          <div className="space-y-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Buscar planes..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 text-[clamp(0.95rem,2.5vw,1rem)] py-3 sm:py-3"
-              />
-            </div>
-
-            {/* Filter Options */}
-            <div className="grid grid-cols-1 gap-4">
-              {/* Status Filter */}
-              <div>
-                <label className="block text-[clamp(0.95rem,2.5vw,1rem)] font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Estado
-                </label>
-                <select
-                  value={selectedStatus}
-                  onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full px-3 py-3 sm:py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 text-[clamp(0.95rem,2.5vw,1rem)]"
-                >
-                  <option value="todos">Todos los estados</option>
-                  {statuses.map(status => (
-                    <option key={status.value} value={status.value}>
-                      {status.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Content based on view mode */}
       {viewMode === 'list' ? (
         /* Plans Tabs */
         <Tabs value={activeTab} onValueChange={setActiveTab} className="px-4 sm:px-0">
-          <TabsList className="grid w-full grid-cols-5 gap-2 sm:gap-2">
-            <TabsTrigger value="todos" className="text-[clamp(0.75rem,2.5vw,0.8rem)] px-2 sm:px-3 py-2.5 sm:py-2.5">
-              Todos ({filteredPlans.length})
+          <TabsList className="grid w-full grid-cols-5 gap-1.5 sm:gap-2 bg-gray-100 dark:bg-gray-800 p-1.5 sm:p-2 rounded-lg">
+            <TabsTrigger 
+              value="todos" 
+              className="text-[clamp(0.7rem,2vw,0.75rem)] sm:text-xs font-medium px-2 sm:px-3 py-2 sm:py-2.5 rounded-md transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            >
+              <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5">
+                <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="font-semibold">{filteredPlans.length}</span>
+              </div>
             </TabsTrigger>
-            <TabsTrigger value="pendiente" className="text-[clamp(0.75rem,2.5vw,0.8rem)] px-2 sm:px-3 py-2.5 sm:py-2.5">
-              Pendientes ({getPlansByStatus('pendiente').length})
+            <TabsTrigger 
+              value="pendiente" 
+              className="text-[clamp(0.7rem,2vw,0.75rem)] sm:text-xs font-medium px-2 sm:px-3 py-2 sm:py-2.5 rounded-md transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-yellow-600 dark:data-[state=active]:text-yellow-400 data-[state=active]:shadow-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            >
+              <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5">
+                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="font-semibold">{getPlansByStatus('pendiente').length}</span>
+              </div>
             </TabsTrigger>
-            <TabsTrigger value="en_progreso" className="text-[clamp(0.75rem,2.5vw,0.8rem)] px-2 sm:px-3 py-2.5 sm:py-2.5">
-              En Progreso ({getPlansByStatus('en_progreso').length})
+            <TabsTrigger 
+              value="en_progreso" 
+              className="text-[clamp(0.7rem,2vw,0.75rem)] sm:text-xs font-medium px-2 sm:px-3 py-2 sm:py-2.5 rounded-md transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            >
+              <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5">
+                <PlayCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="font-semibold">{getPlansByStatus('en_progreso').length}</span>
+              </div>
             </TabsTrigger>
-            <TabsTrigger value="completado" className="text-[clamp(0.75rem,2.5vw,0.8rem)] px-2 sm:px-3 py-2.5 sm:py-2.5">
-              Completados ({getPlansByStatus('completado').length})
+            <TabsTrigger 
+              value="completado" 
+              className="text-[clamp(0.7rem,2vw,0.75rem)] sm:text-xs font-medium px-2 sm:px-3 py-2 sm:py-2.5 rounded-md transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-green-600 dark:data-[state=active]:text-green-400 data-[state=active]:shadow-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            >
+              <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5">
+                <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="font-semibold">{getPlansByStatus('completado').length}</span>
+              </div>
             </TabsTrigger>
-            <TabsTrigger value="cancelado" className="text-[clamp(0.75rem,2.5vw,0.8rem)] px-2 sm:px-3 py-2.5 sm:py-2.5">
-              Cancelados ({getPlansByStatus('cancelado').length})
+            <TabsTrigger 
+              value="cancelado" 
+              className="text-[clamp(0.7rem,2vw,0.75rem)] sm:text-xs font-medium px-2 sm:px-3 py-2 sm:py-2.5 rounded-md transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-red-600 dark:data-[state=active]:text-red-400 data-[state=active]:shadow-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            >
+              <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5">
+                <XCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="font-semibold">{getPlansByStatus('cancelado').length}</span>
+              </div>
             </TabsTrigger>
           </TabsList>
 

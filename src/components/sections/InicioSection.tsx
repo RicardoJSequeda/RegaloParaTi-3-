@@ -88,7 +88,7 @@ export function InicioSection() {
   const gridRef = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
   
-  // Imágenes para el carrusel (10 fotos)
+  // Imágenes para el carrusel (usando las imágenes disponibles)
   const carouselImages = useMemo(() => [
     {
       id: 1,
@@ -127,48 +127,48 @@ export function InicioSection() {
       title: "Aventuras Compartidas",
       description: "Cada viaje es una nueva historia juntos",
       longDescription: "Explorando el mundo de la mano, creando recuerdos que durarán para siempre. Cada destino es especial porque lo compartimos juntos.",
-      image: "/images/carrucel/02.jpg",
-      date: "Aventuras Juntos"
+      image: "/images/carrucel/IMG_20240209_155425.jpg",
+      date: "9 de Febrero, 2024"
     },
     {
       id: 6,
       title: "Risas y Alegría",
       description: "La felicidad se multiplica cuando estamos juntos",
       longDescription: "Cada risa, cada sonrisa, cada momento de alegría compartida es un tesoro que guardamos en nuestros corazones.",
-      image: "/images/carrucel/03.jpg",
-      date: "Momentos de Alegría"
+      image: "/images/carrucel/IMG_20240211_162053.jpg",
+      date: "11 de Febrero, 2024"
     },
     {
       id: 7,
       title: "Celebraciones Especiales",
       description: "Cada ocasión es perfecta contigo",
       longDescription: "Celebrando la vida, el amor y cada momento especial. Contigo cada celebración se convierte en un recuerdo inolvidable.",
-      image: "/images/carrucel/04.jpg",
-      date: "Celebraciones"
+      image: "/images/carrucel/IMG_20240914_035308.jpg",
+      date: "14 de Septiembre, 2024"
     },
     {
       id: 8,
       title: "Paz y Tranquilidad",
       description: "Encontrando la calma en tu compañía",
       longDescription: "Los momentos más simples se vuelven extraordinarios cuando los compartimos. Tu presencia llena mi vida de paz y serenidad.",
-      image: "/images/carrucel/05.jpg",
-      date: "Momentos de Paz"
+      image: "/images/carrucel/IMG_20240914_085701.jpg",
+      date: "14 de Septiembre, 2024"
     },
     {
       id: 9,
       title: "Amor Eterno",
       description: "Un vínculo que crece cada día",
       longDescription: "Nuestro amor se fortalece con cada día que pasa. Eres mi compañera, mi mejor amiga, mi todo. Juntos construimos un futuro lleno de amor.",
-      image: "/images/carrucel/06.jpg",
-      date: "Amor Infinito"
+      image: "/images/carrucel/IMG_20240922_192256.jpg",
+      date: "22 de Septiembre, 2024"
     },
     {
       id: 10,
       title: "Sueños Compartidos",
       description: "Construyendo nuestro futuro juntos",
       longDescription: "Cada sueño, cada meta, cada proyecto es más hermoso cuando lo compartimos. Juntos podemos lograr cualquier cosa.",
-      image: "/images/carrucel/07.jpg",
-      date: "Nuestros Sueños"
+      image: "/images/carrucel/IMG_20241214_095800.jpg",
+      date: "14 de Diciembre, 2024"
     }
   ], [])
 
@@ -388,20 +388,25 @@ export function InicioSection() {
                 className="w-full touch-pan-y"
                 style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}
               >
-                <CarouselContent className="min-h-[350px] snap-x snap-mandatory md:min-h-[400px]" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
+                <CarouselContent className="min-h-[350px] snap-x snap-mandatory md:min-h-[400px] -ml-0" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
                   {carouselImages.map((item, index) => (
                     <CarouselItem
                       key={item.id}
                       className="basis-full snap-center pl-0 md:basis-1/3 lg:basis-1/4"
                       style={{ minWidth: 0, contain: 'layout style', willChange: 'auto' }}
                     >
-                      <div className="w-full px-3 md:px-2" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
-                        <div className="group relative cursor-pointer overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-900" style={{ contain: 'layout style', willChange: 'auto' }}>
-                          <div className="relative aspect-[3/4] overflow-hidden rounded-lg" style={{ contain: 'layout style', willChange: 'auto' }}>
+                      <div className="w-full px-3 md:px-2 flex justify-center" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
+                        <div className="group relative cursor-pointer overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-900 w-full max-w-full" style={{ contain: 'layout style', willChange: 'auto' }}>
+                          <div className="relative aspect-[3/4] overflow-hidden rounded-lg" style={{ contain: 'layout style', willChange: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <ImageWithFallback
                               src={item.image}
                               alt={item.title}
-                              className="h-full w-full object-cover"
+                              className="w-full h-full"
+                              style={{ 
+                                objectFit: 'cover', 
+                                objectPosition: 'center center',
+                                display: 'block'
+                              }}
                               showLoading={true}
                               fallbackSrc="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg=="
                             />

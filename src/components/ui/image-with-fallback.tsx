@@ -39,7 +39,7 @@ export function ImageWithFallback({
   }
 
   return (
-    <div className={cn('relative overflow-hidden', className)}>
+    <div className={cn('relative overflow-hidden w-full h-full', className)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {isLoading && (
         <Skeleton className="absolute inset-0 w-full h-full" />
       )}
@@ -53,6 +53,12 @@ export function ImageWithFallback({
           isLoading ? 'opacity-0' : 'opacity-100',
           hasError && 'bg-gray-100 dark:bg-gray-800'
         )}
+        style={{ 
+          objectPosition: props.style?.objectPosition || 'center center',
+          objectFit: props.style?.objectFit || 'cover',
+          display: props.style?.display || 'block',
+          ...props.style 
+        }}
         loading="lazy"
         {...props}
       />

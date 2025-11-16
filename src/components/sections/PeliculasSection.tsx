@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { useDebounce } from '@/hooks/useDebounce'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -16,7 +15,6 @@ import {
   Plus, 
   Edit, 
   Trash2, 
-  Search, 
   Film,
   Image as ImageIcon,
   MoreVertical,
@@ -65,10 +63,6 @@ export function PeliculasSection() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null)
 
-  // Estados para filtros
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedGenre, setSelectedGenre] = useState('Todos')
-  const [selectedType, setSelectedType] = useState('Todos')
 
   // Estado del formulario
   const [movieForm, setMovieForm] = useState<MovieForm>({
@@ -145,41 +139,8 @@ export function PeliculasSection() {
     }
   }, [supabase])
 
-  // Debounce para búsqueda
-  const debouncedSearchTerm = useDebounce(searchTerm, 300)
-
-  function getMostPopularGenre() {
-    const genreCounts = movies.reduce((acc, movie) => {
-      acc[movie.genre] = (acc[movie.genre] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
-    
-    if (Object.keys(genreCounts).length === 0) return 'N/A'
-    
-    return Object.entries(genreCounts).reduce((a, b) => 
-      genreCounts[a[0]] > genreCounts[b[0]] ? a : b
-    )[0]
-  }
-
-  // Estadísticas (memoizadas)
-  const stats = useMemo(() => ({
-    totalMovies: movies.length,
-    totalPeliculas: movies.filter(m => m.type === 'pelicula').length,
-    totalSeries: movies.filter(m => m.type === 'serie').length,
-    mostPopularGenre: getMostPopularGenre()
-  }), [movies])
-
-  // Filtrar películas (memoizado)
-  const filteredMovies = useMemo(() => {
-    return movies.filter(movie => {
-      const matchesSearch = debouncedSearchTerm === '' ||
-        movie.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        movie.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-      const matchesGenre = selectedGenre === 'Todos' || movie.genre === selectedGenre.toLowerCase()
-      const matchesType = selectedType === 'Todos' || movie.type === selectedType.toLowerCase()
-      return matchesSearch && matchesGenre && matchesType
-    })
-  }, [movies, debouncedSearchTerm, selectedGenre, selectedType])
+  // Todas las películas sin filtros
+  const filteredMovies = movies
 
   // Agrupar por estado (memoizado)
   const peliculasVistas = useMemo(() => filteredMovies.filter(m => m.status === 'visto'), [filteredMovies])
@@ -646,162 +607,56 @@ export function PeliculasSection() {
 
       <Separator />
 
-      {/* Estadísticas Mejoradas */}
-      <div className="flex overflow-x-auto gap-4 sm:gap-3 pb-2 px-4 sm:px-4 lg:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-4 scroll-horizontal">
-        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-lg flex-shrink-0 sm:flex-shrink min-w-[90px] sm:min-w-[100px] hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-2 sm:p-2.5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] sm:text-[11px] text-primary/80 dark:text-primary/60 font-medium">Total</p>
-                <p className="text-base sm:text-lg font-bold text-primary dark:text-primary/80">{stats.totalMovies}</p>
-              </div>
-              <div className="p-1 bg-primary/10 dark:bg-primary/20 rounded-full">
-                <Film className="h-4 w-4 sm:h-4 sm:w-4 text-primary" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-lg flex-shrink-0 sm:flex-shrink min-w-[90px] sm:min-w-[100px] hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-2 sm:p-2.5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] sm:text-[11px] text-blue-600/80 dark:text-blue-400/80 font-medium">Películas</p>
-                <p className="text-base sm:text-lg font-bold text-blue-600 dark:text-blue-400">{stats.totalPeliculas}</p>
-              </div>
-              <div className="p-1 bg-blue-500/10 dark:bg-blue-500/20 rounded-full">
-                <Film className="h-4 w-4 sm:h-4 sm:w-4 text-blue-600 dark:text-blue-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-lg flex-shrink-0 sm:flex-shrink min-w-[90px] sm:min-w-[100px] hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-2 sm:p-2.5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] sm:text-[11px] text-purple-600/80 dark:text-purple-400/80 font-medium">Series</p>
-                <p className="text-base sm:text-lg font-bold text-purple-600 dark:text-purple-400">{stats.totalSeries}</p>
-              </div>
-              <div className="p-1 bg-purple-500/10 dark:bg-purple-500/20 rounded-full">
-                <Tv className="h-4 w-4 sm:h-4 sm:w-4 text-purple-600 dark:text-purple-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-lg flex-shrink-0 sm:flex-shrink min-w-[90px] sm:min-w-[100px] hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-2 sm:p-2.5">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] sm:text-[11px] text-emerald-600/80 dark:text-emerald-400/80 font-medium">Género</p>
-                <p className="text-sm sm:text-base font-bold text-emerald-600 dark:text-emerald-400 truncate">
-                  {genres.find(g => g.value === stats.mostPopularGenre)?.label || 'N/A'}
-                </p>
-              </div>
-              <div className="p-1 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full flex-shrink-0 ml-1">
-                <span className="text-sm">{genres.find(g => g.value === stats.mostPopularGenre)?.icon || '🎬'}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Botón de Agregar */}
+      <div className="flex justify-end px-4 sm:px-0">
+        <Button
+          onClick={openAddModal}
+          className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-medium px-4 sm:px-4 py-2.5 sm:py-2.5 shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105 rounded-full text-sm sm:text-base"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Agregar
+        </Button>
       </div>
 
-      {/* Controles Mejorados */}
-      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0 rounded-2xl overflow-hidden mx-4 sm:mx-0">
-        <CardContent className="p-4 sm:p-4 lg:p-6">
-          <div className="flex flex-col lg:flex-row gap-4 sm:gap-4 items-center justify-between">
-            <div className="flex-1 flex flex-col sm:flex-row gap-3 sm:gap-3">
-              {/* Búsqueda Mejorada */}
-              <div className="relative flex-1 group">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors duration-200" />
-                <Input
-                  placeholder="Buscar películas y series..."
-                  className="pl-12 pr-4 py-3 sm:py-3 border-gray-300 dark:border-gray-600 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-xl"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              
-              {/* Filtro de Género Mejorado */}
-              <Select value={selectedGenre} onValueChange={setSelectedGenre}>
-                <SelectTrigger className="w-full sm:w-44 py-3 sm:py-3 border-gray-300 dark:border-gray-600 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-xl">
-                  <SelectValue placeholder="Género" />
-                </SelectTrigger>
-                <SelectContent className="max-h-60">
-                  <SelectItem value="Todos" className="font-medium">🎭 Todos los géneros</SelectItem>
-                  {genres.map(genre => (
-                    <SelectItem key={genre.value} value={genre.label} className="flex items-center gap-2">
-                      <span>{genre.icon}</span>
-                      <span>{genre.label}</span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {/* Filtro de Tipo Mejorado */}
-              <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-full sm:w-40 py-3 sm:py-3 border-gray-300 dark:border-gray-600 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-xl">
-                  <SelectValue placeholder="Tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Todos" className="font-medium">🎬 Todos los tipos</SelectItem>
-                  <SelectItem value="pelicula" className="flex items-center gap-2">
-                    <span>🎬</span>
-                    <span>Películas</span>
-                  </SelectItem>
-                  <SelectItem value="serie" className="flex items-center gap-2">
-                    <span>📺</span>
-                    <span>Series</span>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Botón de Agregar Mejorado */}
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={openAddModal}
-                className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-medium px-4 sm:px-4 py-2.5 sm:py-2.5 shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105 rounded-full w-full sm:w-auto text-sm sm:text-base"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Agregar
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Contenido Principal Mejorado */}
-      <Tabs defaultValue="pendientes" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-gray-100 border border-gray-200 p-1.5 rounded-xl shadow-sm">
+      <Tabs defaultValue="pendientes" className="w-full px-4 sm:px-0">
+        <TabsList className="grid w-full grid-cols-4 gap-1.5 sm:gap-2 bg-gray-100 dark:bg-gray-800 p-1.5 sm:p-2 rounded-lg">
           <TabsTrigger 
             value="vistas" 
-            className="data-[state=active]:bg-white data-[state=active]:text-emerald-600 data-[state=active]:shadow-md data-[state=active]:border-emerald-200 transition-all duration-200 rounded-lg py-2.5 px-2 font-medium text-[clamp(0.75rem,2.5vw,0.9rem)]"
+            className="text-[clamp(0.7rem,2vw,0.75rem)] sm:text-xs font-medium px-2 sm:px-3 py-2 sm:py-2.5 rounded-md transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:shadow-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
           >
-            <Check className="h-4 w-4 mr-1.5" />
-            Vistas ({peliculasVistas.length})
+            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5">
+              <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="font-semibold">{peliculasVistas.length}</span>
+            </div>
           </TabsTrigger>
           <TabsTrigger 
             value="en_progreso" 
-            className="data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-md data-[state=active]:border-blue-200 transition-all duration-200 rounded-lg py-2.5 px-2 font-medium text-[clamp(0.75rem,2.5vw,0.9rem)]"
+            className="text-[clamp(0.7rem,2vw,0.75rem)] sm:text-xs font-medium px-2 sm:px-3 py-2 sm:py-2.5 rounded-md transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
           >
-            <Play className="h-4 w-4 mr-1.5" />
-            En Progreso ({peliculasEnProgreso.length})
+            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5">
+              <Play className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="font-semibold">{peliculasEnProgreso.length}</span>
+            </div>
           </TabsTrigger>
           <TabsTrigger 
             value="pendientes" 
-            className="data-[state=active]:bg-white data-[state=active]:text-amber-600 data-[state=active]:shadow-md data-[state=active]:border-amber-200 transition-all duration-200 rounded-lg py-2.5 px-2 font-medium text-[clamp(0.75rem,2.5vw,0.9rem)]"
+            className="text-[clamp(0.7rem,2vw,0.75rem)] sm:text-xs font-medium px-2 sm:px-3 py-2 sm:py-2.5 rounded-md transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-amber-600 dark:data-[state=active]:text-amber-400 data-[state=active]:shadow-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
           >
-            <Clock className="h-4 w-4 mr-1.5" />
-            Pendientes ({peliculasPendientes.length})
+            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5">
+              <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="font-semibold">{peliculasPendientes.length}</span>
+            </div>
           </TabsTrigger>
           <TabsTrigger 
             value="favoritas" 
-            className="data-[state=active]:bg-white data-[state=active]:text-red-600 data-[state=active]:shadow-md data-[state=active]:border-red-200 transition-all duration-200 rounded-lg py-2.5 px-2 font-medium text-[clamp(0.75rem,2.5vw,0.9rem)]"
+            className="text-[clamp(0.7rem,2vw,0.75rem)] sm:text-xs font-medium px-2 sm:px-3 py-2 sm:py-2.5 rounded-md transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-red-600 dark:data-[state=active]:text-red-400 data-[state=active]:shadow-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
           >
-            <Heart className="h-4 w-4 mr-1.5" />
-            Favoritas ({peliculasFavoritas.length})
+            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5">
+              <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="font-semibold">{peliculasFavoritas.length}</span>
+            </div>
           </TabsTrigger>
         </TabsList>
 
