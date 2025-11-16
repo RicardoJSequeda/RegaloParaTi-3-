@@ -816,56 +816,152 @@ export function MascotasSection() {
 
   const addTask = async () => {
     if (!(newTask.title && newTask.petId)) return
+    // pet_id es UUID en la BD, mantener como string
     const petId = typeof newTask.petId === 'string' ? newTask.petId : `${newTask.petId}`
+    const nextDueDate = newTask.nextDue || new Date().toISOString()
 
     if (isEditingTask && newTask.id) {
-      const { data, error } = await supabase
-        .from('pet_tasks')
-        .update({
-          pet_id: petId,
-          title: newTask.title || '',
-          description: newTask.description || '',
-          next_due: newTask.nextDue || new Date().toISOString(),
-          reminder: newTask.reminder || null,
-          notes: newTask.notes || null,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', newTask.id)
-        .select()
-      if (!error && data) {
-        const updated = normalizeTask(data[0])
-        setTasks(prev => prev.map(t => t.id === newTask.id ? updated : t))
-        sendNotification({ title: 'Tarea actualizada', body: 'La tarea se actualizó correctamente' })
-      } else {
+      // Guardar valores antes de limpiar el formulario
+      const taskId = newTask.id
+      const taskTitle = newTask.title || ''
+      const taskDescription = newTask.description || ''
+      const taskType = newTask.type || 'otro'
+      const taskFrequency = newTask.frequency || 'diario'
+      const taskPriority = newTask.priority || 'Media'
+      const taskStatus = newTask.status || 'pendiente'
+      const taskReminder = newTask.reminder || null
+      const taskNotes = newTask.notes || null
+      const taskLastCompleted = newTask.lastCompleted
+      const taskCreatedAt = newTask.createdAt || new Date().toISOString()
+      const originalTask = tasks.find(t => t.id === taskId)
+      
+      // Para edición, actualizar optimistamente
+      // Nota: petId puede ser UUID (string) pero el tipo espera number, usar cast temporal
+      const tempTask: PetCareTask = {
+        id: taskId,
+        petId: petId as any, // pet_id es UUID en BD pero el tipo espera number
+        title: taskTitle,
+        description: taskDescription,
+        type: taskType,
+        frequency: taskFrequency,
+        nextDue: nextDueDate,
+        priority: taskPriority,
+        status: taskStatus,
+        reminder: taskReminder || undefined,
+        notes: taskNotes || undefined,
+        lastCompleted: taskLastCompleted,
+        createdAt: taskCreatedAt,
+        updatedAt: new Date().toISOString()
+      }
+      
+      setTasks(prev => prev.map(t => t.id === taskId ? tempTask : t))
+      setNewTask({})
+      setShowAddTaskDialog(false)
+      setIsEditingTask(false)
+      sendNotification({ title: 'Tarea actualizada', body: 'La tarea se actualizó correctamente' })
+      
+      // Actualizar en la base de datos en segundo plano
+      try {
+        const { data, error } = await supabase
+          .from('pet_tasks')
+          .update({
+            pet_id: petId,
+            title: taskTitle,
+            description: taskDescription,
+            next_due: nextDueDate,
+            reminder: taskReminder,
+            notes: taskNotes,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', taskId)
+          .select()
+        if (!error && data) {
+          const updated = normalizeTask(data[0])
+          setTasks(prev => prev.map(t => t.id === taskId ? updated : t))
+        } else {
+          throw error
+        }
+      } catch (error) {
         console.error('❌ Error actualizando tarea:', error)
-        sendNotification({ title: 'Error', body: 'No se pudo actualizar la tarea' })
+        // Revertir actualización optimista
+        if (originalTask) {
+          setTasks(prev => prev.map(t => t.id === taskId ? originalTask : t))
+        }
+        sendNotification({ title: 'Error', body: 'No se pudo actualizar la tarea. Se ha revertido.' })
       }
     } else {
-      const { data, error } = await supabase
-        .from('pet_tasks')
-        .insert([{ 
+      // ACTUALIZACIÓN OPTIMISTA: Crear tarea temporal
+      // Nota: petId puede ser UUID (string) pero el tipo espera number, usar cast temporal
+      const tempTask: PetCareTask = {
+        id: -Date.now(), // ID temporal negativo
+        petId: petId as any, // pet_id es UUID en BD pero el tipo espera number
+        title: newTask.title,
+        description: newTask.description || '',
+        type: newTask.type || 'otro',
+        frequency: newTask.frequency || 'diario',
+        nextDue: nextDueDate,
+        priority: newTask.priority || 'Media',
+        status: 'pendiente',
+        reminder: newTask.reminder || undefined,
+        notes: newTask.notes || undefined,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+      
+      // Agregar tarea temporal inmediatamente
+      setTasks(prev => [...prev, tempTask])
+      
+      // Cerrar modal y limpiar formulario inmediatamente
+      setNewTask({})
+      setShowAddTaskDialog(false)
+      setIsEditingTask(false)
+      sendNotification({ title: 'Tarea creada', body: 'La tarea se agregó correctamente' })
+      
+      // Insertar en la base de datos en segundo plano
+      try {
+        const insertData = { 
           pet_id: petId,
-          title: newTask.title,
-          description: newTask.description || '',
-          next_due: newTask.nextDue || new Date().toISOString(),
+          title: tempTask.title,
+          description: tempTask.description,
+          type: tempTask.type,
+          frequency: tempTask.frequency,
+          next_due: tempTask.nextDue,
+          priority: tempTask.priority,
           status: 'pendiente',
-          reminder: newTask.reminder || null,
-          notes: newTask.notes || null
-        }])
-        .select()
-        .single()
-      if (!error && data) {
+          reminder: tempTask.reminder ? (typeof tempTask.reminder === 'object' ? JSON.stringify(tempTask.reminder) : tempTask.reminder) : null,
+          notes: tempTask.notes || null
+        }
+        
+        console.log('📝 Insertando tarea en BD:', insertData)
+        
+        const { data, error } = await supabase
+          .from('pet_tasks')
+          .insert([insertData])
+          .select()
+          .single()
+        if (error) {
+          console.error('❌ Error de Supabase al crear tarea:', error)
+          throw new Error(error.message || 'Error al crear la tarea en la base de datos')
+        }
+        
+        if (!data) {
+          throw new Error('No se recibieron datos de la base de datos')
+        }
+        
         const inserted = normalizeTask(data)
-        setTasks(prev => [...prev, inserted])
-        sendNotification({ title: 'Tarea creada', body: 'La tarea se agregó correctamente' })
-      } else {
+        // Reemplazar tarea temporal con la real
+        setTasks(prev => prev.map(t => t.id === tempTask.id ? inserted : t))
+      } catch (error: any) {
         console.error('❌ Error creando tarea:', error)
-        sendNotification({ title: 'Error', body: 'No se pudo crear la tarea' })
+        // Revertir actualización optimista
+        setTasks(prev => prev.filter(t => t.id !== tempTask.id))
+        const errorMessage = error?.message || error?.toString() || 'Error desconocido'
+        sendNotification({ 
+          title: 'Error', 
+          body: `No se pudo crear la tarea: ${errorMessage}. Se ha revertido.` 
+        })
       }
     }
-    setNewTask({})
-    setShowAddTaskDialog(false)
-    setIsEditingTask(false)
   }
 
   const addHealthRecord = async () => {

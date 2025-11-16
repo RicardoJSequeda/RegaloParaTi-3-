@@ -631,28 +631,46 @@ export default function FotosSection() {
   }
 
   const handleDeletePhoto = async (photo: Photo) => {
+    // ACTUALIZACIÓN OPTIMISTA: Eliminar la foto inmediatamente del estado
+    const photoToDelete = photo
+    setPhotos(prev => prev.filter(p => p.id !== photo.id))
+    
+    // Cerrar el modal inmediatamente
+    setShowDetailModal(false)
+    setSelectedPhoto(null)
+    
+    // Mostrar toast de éxito inmediatamente
+    setToast({
+      show: true,
+      title: 'Éxito',
+      description: 'Foto eliminada correctamente'
+    })
+    
+    // Eliminar de la base de datos en segundo plano
     try {
       const { error } = await supabase
         .from('photos')
         .delete()
-        .eq('id', photo.id)
+        .eq('id', photoToDelete.id)
 
       if (error) {
         throw error
       }
-
-      await loadPhotos() // Recargar fotos
-      setToast({
-        show: true,
-        title: 'Éxito',
-        description: 'Foto eliminada correctamente'
-      })
     } catch (error) {
       console.error('Error deleting photo:', error)
+      // Revertir actualización optimista en caso de error
+      setPhotos(prev => {
+        // Verificar si la foto ya no está en el estado antes de agregarla de nuevo
+        const exists = prev.find(p => p.id === photoToDelete.id)
+        if (!exists) {
+          return [photoToDelete, ...prev]
+        }
+        return prev
+      })
       setToast({
         show: true,
         title: 'Error',
-        description: 'Error al eliminar la foto',
+        description: 'Error al eliminar la foto. Se ha restaurado.',
         variant: 'destructive'
       })
     }
@@ -1416,8 +1434,9 @@ export default function FotosSection() {
                           <AlertDialogCancel>Cancelar</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => {
-                              handleDeletePhoto(selectedPhoto)
-                              setShowDetailModal(false)
+                              if (selectedPhoto) {
+                                handleDeletePhoto(selectedPhoto)
+                              }
                             }}
                             className="bg-red-600 hover:bg-red-700"
                           >
