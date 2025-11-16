@@ -500,9 +500,9 @@
     -webkit-backdrop-filter: blur(10px);
   }
 
+  /* Eliminar animación hover que causa problemas */
   .compact-player:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: none;
   }
 
   /* Animación de entrada para el reproductor compacto */
@@ -519,6 +519,12 @@
 
   .compact-player-enter {
     animation: slideInFromBottom 0.3s ease-out;
+  }
+
+  /* Prevenir overflow del mini-reproductor */
+  .compact-player {
+    will-change: auto;
+    transform: translateZ(0);
   }
 
   /* Estilos para el control de volumen */

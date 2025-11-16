@@ -152,7 +152,10 @@ export function Navigation({
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="w-full justify-start gap-3 h-10 px-3">
                   <Avatar className="h-6 w-6">
-                    <AvatarImage src="/avatars/user.jpg" alt="Usuario" />
+                    <AvatarImage src="/avatars/user.jpg" alt="Usuario" onError={(e) => {
+                      // Ocultar imagen si falla, mostrar fallback
+                      e.currentTarget.style.display = 'none'
+                    }} />
                     <AvatarFallback className="text-xs">
                       <User className="h-3 w-3" />
                     </AvatarFallback>
@@ -247,7 +250,10 @@ export function Navigation({
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="w-full justify-start gap-3 h-10 sm:h-12 px-3">
                       <Avatar className="h-5 w-5 sm:h-6 sm:w-6">
-                        <AvatarImage src="/avatars/user.jpg" alt="Usuario" />
+                        <AvatarImage src="/avatars/user.jpg" alt="Usuario" onError={(e) => {
+                          // Ocultar imagen si falla, mostrar fallback
+                          e.currentTarget.style.display = 'none'
+                        }} />
                         <AvatarFallback className="text-xs">
                           <User className="h-3 w-3" />
                         </AvatarFallback>

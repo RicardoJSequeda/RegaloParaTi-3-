@@ -11,9 +11,12 @@ interface ImageWithFallbackProps extends React.ImgHTMLAttributes<HTMLImageElemen
   alt: string
 }
 
+// Data URI para placeholder (imagen transparente 1x1)
+const PLACEHOLDER_DATA_URI = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PC9zdmc+'
+
 export function ImageWithFallback({
   src,
-  fallbackSrc = '/api/placeholder/400/600',
+  fallbackSrc = PLACEHOLDER_DATA_URI,
   className,
   alt,
   showLoading = true,

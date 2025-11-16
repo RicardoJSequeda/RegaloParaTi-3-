@@ -121,7 +121,10 @@ export function GlobalPlayer() {
       if (isPlaying) {
         if (currentSong && hasValidAudio(currentSong)) {
           audio.play().catch((error) => {
-            console.error('Error reproduciendo audio:', error)
+            // Ignorar AbortError - es normal cuando se interrumpe una carga
+            if (error.name !== 'AbortError') {
+              console.error('Error reproduciendo audio:', error)
+            }
             setIsPlaying(false)
             setIsActuallyPlaying(false)
           })
@@ -139,60 +142,74 @@ export function GlobalPlayer() {
   useEffect(() => {
     const audio = audioRef.current
     if (audio && currentSong) {
-      setIsActuallyPlaying(false)
-      setIsLoading(true) // UX: Mostrar indicador de carga
+      // Solo resetear cuando cambia la canción, no cuando cambia isPlaying
+      const previousSongId = audio.dataset.songId
+      const isNewSong = previousSongId !== currentSong.id
       
-      if (hasValidAudio(currentSong)) {
-        audio.src = currentSong.audioUrl || (currentSong as any).audio_url
-        audio.currentTime = 0
-        setCurrentTime(0)
+      if (isNewSong) {
+        setIsActuallyPlaying(false)
+        setIsLoading(true) // UX: Mostrar indicador de carga
         
-        // UX: Manejar eventos de carga para ocultar indicador
-        const handleCanPlay = () => {
-          setIsLoading(false)
-          if (isPlaying) {
-            audio.play().catch((error) => {
-              console.error('Error reproduciendo nueva canción:', error)
-              setIsPlaying(false)
-              setIsActuallyPlaying(false)
-              setIsLoading(false)
-            })
-          } else {
+        if (hasValidAudio(currentSong)) {
+          // Guardar el ID de la canción actual en el elemento audio
+          audio.dataset.songId = currentSong.id
+          audio.src = currentSong.audioUrl || (currentSong as any).audio_url
+          audio.currentTime = 0
+          setCurrentTime(0)
+          
+          // UX: Manejar eventos de carga para ocultar indicador
+          const handleCanPlay = () => {
             setIsLoading(false)
+            if (isPlaying) {
+              audio.play().catch((error) => {
+                // Ignorar AbortError - es normal cuando se interrumpe una carga
+                if (error.name !== 'AbortError') {
+                  console.error('Error reproduciendo nueva canción:', error)
+                }
+                setIsPlaying(false)
+                setIsActuallyPlaying(false)
+                setIsLoading(false)
+              })
+            } else {
+              setIsLoading(false)
+            }
           }
-        }
-        
-        const handleError = () => {
-          setIsLoading(false)
+          
+          const handleError = () => {
+            setIsLoading(false)
+            setIsPlaying(false)
+            setIsActuallyPlaying(false)
+          }
+          
+          audio.addEventListener('canplay', handleCanPlay, { once: true })
+          audio.addEventListener('error', handleError, { once: true })
+          
+          if (isPlaying) {
+            setTimeout(() => {
+              audio.play().catch((error) => {
+                // Ignorar AbortError - es normal cuando se interrumpe una carga
+                if (error.name !== 'AbortError') {
+                  console.error('Error reproduciendo nueva canción:', error)
+                }
+                setIsPlaying(false)
+                setIsActuallyPlaying(false)
+                setIsLoading(false)
+              })
+            }, 100)
+          } else {
+            // Si no está reproduciendo, ocultar loading después de un tiempo
+            setTimeout(() => setIsLoading(false), 500)
+          }
+          
+          return () => {
+            audio.removeEventListener('canplay', handleCanPlay)
+            audio.removeEventListener('error', handleError)
+          }
+        } else {
           setIsPlaying(false)
           setIsActuallyPlaying(false)
+          setIsLoading(false)
         }
-        
-        audio.addEventListener('canplay', handleCanPlay, { once: true })
-        audio.addEventListener('error', handleError, { once: true })
-        
-        if (isPlaying) {
-          setTimeout(() => {
-            audio.play().catch((error) => {
-              console.error('Error reproduciendo nueva canción:', error)
-              setIsPlaying(false)
-              setIsActuallyPlaying(false)
-              setIsLoading(false)
-            })
-          }, 100)
-        } else {
-          // Si no está reproduciendo, ocultar loading después de un tiempo
-          setTimeout(() => setIsLoading(false), 500)
-        }
-        
-        return () => {
-          audio.removeEventListener('canplay', handleCanPlay)
-          audio.removeEventListener('error', handleError)
-        }
-      } else {
-        setIsPlaying(false)
-        setIsActuallyPlaying(false)
-        setIsLoading(false)
       }
     }
   }, [currentSong?.id, currentSong, isPlaying, setCurrentTime, setIsPlaying, setIsActuallyPlaying])
@@ -233,10 +250,9 @@ export function GlobalPlayer() {
 
   return (
     <>
-      {/* Elemento de audio oculto */}
+      {/* Elemento de audio oculto - src se maneja en useEffect para evitar recargas */}
       <audio
         ref={audioRef}
-        src={currentSong.audioUrl || (currentSong as any).audio_url || ''}
         onLoadedMetadata={(e) => setDuration(Math.floor((e.target as HTMLAudioElement).duration || 0))}
         onTimeUpdate={(e) => setCurrentTime(Math.floor((e.target as HTMLAudioElement).currentTime || 0))}
         onPlay={() => setIsActuallyPlaying(true)}
@@ -267,10 +283,17 @@ export function GlobalPlayer() {
 
       {/* UX: Reproductor optimizado para móvil con safe areas y tamaños táctiles */}
       <div 
-        className="fixed z-50 compact-player-enter bottom-3 right-3 sm:bottom-4 sm:right-4"
+        className="fixed z-50 bottom-3 right-3 sm:bottom-4 sm:right-4"
         style={{ 
           bottom: 'max(env(safe-area-inset-bottom), 0.75rem)',
-          right: 'max(env(safe-area-inset-right), 0.75rem)'
+          right: 'max(env(safe-area-inset-right), 0.75rem)',
+          maxWidth: 'calc(100vw - 1.5rem)',
+          width: 'auto',
+          minWidth: 0,
+          boxSizing: 'border-box',
+          contain: 'layout style paint',
+          pointerEvents: 'auto',
+          willChange: 'auto'
         }}
       >
         {/* UX: Indicador de volumen mejorado con mejor visibilidad */}
@@ -288,21 +311,22 @@ export function GlobalPlayer() {
             </div>
           </div>
         )}
-        <Card className={`compact-player bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200 dark:border-gray-700 shadow-2xl transition-all duration-300 ${
-          isExpanded ? 'w-[calc(100vw-1.5rem)] max-w-sm sm:w-80' : 'w-[calc(100vw-1.5rem)] max-w-[280px] sm:w-64'
-        }`}>
+        <Card className={`compact-player bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200 dark:border-gray-700 shadow-2xl ${isExpanded ? 'w-[320px] sm:w-80' : 'w-[260px] sm:w-64'}`} style={{ 
+          minWidth: 0, 
+          maxWidth: 'calc(100vw - 1.5rem)', 
+          boxSizing: 'border-box',
+          contain: 'layout style paint',
+          overflow: 'hidden'
+        }}>
           <div className="p-2.5 sm:p-3">
             {/* UX: Header con controles principales optimizados para touch */}
             <div className="flex items-center gap-2 mb-2.5 sm:gap-3 sm:mb-3">
               {/* UX: Portada con tamaño responsive */}
               <div className="flex-shrink-0">
                 <div className={`w-12 h-12 rounded-lg overflow-hidden ring-2 ring-pink-200 dark:ring-pink-700 transition-all ${
-                  isActuallyPlaying ? 'animate-spin shadow-lg' : ''
-                } sm:w-14 sm:h-14`} style={{ 
-                  animationDuration: '20s', 
-                  animationPlayState: isActuallyPlaying ? 'running' : 'paused' 
-                }}>
-                  {currentSong.cover && currentSong.cover !== '/api/placeholder/200/200' ? (
+                  isActuallyPlaying ? 'shadow-lg' : ''
+                } sm:w-14 sm:h-14`}>
+                  {currentSong.cover && currentSong.cover !== 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTBlNGU5Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIGltYWdlbjwvdGV4dD48L3N2Zz4=' ? (
                     <img 
                       src={currentSong.cover} 
                       alt={`Portada de ${currentSong.title}`}
@@ -316,108 +340,92 @@ export function GlobalPlayer() {
                 </div>
               </div>
 
-              {/* UX: Información de la canción con tipografía legible */}
-              <div className="flex-1 min-w-0">
-                <h4 className="font-semibold text-gray-900 dark:text-white truncate text-[13px] sm:text-sm">
-                  {currentSong.title}
-                </h4>
-                <div className="flex items-center gap-1.5">
-                  <p className="text-[11px] text-gray-600 dark:text-gray-400 truncate sm:text-xs">
-                    {currentSong.artist}
-                  </p>
-                  {/* UX: Indicador de dedicatoria si existe */}
-                  {currentSong.dedication && (
-                    <button
-                      onClick={() => setShowDedicationModal(true)}
-                      className="flex-shrink-0 text-pink-500 hover:text-pink-600 active:scale-95 transition-all"
-                      aria-label="Ver dedicatoria"
-                      title="Ver dedicatoria"
+              {/* UX: Controles principales organizados simétricamente */}
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                {/* Grupo de controles de reproducción: Anterior, Play, Siguiente */}
+                <div className="flex items-center gap-1 sm:gap-1.5">
+                  {/* UX: Botón anterior */}
+                  {playlist.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={prevSong}
+                      className="w-9 h-9 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 active:scale-95 transition-all rounded-full min-h-[36px] min-w-[36px] sm:w-8 sm:h-8 sm:min-h-0 sm:min-w-0"
+                      aria-label="Canción anterior"
+                      title="Canción anterior (Ctrl+←)"
                     >
-                      <MessageCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                    </button>
+                      <SkipBack className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                    </Button>
+                  )}
+                  
+                  {/* UX: Botón play/pause - más grande y destacado */}
+                  <Button
+                    onClick={togglePlay}
+                    size="sm"
+                    className={`rounded-full transition-all active:scale-95 relative ${
+                      hasValidAudio(currentSong)
+                        ? (isActuallyPlaying ? 'bg-pink-500 shadow-lg ring-2 ring-pink-300' : 'bg-pink-500 hover:bg-pink-600 shadow-md')
+                        : 'bg-gray-400 cursor-not-allowed'
+                    } w-10 h-10 min-h-[40px] min-w-[40px] sm:w-9 sm:h-9 sm:min-h-0 sm:min-w-0`}
+                    disabled={!hasValidAudio(currentSong) || isLoading}
+                    aria-label={isPlaying ? 'Pausar (Espacio)' : 'Reproducir (Espacio)'}
+                    title={isPlaying ? 'Pausar (Espacio)' : 'Reproducir (Espacio)'}
+                  >
+                    {isLoading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin sm:w-4 sm:h-4"></div>
+                    ) : isPlaying ? (
+                      <Pause className="h-4 w-4 sm:h-4 sm:w-4" />
+                    ) : (
+                      <Play className="h-4 w-4 ml-0.5 sm:h-4 sm:w-4" />
+                    )}
+                  </Button>
+                  
+                  {/* UX: Botón siguiente */}
+                  {playlist.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={nextSong}
+                      className="w-9 h-9 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 active:scale-95 transition-all rounded-full min-h-[36px] min-w-[36px] sm:w-8 sm:h-8 sm:min-h-0 sm:min-w-0"
+                      aria-label="Siguiente canción"
+                      title="Siguiente canción (Ctrl+→)"
+                    >
+                      <SkipForward className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                    </Button>
                   )}
                 </div>
-              </div>
-
-              {/* UX: Controles principales mejorados con next/prev siempre visibles */}
-              <div className="flex items-center gap-1 sm:gap-1.5">
-                {/* UX: Botón anterior - siempre visible para mejor acceso */}
-                {playlist.length > 1 && (
+                
+                {/* Separador visual entre grupos de botones */}
+                <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-0.5" />
+                
+                {/* Grupo de controles de UI: Expandir, Cerrar */}
+                <div className="flex items-center gap-1 sm:gap-1.5">
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={prevSong}
-                    className="w-9 h-9 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 active:scale-95 transition-all rounded-full min-h-[44px] min-w-[44px] sm:w-8 sm:h-8 sm:min-h-0 sm:min-w-0"
-                    aria-label="Canción anterior"
-                    title="Canción anterior (Ctrl+←)"
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="w-9 h-9 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 active:scale-95 transition-all rounded-full min-h-[36px] min-w-[36px] sm:w-8 sm:h-8 sm:min-h-0 sm:min-w-0"
+                    aria-label={isExpanded ? 'Minimizar reproductor' : 'Expandir reproductor'}
+                    title={isExpanded ? 'Minimizar' : 'Expandir'}
                   >
-                    <SkipBack className="h-3.5 w-3.5 sm:h-3 sm:w-3" />
+                    {isExpanded ? <Minimize2 className="h-4 w-4 sm:h-3.5 sm:w-3.5" /> : <Maximize2 className="h-4 w-4 sm:h-3.5 sm:w-3.5" />}
                   </Button>
-                )}
-                
-                {/* UX: Botón play/pause con indicador de carga */}
-                <Button
-                  onClick={togglePlay}
-                  size="sm"
-                  className={`rounded-full transition-all active:scale-95 relative ${
-                    hasValidAudio(currentSong)
-                      ? (isActuallyPlaying ? 'bg-pink-500 animate-pulse shadow-lg ring-2 ring-pink-300' : 'bg-pink-500 hover:bg-pink-600 shadow-md')
-                      : 'bg-gray-400 cursor-not-allowed'
-                  } w-11 h-11 min-h-[44px] min-w-[44px] sm:w-10 sm:h-10 sm:min-h-0 sm:min-w-0`}
-                  style={{ 
-                    animationPlayState: hasValidAudio(currentSong) && isActuallyPlaying ? 'running' : 'paused' 
-                  }}
-                  disabled={!hasValidAudio(currentSong) || isLoading}
-                  aria-label={isPlaying ? 'Pausar (Espacio)' : 'Reproducir (Espacio)'}
-                  title={isPlaying ? 'Pausar (Espacio)' : 'Reproducir (Espacio)'}
-                >
-                  {isLoading ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin sm:w-5 sm:h-5"></div>
-                  ) : isPlaying ? (
-                    <Pause className="h-4 w-4 sm:h-5 sm:w-5" />
-                  ) : (
-                    <Play className="h-4 w-4 ml-0.5 sm:h-5 sm:w-5" />
-                  )}
-                </Button>
-                
-                {/* UX: Botón siguiente - siempre visible para mejor acceso */}
-                {playlist.length > 1 && (
+                  
+                  {/* UX: Botón cerrar con mejor feedback visual */}
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={nextSong}
-                    className="w-9 h-9 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 active:scale-95 transition-all rounded-full min-h-[44px] min-w-[44px] sm:w-8 sm:h-8 sm:min-h-0 sm:min-w-0"
-                    aria-label="Siguiente canción"
-                    title="Siguiente canción (Ctrl+→)"
+                    onClick={() => {
+                      setIsPlaying(false)
+                      setCurrentSong(null)
+                    }}
+                    className="w-9 h-9 p-0 text-gray-500 hover:text-red-500 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-red-900/20 active:scale-95 transition-all rounded-full min-h-[36px] min-w-[36px] sm:w-8 sm:h-8 sm:min-h-0 sm:min-w-0"
+                    aria-label="Cerrar reproductor"
+                    title="Cerrar reproductor"
                   >
-                    <SkipForward className="h-3.5 w-3.5 sm:h-3 sm:w-3" />
+                    <X className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                   </Button>
-                )}
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="w-10 h-10 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 active:scale-95 transition-all rounded-full min-h-[44px] min-w-[44px] sm:w-8 sm:h-8 sm:min-h-0 sm:min-w-0"
-                  aria-label={isExpanded ? 'Minimizar reproductor' : 'Expandir reproductor'}
-                >
-                  {isExpanded ? <Minimize2 className="h-4 w-4 sm:h-3.5 sm:w-3.5" /> : <Maximize2 className="h-4 w-4 sm:h-3.5 sm:w-3.5" />}
-                </Button>
-                
-                {/* UX: Botón cerrar con mejor feedback visual */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setIsPlaying(false)
-                    setCurrentSong(null)
-                  }}
-                  className="w-10 h-10 p-0 text-gray-500 hover:text-red-500 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-red-900/20 active:scale-95 transition-all rounded-full min-h-[44px] min-w-[44px] sm:w-8 sm:h-8 sm:min-h-0 sm:min-w-0"
-                  aria-label="Cerrar reproductor"
-                  title="Cerrar reproductor"
-                >
-                  <X className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
-                </Button>
+                </div>
               </div>
             </div>
 
@@ -462,8 +470,18 @@ export function GlobalPlayer() {
             {/* UX: Controles expandidos con mejor jerarquía visual y tamaños táctiles */}
             {isExpanded && (
               <div className="space-y-3 pt-2.5 border-t border-gray-200 dark:border-gray-700 sm:space-y-3 sm:pt-2">
-                {/* UX: Controles de navegación con feedback táctil */}
-                <div className="flex items-center justify-center gap-2 sm:gap-3">
+                {/* UX: Información de la canción */}
+                <div className="text-center px-2">
+                  <h4 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base mb-1 line-clamp-2">
+                    {currentSong.title}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
+                    {currentSong.artist}
+                  </p>
+                </div>
+                
+                {/* UX: Controles de modo (Shuffle y Repeat) */}
+                <div className="flex items-center justify-center gap-3 sm:gap-4">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -482,28 +500,6 @@ export function GlobalPlayer() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={prevSong}
-                    disabled={playlist.length <= 1}
-                    className="transition-all active:scale-95 rounded-full min-h-[44px] min-w-[44px] text-gray-600 hover:text-gray-800 disabled:opacity-40 disabled:cursor-not-allowed sm:min-h-0 sm:min-w-0"
-                    aria-label="Canción anterior"
-                  >
-                    <SkipBack className="h-5 w-5 sm:h-4 sm:w-4" />
-                  </Button>
-                  
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={nextSong}
-                    disabled={playlist.length <= 1}
-                    className="transition-all active:scale-95 rounded-full min-h-[44px] min-w-[44px] text-gray-600 hover:text-gray-800 disabled:opacity-40 disabled:cursor-not-allowed sm:min-h-0 sm:min-w-0"
-                    aria-label="Siguiente canción"
-                  >
-                    <SkipForward className="h-5 w-5 sm:h-4 sm:w-4" />
-                  </Button>
-                  
-                  <Button
-                    variant="ghost"
-                    size="sm"
                     onClick={() => setRepeat(!repeat)}
                     className={`transition-all active:scale-95 rounded-full min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 ${
                       repeat 
@@ -517,13 +513,13 @@ export function GlobalPlayer() {
                   </Button>
                 </div>
 
-                {/* UX: Control de volumen mejorado con área táctil */}
+                {/* UX: Control de volumen mejorado con área táctil y funcionalidad completa */}
                 <div className="flex items-center gap-2 sm:gap-3">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => changeVolume(volume === 0 ? 1 : 0)}
-                    className={`volume-control transition-all active:scale-95 rounded-full min-h-[44px] min-w-[44px] sm:w-8 sm:h-8 sm:min-h-0 sm:min-w-0 ${
+                    className={`volume-control transition-all active:scale-95 rounded-full min-h-[44px] min-w-[44px] sm:w-9 sm:h-9 sm:min-h-0 sm:min-w-0 ${
                       volume === 0 
                         ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20' 
                         : volume < 0.5 
@@ -535,11 +531,24 @@ export function GlobalPlayer() {
                     {volume === 0 ? <VolumeX className="h-5 w-5 sm:h-4 sm:w-4" /> : <Volume2 className="h-5 w-5 sm:h-4 sm:w-4" />}
                   </Button>
                   <div className="flex-1 relative group" onWheel={handleVolumeScroll}>
-                    <Progress 
-                      value={volume * 100} 
-                      className="volume-slider h-3 cursor-pointer transition-all duration-200 group-hover:h-3.5 sm:h-2 sm:group-hover:h-2.5"
-                      onValueChange={(value) => changeVolume(value / 100)}
-                    />
+                    <div className="relative h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden cursor-pointer sm:h-2">
+                      <div 
+                        className="absolute h-full bg-pink-500 rounded-full transition-all"
+                        style={{ width: `${volume * 100}%` }}
+                      />
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value={volume}
+                        onChange={(e) => {
+                          const newVolume = parseFloat(e.target.value)
+                          changeVolume(newVolume)
+                        }}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                    </div>
                     {/* UX: Tooltip de volumen mejorado */}
                     <div className="absolute -top-9 left-1/2 transform -translate-x-1/2 bg-gray-900/95 text-white text-[10px] px-2.5 py-1.5 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 backdrop-blur-sm border border-gray-700 sm:text-xs">
                       <div className="flex items-center gap-1.5">
@@ -554,7 +563,7 @@ export function GlobalPlayer() {
                       </div>
                     </div>
                   </div>
-                  <span className="text-[10px] text-gray-500 dark:text-gray-400 w-10 text-right font-mono font-semibold sm:text-xs sm:w-8">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 w-12 text-right font-mono font-semibold tabular-nums sm:text-sm sm:w-10">
                     {Math.round(volume * 100)}%
                   </span>
                 </div>
@@ -564,20 +573,6 @@ export function GlobalPlayer() {
                   <div className="text-[11px] text-gray-500 dark:text-gray-400 text-center sm:text-xs">
                     <span className="font-medium">{playlist.length}</span> canciones {currentSong.album && `• ${currentSong.album}`}
                   </div>
-                  {/* UX: Botón de dedicatoria si existe */}
-                  {currentSong.dedication && (
-                    <div className="flex justify-center">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowDedicationModal(true)}
-                        className="text-[10px] px-3 py-1.5 rounded-full border-pink-200 text-pink-600 hover:bg-pink-50 dark:border-pink-700 dark:text-pink-400 dark:hover:bg-pink-900/20 active:scale-95 transition-all min-h-[36px] sm:text-xs"
-                      >
-                        <MessageCircle className="h-3 w-3 mr-1.5 sm:h-3.5 sm:w-3.5" />
-                        Ver Dedicatoria
-                      </Button>
-                    </div>
-                  )}
                   {/* UX: Indicadores visuales de modo activo */}
                   <div className="flex items-center justify-center gap-2 flex-wrap">
                     {shuffle && (
@@ -619,7 +614,7 @@ export function GlobalPlayer() {
               {/* UX: Portada y información con layout responsive */}
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="w-14 h-14 rounded-lg overflow-hidden ring-2 ring-pink-200 dark:ring-pink-700 flex-shrink-0 sm:w-16 sm:h-16">
-                  {currentSong.cover && currentSong.cover !== '/api/placeholder/200/200' ? (
+                  {currentSong.cover && currentSong.cover !== 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTBlNGU5Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIGltYWdlbjwvdGV4dD48L3N2Zz4=' ? (
                     <img 
                       src={currentSong.cover} 
                       alt={`Portada de ${currentSong.title}`}
