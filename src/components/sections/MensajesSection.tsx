@@ -6,6 +6,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle 
+} from '@/components/ui/dialog'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Search, 
@@ -101,9 +108,10 @@ export function MensajesSection() {
   const supabase = getBrowserClient()
   const [messages, setMessages] = useState<Message[]>([])
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
+  const [viewingMessage, setViewingMessage] = useState<Message | null>(null)
   const [editingMessage, setEditingMessage] = useState<Message | null>(null)
   const [newMessage, setNewMessage] = useState({ title: '', content: '', category: 'Amor' })
   const [newImages, setNewImages] = useState<File[]>([])
@@ -195,10 +203,9 @@ export function MensajesSection() {
       const matchesSearch = debouncedSearchQuery === '' ||
         message.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
         message.content.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
-      const matchesCategory = !selectedCategory || message.category === selectedCategory
-      return matchesSearch && matchesCategory
+      return matchesSearch
     })
-  }, [messages, debouncedSearchQuery, selectedCategory])
+  }, [messages, debouncedSearchQuery])
 
   // Toggle favorito con feedback visual
   const toggleFavorite = useCallback(async (messageId: string, e?: React.MouseEvent) => {
@@ -452,42 +459,6 @@ export function MensajesSection() {
             style={{ fontSize: '16px' }}
           />
         </div>
-        {/* UX: Filtros con scroll horizontal táctil */}
-        <div className="flex w-full overflow-x-auto gap-1.5 pb-2 px-1 scrollbar-hide sm:gap-2 sm:flex-wrap sm:justify-center sm:overflow-visible sm:pb-0 sm:px-0">
-          <Badge 
-            variant={selectedCategory === '' ? 'default' : 'secondary'} 
-            className="category-badge hover:bg-pink-100 dark:hover:bg-pink-900/20 flex-shrink-0 px-3 py-2.5 rounded-full text-[11px] font-semibold min-h-[44px] touch-target cursor-pointer transition-all duration-200 active:scale-95 sm:px-4 sm:py-2 sm:text-xs md:text-sm"
-            onClick={() => setSelectedCategory('')}
-            role="button"
-            tabIndex={0}
-            aria-label="Filtrar todos los mensajes"
-            onKeyDown={(e) => e.key === 'Enter' && setSelectedCategory('')}
-          >
-            Todos
-          </Badge>
-          {categories.map((category) => {
-            const Icon = category.icon
-            const isSelected = selectedCategory === category.name
-            return (
-              <Badge 
-                key={category.name} 
-                variant={isSelected ? 'default' : 'secondary'} 
-                className={`category-badge ${category.color} flex-shrink-0 px-3 py-2.5 rounded-full text-[11px] font-semibold min-h-[44px] touch-target cursor-pointer transition-all duration-200 active:scale-95 sm:px-4 sm:py-2 sm:text-xs md:text-sm ${
-                  isSelected ? 'ring-2 ring-pink-500 dark:ring-pink-400' : ''
-                }`}
-                onClick={() => setSelectedCategory(category.name)}
-                role="button"
-                tabIndex={0}
-                aria-label={`Filtrar mensajes de categoría ${category.name}`}
-                aria-pressed={isSelected}
-                onKeyDown={(e) => e.key === 'Enter' && setSelectedCategory(category.name)}
-              >
-                <Icon className="h-3 w-3 mr-1 sm:h-3.5 sm:w-3.5 sm:mr-1.5 md:h-4 md:w-4" aria-hidden="true" />
-                {category.name}
-              </Badge>
-            )
-          })}
-        </div>
       </motion.div>
 
       {/* UX: Mensajes con grid responsive optimizado para móvil */}
@@ -504,8 +475,8 @@ export function MensajesSection() {
               <Heart className="h-10 w-10 mx-auto sm:h-12 sm:w-12 md:h-16 md:w-16" />
             </div>
             <p className="text-[13px] text-gray-600 dark:text-gray-400 sm:text-sm md:text-base lg:text-lg">
-              {searchQuery || selectedCategory 
-                ? 'No se encontraron mensajes con estos filtros' 
+              {searchQuery 
+                ? 'No se encontraron mensajes con esta búsqueda' 
                 : 'Aún no hay mensajes. ¡Escribe el primero!'}
             </p>
           </motion.div>
@@ -578,9 +549,32 @@ export function MensajesSection() {
                           </Button>
                         </div>
                       </div>
-                      <p className="text-[12px] text-gray-600 dark:text-gray-300 line-clamp-4 mb-2.5 leading-relaxed sm:text-sm sm:mb-3 md:text-base">
-                        {message.content}
-                      </p>
+                      <div 
+                        className="mb-2.5 sm:mb-3 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setViewingMessage(message)
+                          setIsViewModalOpen(true)
+                          markAsRead(message.id)
+                        }}
+                      >
+                        <p className="text-[12px] text-gray-600 dark:text-gray-300 line-clamp-4 leading-relaxed sm:text-sm md:text-base">
+                          {message.content}
+                        </p>
+                        {message.content.length > 200 && (
+                          <button
+                            className="text-[11px] text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 font-medium mt-1 sm:text-xs md:text-sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setViewingMessage(message)
+                              setIsViewModalOpen(true)
+                              markAsRead(message.id)
+                            }}
+                          >
+                            Ver más...
+                          </button>
+                        )}
+                      </div>
                       {message.images && message.images.length > 0 && (
                         <div className="mb-2.5 sm:mb-3">
                           <div className="flex gap-1.5 overflow-x-auto pb-2 -mx-0.5 px-0.5 sm:gap-2 sm:-mx-1 sm:px-1">
@@ -1041,6 +1035,74 @@ export function MensajesSection() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Modal para ver el contenido completo del mensaje */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+              {viewingMessage?.title}
+            </DialogTitle>
+            <DialogDescription className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+              <Calendar className="h-4 w-4" />
+              <span>{viewingMessage?.date}</span>
+              {viewingMessage?.category && (
+                <>
+                  <span>•</span>
+                  <Badge className="text-xs">
+                    {viewingMessage.category}
+                  </Badge>
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {viewingMessage && (
+            <div className="space-y-4 mt-4">
+              {/* Contenido completo del mensaje */}
+              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 sm:p-6">
+                <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+                  {viewingMessage.content}
+                </p>
+              </div>
+
+              {/* Imágenes si las hay */}
+              {viewingMessage.images && viewingMessage.images.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Imágenes ({viewingMessage.images.length})
+                  </h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {viewingMessage.images.map((imageUrl, idx) => (
+                      <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                        <img
+                          src={imageUrl}
+                          alt={`Imagen ${idx + 1} de ${viewingMessage.title}`}
+                          className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => window.open(imageUrl, '_blank')}
+                          loading="lazy"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400?text=Imagen'
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2 mt-6">
+            <Button
+              variant="outline"
+              onClick={() => setIsViewModalOpen(false)}
+            >
+              Cerrar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }

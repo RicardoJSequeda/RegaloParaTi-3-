@@ -15,7 +15,18 @@ import {
   Trash2,
   Upload,
   Music,
-  MessageCircle
+  MessageCircle,
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  Shuffle,
+  Repeat,
+  Volume2,
+  VolumeX,
+  Maximize2,
+  X,
+  ChevronRight
 } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { FileUpload } from '@/components/ui/file-upload'
@@ -75,10 +86,22 @@ export default function MusicaSection() {
   const {
     currentSong,
     isActuallyPlaying,
+    isPlaying,
     playlist,
     setPlaylist,
     selectSong,
-    hasValidAudio
+    hasValidAudio,
+    togglePlay,
+    nextSong,
+    prevSong,
+    currentTime,
+    duration,
+    volume,
+    setVolume,
+    repeat,
+    setRepeat,
+    shuffle,
+    setShuffle
   } = useGlobalPlayer()
 
   // Cargar canciones desde Supabase
@@ -96,17 +119,14 @@ export default function MusicaSection() {
 
       if (data) {
         const currentYear = new Date().getFullYear()
-        const mapped = data.map((r: any) => ({
+        const mapped: GlobalSong[] = data.map((r: any) => ({
           id: r.id,
           title: r.title,
           artist: r.artist,
-          album: r.album ?? '',
           duration: r.duration ?? '3:00',
           cover: r.cover ?? '/api/placeholder/200/200',
           dedication: r.dedication ?? '',
           isFavorite: !!r.is_favorite,
-          genre: r.genre ?? '',
-          year: r.year ?? currentYear.toString(),
           plays: r.plays ?? 0,
           fileName: r.file_name ?? '',
           audioUrl: r.audio_url ?? ''
@@ -210,10 +230,7 @@ export default function MusicaSection() {
   const [formData, setFormData] = useState({
     title: '',
     artist: '',
-    album: '',
-    dedication: '',
-    genre: '',
-    year: new Date().getFullYear().toString()
+    dedication: ''
   })
   const [audioFile, setAudioFile] = useState<File | null>(null)
   const [coverFile, setCoverFile] = useState<File | null>(null)
@@ -227,10 +244,7 @@ export default function MusicaSection() {
   const [editFormData, setEditFormData] = useState({
     title: '',
     artist: '',
-    album: '',
-    dedication: '',
-    genre: '',
-    year: ''
+    dedication: ''
   })
   const [editAudioFile, setEditAudioFile] = useState<File | null>(null)
   const [editCoverFile, setEditCoverFile] = useState<File | null>(null)
@@ -247,10 +261,7 @@ export default function MusicaSection() {
     setFormData({
       title: '',
       artist: '',
-      album: '',
-      dedication: '',
-      genre: '',
-      year: new Date().getFullYear().toString()
+      dedication: ''
     })
     setAudioFile(null)
     setCoverFile(null)
@@ -341,12 +352,9 @@ export default function MusicaSection() {
         .insert({
           title: formData.title,
           artist: formData.artist,
-          album: formData.album,
           duration,
           cover: coverUrl,
           dedication: formData.dedication,
-          genre: formData.genre,
-          year: formData.year,
           audio_url: audioUrl,
           file_name: audioFile.name,
           plays: 0,
@@ -399,10 +407,7 @@ export default function MusicaSection() {
     setEditFormData({
       title: song.title,
       artist: song.artist,
-      album: song.album,
-      dedication: song.dedication,
-      genre: song.genre,
-      year: song.year
+      dedication: song.dedication
     })
     setEditAudioPreview('')
     setEditCoverPreview('')
@@ -416,10 +421,7 @@ export default function MusicaSection() {
     setEditFormData({
       title: '',
       artist: '',
-      album: '',
-      dedication: '',
-      genre: '',
-      year: ''
+      dedication: ''
     })
     setEditAudioFile(null)
     setEditCoverFile(null)
@@ -522,10 +524,7 @@ export default function MusicaSection() {
         .update({
           title: editFormData.title,
           artist: editFormData.artist,
-          album: editFormData.album,
           dedication: editFormData.dedication,
-          genre: editFormData.genre,
-          year: editFormData.year,
           duration,
           cover: coverUrl,
           audio_url: audioUrl,
@@ -547,10 +546,7 @@ export default function MusicaSection() {
         ...editingSong,
         title: editFormData.title,
         artist: editFormData.artist,
-        album: editFormData.album,
         dedication: editFormData.dedication,
-        genre: editFormData.genre,
-        year: editFormData.year,
         duration,
         cover: coverUrl,
         audioUrl,
@@ -599,7 +595,7 @@ export default function MusicaSection() {
           variant="secondary"
           className="w-fit rounded-full bg-white/80 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-pink-600 shadow-sm ring-1 ring-pink-200/70 backdrop-blur sm:px-3 sm:py-1 sm:text-[11px]"
         >
-          Nuestra Música
+          Nuestras Canciones
         </Badge>
         <h1 className="w-full text-wrap text-[1.5rem] font-extrabold leading-[1.2] tracking-tight text-gray-900 dark:text-white sm:text-[1.75rem] md:text-3xl lg:text-4xl">
           Nuestras Canciones
@@ -647,17 +643,15 @@ export default function MusicaSection() {
         </Card>
       </div>
 
-      {/* UX: Reproductor Global Info optimizado para móvil */}
+      {/* UX: Reproductor Global mejorado con controles completos */}
       {currentSong && (
-        <Card className="bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg border-0 rounded-xl overflow-hidden sm:rounded-2xl">
-          <CardContent className="p-3 sm:p-4 md:p-6">
-            <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
-              <div className={`w-14 h-14 rounded-xl overflow-hidden ring-2 ring-white/20 song-cover flex-shrink-0 transition-all ${
-                isActuallyPlaying ? 'animate-spin song-cover-playing shadow-lg' : ''
-              } sm:w-16 sm:h-16 md:w-20 md:h-20`} style={{ 
-                animationDuration: '20s', 
-                animationPlayState: isActuallyPlaying ? 'running' : 'paused' 
-              }}>
+        <Card className="bg-white dark:bg-gray-800 shadow-xl border-0 rounded-2xl overflow-hidden">
+          <CardContent className="p-4 sm:p-6">
+            {/* Header con información de la canción */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`w-16 h-16 rounded-xl overflow-hidden ring-2 ring-pink-200 dark:ring-pink-800 flex-shrink-0 transition-all ${
+                isActuallyPlaying ? 'animate-pulse' : ''
+              }`}>
                 {currentSong.cover && currentSong.cover !== '/api/placeholder/200/200' ? (
                   <img 
                     src={currentSong.cover} 
@@ -665,21 +659,192 @@ export default function MusicaSection() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-white/20 flex items-center justify-center">
-                    <Music className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8" />
+                  <div className="w-full h-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+                    <Music className="h-6 w-6 text-white" />
                   </div>
                 )}
               </div>
-              <div className="flex-1 text-center sm:text-left">
-                <h3 className="font-bold text-base sm:text-lg md:text-xl">{currentSong.title}</h3>
-                <p className="text-white/80 text-[13px] sm:text-sm md:text-base">{currentSong.artist}</p>
-                {currentSong.album && (
-                  <p className="text-[12px] text-white/60 sm:text-sm">{currentSong.album}</p>
-                )}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-base sm:text-lg text-gray-900 dark:text-white truncate">
+                  {currentSong.title}
+                </h3>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 truncate">
+                    {currentSong.artist}
+                  </p>
+                  {currentSong.dedication && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-5 w-5 p-0 text-pink-500 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/20"
+                      onClick={() => {
+                        setSelectedDedication({
+                          title: currentSong.title,
+                          artist: currentSong.artist,
+                          dedication: currentSong.dedication,
+                          cover: currentSong.cover
+                        })
+                        setShowDedicationModal(true)
+                      }}
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
-              <Badge variant="secondary" className="bg-white/20 text-white text-[10px] px-2.5 py-1 rounded-full sm:text-xs sm:px-3 md:text-sm">
-                Reproduciendo Globalmente
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                >
+                  <Maximize2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Controles principales de reproducción */}
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`h-10 w-10 p-0 rounded-full ${shuffle ? 'text-pink-500 bg-pink-50 dark:bg-pink-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+                onClick={() => setShuffle(!shuffle)}
+                aria-label="Shuffle"
+              >
+                <Shuffle className="h-5 w-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-10 w-10 p-0 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                onClick={prevSong}
+                aria-label="Canción anterior"
+              >
+                <SkipBack className="h-5 w-5" />
+              </Button>
+              <Button
+                variant="default"
+                size="lg"
+                className="h-14 w-14 p-0 rounded-full bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transition-all active:scale-95"
+                onClick={togglePlay}
+                aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
+              >
+                {isPlaying ? (
+                  <Pause className="h-6 w-6" />
+                ) : (
+                  <Play className="h-6 w-6 ml-0.5" />
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-10 w-10 p-0 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                onClick={nextSong}
+                aria-label="Siguiente canción"
+              >
+                <SkipForward className="h-5 w-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`h-10 w-10 p-0 rounded-full ${repeat ? 'text-pink-500 bg-pink-50 dark:bg-pink-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+                onClick={() => setRepeat(!repeat)}
+                aria-label="Repetir"
+              >
+                <Repeat className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Barra de progreso */}
+            <div className="mb-4">
+              <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-2">
+                <span>{formatDuration(Math.floor(currentTime))}</span>
+                <span>{currentSong.duration || '0:00'}</span>
+              </div>
+              <div className="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div 
+                  className="absolute h-full bg-pink-500 rounded-full transition-all duration-300"
+                  style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Controles secundarios: Volumen */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                onClick={() => setVolume(volume > 0 ? 0 : 1)}
+                aria-label={volume > 0 ? 'Silenciar' : 'Activar sonido'}
+              >
+                {volume > 0 ? (
+                  <Volume2 className="h-4 w-4" />
+                ) : (
+                  <VolumeX className="h-4 w-4" />
+                )}
+              </Button>
+              <div className="flex-1 relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div 
+                  className="absolute h-full bg-pink-500 rounded-full transition-all"
+                  style={{ width: `${volume * 100}%` }}
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={volume}
+                  onChange={(e) => setVolume(parseFloat(e.target.value))}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+              </div>
+              <span className="text-xs text-gray-600 dark:text-gray-400 w-10 text-right">
+                {Math.round(volume * 100)}%
+              </span>
+            </div>
+
+            {/* Información adicional */}
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-2">
+                <span>{playlist.length} canciones</span>
+              </div>
+              {currentSong.dedication && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-pink-200 dark:border-pink-800 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20"
+                  onClick={() => {
+                    setSelectedDedication({
+                      title: currentSong.title,
+                      artist: currentSong.artist,
+                      dedication: currentSong.dedication,
+                      cover: currentSong.cover
+                    })
+                    setShowDedicationModal(true)
+                  }}
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Ver Dedicatoria
+                </Button>
+              )}
+              {(() => {
+                const currentIndex = playlist.findIndex(song => song.id === currentSong.id)
+                const nextIndex = repeat ? (currentIndex + 1) % playlist.length : (currentIndex + 1 >= playlist.length ? 0 : currentIndex + 1)
+                const nextSong = playlist[nextIndex]
+                return nextSong ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full mt-2 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                    onClick={() => selectSong(nextSong)}
+                  >
+                    <ChevronRight className="h-4 w-4 mr-2" />
+                    Siguiente: {nextSong.title}
+                  </Button>
+                ) : null
+              })()}
             </div>
           </CardContent>
         </Card>
@@ -748,14 +913,6 @@ export default function MusicaSection() {
                       </h4>
                       <p className="text-[11px] text-gray-600 dark:text-gray-400 truncate sm:text-xs md:text-sm">{song.artist}</p>
                       <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-gray-500 dark:text-gray-400 flex-wrap sm:gap-2 sm:mt-1 sm:text-xs">
-                        {song.genre && (
-                          <>
-                            <span className="truncate">{song.genre}</span>
-                            <span>•</span>
-                          </>
-                        )}
-                        <span>{song.year}</span>
-                        <span>•</span>
                         <span>{song.plays} reproducciones</span>
                         {song.fileName && (
                           <>
@@ -891,42 +1048,6 @@ export default function MusicaSection() {
                   value={formData.artist}
                   onChange={handleInputChange}
                   required 
-                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-xl sm:text-sm md:text-base"
-                  style={{ fontSize: '16px' }}
-                />
-              </div>
-              <div>
-                <Label htmlFor="album" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Álbum</Label>
-                <Input 
-                  id="album" 
-                  name="album" 
-                  value={formData.album}
-                  onChange={handleInputChange}
-                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-xl sm:text-sm md:text-base"
-                  style={{ fontSize: '16px' }}
-                />
-              </div>
-              <div>
-                <Label htmlFor="genre" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Género</Label>
-                <Input 
-                  id="genre" 
-                  name="genre" 
-                  value={formData.genre}
-                  onChange={handleInputChange}
-                  className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-xl sm:text-sm md:text-base"
-                  style={{ fontSize: '16px' }}
-                />
-              </div>
-              <div>
-                <Label htmlFor="year" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Año</Label>
-                <Input 
-                  id="year" 
-                  name="year" 
-                  type="number" 
-                  min="1900" 
-                  max={new Date().getFullYear()}
-                  value={formData.year}
-                  onChange={handleInputChange}
                   className="border-gray-300 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-xl sm:text-sm md:text-base"
                   style={{ fontSize: '16px' }}
                 />
@@ -1131,42 +1252,6 @@ export default function MusicaSection() {
                     value={editFormData.artist}
                     onChange={handleEditInputChange}
                     required
-                    className="file-input-hover edit-form-input border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring-green-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-md sm:text-sm md:text-base"
-                    style={{ fontSize: '16px' }}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-album" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Álbum</Label>
-                  <Input
-                    id="edit-album"
-                    name="album"
-                    value={editFormData.album}
-                    onChange={handleEditInputChange}
-                    className="file-input-hover edit-form-input border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring-green-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-md sm:text-sm md:text-base"
-                    style={{ fontSize: '16px' }}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-genre" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Género</Label>
-                  <Input
-                    id="edit-genre"
-                    name="genre"
-                    value={editFormData.genre}
-                    onChange={handleEditInputChange}
-                    className="file-input-hover edit-form-input border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring-green-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-md sm:text-sm md:text-base"
-                    style={{ fontSize: '16px' }}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-year" className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:text-sm sm:mb-2">Año</Label>
-                  <Input
-                    id="edit-year"
-                    name="year"
-                    value={editFormData.year}
-                    onChange={handleEditInputChange}
-                    type="number"
-                    min="1900"
-                    max={new Date().getFullYear()}
                     className="file-input-hover edit-form-input border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring-green-500 rounded-lg min-h-[44px] text-[13px] sm:rounded-md sm:text-sm md:text-base"
                     style={{ fontSize: '16px' }}
                   />

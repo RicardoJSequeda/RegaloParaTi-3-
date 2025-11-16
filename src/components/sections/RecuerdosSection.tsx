@@ -8,6 +8,13 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle 
+} from '@/components/ui/dialog'
 import { LeafletMap } from '@/components/ui/leaflet-map'
 import { Heart, Calendar, MapPin, Image, Clock, Star, Map, Camera, Plane, Search, Edit, Trash2, ChevronRight, AlertCircle, X, Save, Plus, Upload } from 'lucide-react'
 import { Milestone, MemoryPlace } from '@/types'
@@ -22,7 +29,6 @@ export function RecuerdosSection() {
   const [loading, setLoading] = useState(true)
   
   // Estados para UI
-  const [selectedFilter, setSelectedFilter] = useState('Todos')
   const [selectedPlaceFilter, setSelectedPlaceFilter] = useState('Todos')
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState<MemoryPlace[]>([])
@@ -35,6 +41,8 @@ export function RecuerdosSection() {
   const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [deletingMilestone, setDeletingMilestone] = useState<Milestone | null>(null)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
+  const [viewingMilestone, setViewingMilestone] = useState<Milestone | null>(null)
   const [isEditPlaceModalOpen, setIsEditPlaceModalOpen] = useState(false)
   const [editingPlace, setEditingPlace] = useState<MemoryPlace | null>(null)
   const [isDeletePlaceModalOpen, setIsDeletePlaceModalOpen] = useState(false)
@@ -211,12 +219,10 @@ export function RecuerdosSection() {
     }
   }
 
-  // Filtrar hitos según el filtro seleccionado (memoizado)
+  // Filtrar hitos (sin filtro de categoría)
   const filteredMilestones = useMemo(() => {
-    return selectedFilter === 'Todos' 
-      ? milestones 
-      : milestones.filter(milestone => milestone.type === selectedFilter.toLowerCase())
-  }, [milestones, selectedFilter])
+    return milestones
+  }, [milestones])
 
   // Función de búsqueda avanzada (memoizada)
   const performSearch = useCallback((query: string) => {
@@ -403,31 +409,59 @@ export function RecuerdosSection() {
         }
       }
 
-      const { error } = await supabase
+      // Guardar valores antes de actualizar
+      const milestoneId = editingMilestone.id
+      const milestoneData = {
+        title: editingMilestone.title,
+        description: editingMilestone.description,
+        image_url: imageUrl,
+        date_taken: editingMilestone.date_taken,
+        type: editingMilestone.type,
+        location: editingMilestone.location,
+        tags: editingMilestone.tags,
+        is_favorite: editingMilestone.is_favorite
+      }
+
+      const { data, error } = await supabase
         .from('milestones')
-        .update({
-          title: editingMilestone.title,
-          description: editingMilestone.description,
-          image_url: imageUrl,
-          date_taken: editingMilestone.date_taken,
-          type: editingMilestone.type,
-          location: editingMilestone.location,
-          tags: editingMilestone.tags,
-          is_favorite: editingMilestone.is_favorite
-        })
-        .eq('id', editingMilestone.id)
+        .update(milestoneData)
+        .eq('id', milestoneId)
+        .select()
+        .single()
 
       if (error) {
         console.error('Error updating milestone:', error)
+        alert('Error al actualizar el hito: ' + (error.message || 'Error desconocido'))
         return
       }
+
+      if (!data) {
+        throw new Error('No se recibieron datos de la base de datos')
+      }
+
+      // Actualizar estado local con los datos de la BD
+      const updatedMilestone: Milestone = {
+        id: data.id,
+        title: data.title,
+        description: data.description,
+        image_url: data.image_url,
+        date_taken: data.date_taken,
+        type: data.type,
+        location: data.location,
+        tags: data.tags || [],
+        is_favorite: data.is_favorite || false,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      }
+
+      setMilestones(prev => prev.map(m => m.id === milestoneId ? updatedMilestone : m))
 
       setIsEditModalOpen(false)
       setEditingMilestone(null)
       clearImageSelection()
-      await loadMilestones()
     } catch (error) {
       console.error('Error in handleSaveMilestone:', error)
+      alert('Error al guardar el hito: ' + (error instanceof Error ? error.message : 'Error desconocido'))
     }
   }
 
@@ -722,24 +756,6 @@ export function RecuerdosSection() {
               {filteredMilestones.length} de {milestones.length} hitos especiales
             </p>
             
-            {/* UX: Filtros con scroll horizontal táctil optimizado para móvil (320px+) */}
-            <div className="flex w-full overflow-x-auto gap-1.5 pb-2 px-1 scrollbar-hide sm:gap-2 sm:flex-wrap sm:justify-center sm:overflow-visible sm:pb-0 sm:px-0">
-              {["Todos", "Aniversario", "Viajes", "Eventos", "Otros"].map((filter) => (
-                <Button
-                  key={filter}
-                  variant={selectedFilter === filter ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedFilter(filter)}
-                  className={`flex-shrink-0 rounded-full border-2 px-3 py-2.5 text-[11px] font-semibold transition-all active:scale-95 sm:flex-shrink sm:px-4 sm:py-2 sm:text-xs md:text-sm min-h-[44px] touch-target ${
-                    selectedFilter === filter 
-                      ? "bg-pink-500 text-white shadow-lg hover:bg-pink-600 border-pink-500" 
-                      : "border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400 dark:border-pink-600 dark:text-pink-400 dark:hover:bg-pink-900/20"
-                  }`}
-                >
-                  {filter}
-                </Button>
-              ))}
-            </div>
           </div>
 
           {/* UX: Timeline optimizado para móvil con mejor espaciado y legibilidad */}
@@ -762,26 +778,18 @@ export function RecuerdosSection() {
                     <Heart className="w-7 h-7 text-pink-500 sm:w-8 sm:h-8 md:w-10 md:h-10" />
                   </div>
                   <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1.5 sm:text-lg sm:mb-2 md:text-xl md:mb-3 lg:text-2xl">
-                    {selectedFilter !== 'Todos' 
-                      ? 'No hay hitos con este filtro'
-                      : '¡Comienza tu historia de amor!'
-                    }
+                    ¡Comienza tu historia de amor!
                   </h3>
                   <p className="text-[12px] text-gray-600 dark:text-gray-400 mb-3 max-w-md mx-auto leading-relaxed sm:text-sm sm:mb-4 md:text-base md:mb-6">
-                    {selectedFilter !== 'Todos' 
-                      ? 'Intenta cambiar los filtros para ver más hitos especiales'
-                      : 'Agrega tu primer hito para comenzar a documentar los momentos más especiales de vuestra relación'
-                    }
+                    Agrega tu primer hito para comenzar a documentar los momentos más especiales de vuestra relación
                   </p>
-                  {selectedFilter === 'Todos' && (
-                    <Button 
-                      className="bg-pink-500 text-white rounded-full shadow-lg min-h-[44px] px-4 py-2.5 text-[12px] font-semibold active:scale-95 hover:bg-pink-600 sm:px-5 sm:py-3 sm:text-sm md:text-base"
-                      onClick={() => {/* Aquí podrías abrir un modal para agregar hito */}}
-                    >
+                  <Button 
+                    className="bg-pink-500 text-white rounded-full shadow-lg min-h-[44px] px-4 py-2.5 text-[12px] font-semibold active:scale-95 hover:bg-pink-600 sm:px-5 sm:py-3 sm:text-sm md:text-base"
+                    onClick={() => {/* Aquí podrías abrir un modal para agregar hito */}}
+                  >
                       <Plus className="w-3.5 h-3.5 mr-1.5 sm:w-4 sm:h-4 sm:mr-2 md:w-5 md:h-5" />
                       Agregar Primer Hito
                     </Button>
-                  )}
                 </motion.div>
               ) : (
                 filteredMilestones.map((milestone, index) => {
@@ -828,36 +836,18 @@ export function RecuerdosSection() {
                           <div className="timeline-card w-full overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl sm:rounded-2xl">
                             {/* Imagen del hito con altura responsive */}
                             <div className="relative w-full">
-                              <div className="w-full h-36 overflow-hidden sm:h-44 md:h-52 lg:h-56">
+                              <div 
+                                className="w-full h-36 overflow-hidden sm:h-44 md:h-52 lg:h-56 cursor-pointer"
+                                onClick={() => {
+                                  setViewingMilestone(milestone)
+                                  setIsViewModalOpen(true)
+                                }}
+                              >
                                 <img
                                   src={milestone.image_url || 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=600&h=400&fit=crop&crop=center'}
                                   alt={milestone.title}
                                   className="w-full h-full object-cover timeline-image rounded-t-xl sm:rounded-t-2xl"
                                 />
-                              </div>
-                              
-                              {/* UX: Overlay con controles táctiles - siempre visible en móvil para mejor UX */}
-                              <div className="absolute inset-0 timeline-overlay opacity-100 transition-opacity duration-300 sm:opacity-0 sm:group-hover:opacity-100">
-                                <div className="absolute top-1.5 right-1.5 flex gap-1.5 sm:top-2 sm:right-2 sm:gap-2">
-                                  <Button 
-                                    size="sm" 
-                                    variant="ghost" 
-                                    className="h-10 w-10 p-0 timeline-controls bg-white/95 hover:bg-white active:scale-95 dark:bg-gray-800/95 dark:hover:bg-gray-800 min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0"
-                                    onClick={() => handleEditMilestone(milestone)}
-                                    aria-label="Editar hito"
-                                  >
-                                    <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
-                                  </Button>
-                                  <Button 
-                                    size="sm" 
-                                    variant="ghost" 
-                                    className="h-10 w-10 p-0 timeline-controls bg-white/95 hover:bg-white active:scale-95 dark:bg-gray-800/95 dark:hover:bg-gray-800 min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0"
-                                    onClick={() => handleDeleteMilestone(milestone)}
-                                    aria-label="Eliminar hito"
-                                  >
-                                    <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
-                                  </Button>
-                                </div>
                               </div>
 
                               {/* Badge de fecha con tipografía responsive */}
@@ -875,37 +865,51 @@ export function RecuerdosSection() {
 
                             {/* UX: Contenido del hito con padding responsive y tipografía escalable */}
                             <div className="p-3 timeline-card-content sm:p-4 md:p-5 lg:p-6">
-                              <h3 className="text-base font-bold text-gray-800 dark:text-white mb-1.5 timeline-title sm:text-lg sm:mb-2 md:text-xl md:mb-2.5 lg:text-2xl">
-                                {milestone.title}
-                              </h3>
-                              <p className="text-[12px] text-gray-600 dark:text-gray-400 leading-relaxed mb-2.5 line-clamp-2 sm:text-sm sm:mb-3 sm:line-clamp-3 md:text-base md:mb-4">
+                              <div className="flex items-start justify-between gap-2 mb-2">
+                                <h3 className="text-base font-bold text-gray-800 dark:text-white timeline-title sm:text-lg md:text-xl lg:text-2xl flex-1">
+                                  {milestone.title}
+                                </h3>
+                                {/* Botones de acción fuera de la imagen */}
+                                <div className="flex gap-1 flex-shrink-0">
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    className="h-8 w-8 p-0 text-blue-500 hover:text-blue-600 hover:bg-blue-50 active:scale-95 dark:hover:bg-blue-900/20 min-h-[44px] min-w-[44px] sm:h-7 sm:w-7 sm:min-h-0 sm:min-w-0"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      handleEditMilestone(milestone)
+                                    }}
+                                    aria-label="Editar hito"
+                                  >
+                                    <Edit className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 active:scale-95 dark:hover:bg-red-900/20 min-h-[44px] min-w-[44px] sm:h-7 sm:w-7 sm:min-h-0 sm:min-w-0"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      handleDeleteMilestone(milestone)
+                                    }}
+                                    aria-label="Eliminar hito"
+                                  >
+                                    <Trash2 className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                                  </Button>
+                                </div>
+                              </div>
+                              <p className="text-[12px] text-gray-600 dark:text-gray-400 leading-relaxed mb-3 line-clamp-2 sm:text-sm sm:mb-4 sm:line-clamp-3 md:text-base">
                                 {milestone.description}
                               </p>
-                              
-                              {/* Tags del hito con tamaño responsive */}
-                              {milestone.tags && milestone.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-1 mb-2.5 timeline-tags sm:gap-1.5 sm:mb-3 md:gap-2 md:mb-4">
-                                  {milestone.tags.slice(0, 3).map((tag, tagIndex) => (
-                                    <Badge 
-                                      key={tagIndex} 
-                                      variant="secondary" 
-                                      className="text-[9px] timeline-tag px-1.5 py-0.5 sm:text-[10px] sm:px-2 md:text-xs"
-                                    >
-                                      {tag}
-                                    </Badge>
-                                  ))}
-                                  {milestone.tags.length > 3 && (
-                                    <Badge variant="secondary" className="text-[9px] px-1.5 py-0.5 sm:text-[10px] sm:px-2 md:text-xs">
-                                      +{milestone.tags.length - 3}
-                                    </Badge>
-                                  )}
-                                </div>
-                              )}
 
-                              {/* UX: Botón ver más con área táctil mínima */}
+                              {/* UX: Botón ver más detalles mejorado */}
                               <Button 
                                 variant="link" 
                                 className="p-0 h-auto text-pink-600 hover:text-pink-700 dark:text-pink-400 dark:hover:text-pink-300 font-medium text-[12px] active:scale-95 min-h-[44px] sm:text-sm sm:min-h-0 md:text-base"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setViewingMilestone(milestone)
+                                  setIsViewModalOpen(true)
+                                }}
                               >
                                 Ver más detalles
                                 <ChevronRight className="h-3.5 w-3.5 ml-0.5 sm:h-4 sm:w-4 sm:ml-1" />
@@ -1359,6 +1363,131 @@ export function RecuerdosSection() {
           </motion.div>
         </div>
       )}
+
+      {/* Modal de Ver Más Detalles */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+              {viewingMilestone?.title}
+            </DialogTitle>
+            <DialogDescription className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+              <Calendar className="h-4 w-4" />
+              <span>
+                {viewingMilestone && new Date(viewingMilestone.date_taken).toLocaleDateString('es-ES', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </span>
+              {viewingMilestone?.location && (
+                <>
+                  <span>•</span>
+                  <MapPin className="h-4 w-4" />
+                  <span>{viewingMilestone.location}</span>
+                </>
+              )}
+              {viewingMilestone?.type && (
+                <>
+                  <span>•</span>
+                  <Badge variant="secondary" className="text-xs">
+                    {viewingMilestone.type}
+                  </Badge>
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {viewingMilestone && (
+            <div className="space-y-4 mt-4">
+              {/* Imagen principal */}
+              {viewingMilestone.image_url && (
+                <div className="relative w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                  <img
+                    src={viewingMilestone.image_url}
+                    alt={viewingMilestone.title}
+                    className="w-full h-auto max-h-[500px] object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=600&h=400&fit=crop&crop=center'
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Descripción completa */}
+              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 sm:p-6">
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Descripción
+                </h4>
+                <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+                  {viewingMilestone.description || 'Sin descripción'}
+                </p>
+              </div>
+
+              {/* Información adicional */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {viewingMilestone.location && (
+                  <div className="flex items-start gap-2">
+                    <MapPin className="h-5 w-5 text-pink-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Ubicación</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{viewingMilestone.location}</p>
+                    </div>
+                  </div>
+                )}
+                {viewingMilestone.type && (
+                  <div className="flex items-start gap-2">
+                    <Star className="h-5 w-5 text-pink-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Tipo</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{viewingMilestone.type}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Tags si existen */}
+              {viewingMilestone.tags && viewingMilestone.tags.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Etiquetas
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {viewingMilestone.tags.map((tag, idx) => (
+                      <Badge key={idx} variant="secondary" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2 mt-6">
+            <Button
+              variant="outline"
+              onClick={() => setIsViewModalOpen(false)}
+            >
+              Cerrar
+            </Button>
+            {viewingMilestone && (
+              <Button
+                variant="default"
+                onClick={() => {
+                  setIsViewModalOpen(false)
+                  handleEditMilestone(viewingMilestone)
+                }}
+                className="bg-pink-500 hover:bg-pink-600"
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Editar
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Modal de Edición de Lugar */}
       {isEditPlaceModalOpen && editingPlace && (

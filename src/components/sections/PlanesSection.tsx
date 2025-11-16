@@ -27,6 +27,7 @@ import {
 import { useReminders } from '@/hooks/useReminders'
 import { useAchievements } from '@/hooks/useAchievements'
 import { getBrowserClient } from '@/lib/supabase/browser-client'
+import { uploadPublicFile } from '@/lib/supabase/storage'
 import { 
   Plus, 
   Calendar, 
@@ -247,9 +248,11 @@ export function PlanesSection() {
   const [planForm, setPlanForm] = useState({
     title: '',
     description: '',
-    status: 'pendiente' as Plan['status']
+    status: 'pendiente' as Plan['status'],
+    date: '' // Fecha opcional para el calendario
   })
   const [planImage, setPlanImage] = useState<string>('')
+  const [planImageFile, setPlanImageFile] = useState<File | null>(null)
 
   // Cargar planes desde Supabase
   useEffect(() => {
@@ -348,18 +351,60 @@ export function PlanesSection() {
     setPlanForm({
       title: '',
       description: '',
-      status: 'pendiente'
+      status: 'pendiente',
+      date: ''
     })
     setPlanImage('')
+    setPlanImageFile(null)
   }
 
   const handleCreatePlan = async () => {
+    // Usar fecha del formulario si existe, sino usar fecha actual como valor por defecto (formato YYYY-MM-DD)
+    const planDate = planForm.date || new Date().toISOString().split('T')[0]
+    const tempImageUrl = planImage || null
+
+    // ACTUALIZACIÓN OPTIMISTA: Crear plan temporal
+    const tempPlan: Plan = {
+      id: -Date.now(), // ID temporal negativo
+      title: planForm.title,
+      description: planForm.description,
+      date: planDate,
+      status: planForm.status,
+      image: tempImageUrl,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+
+    // Agregar plan temporal inmediatamente
+    setPlans(prev => [tempPlan, ...prev])
+
+    // Cerrar modal y limpiar formulario inmediatamente
+    setShowCreateModal(false)
+    resetForm()
+
+    // Subir imagen y guardar en BD en segundo plano
     try {
+      let imageUrl = tempImageUrl
+
+      // Si hay un archivo nuevo, subirlo a Supabase Storage
+      if (planImageFile) {
+        try {
+          const uploadResult = await uploadPublicFile('plan-images', planImageFile, `plans/${Date.now()}/`)
+          if (uploadResult && uploadResult.url) {
+            imageUrl = uploadResult.url
+          }
+        } catch (uploadError) {
+          console.error('Error uploading image:', uploadError)
+          // Continuar sin imagen si falla la subida
+        }
+      }
+
       const planData = {
         title: planForm.title,
         description: planForm.description,
         status: planForm.status,
-        image: planImage || null
+        date: planDate,
+        image: imageUrl
       }
 
       const { data, error } = await supabase
@@ -369,73 +414,167 @@ export function PlanesSection() {
         .single()
 
       if (error) {
-        console.error('Error creating plan:', error)
-        alert('Error al crear el plan')
-        return
+        throw error
       }
 
-      setShowCreateModal(false)
-      resetForm()
-      await loadPlans() // Recargar planes
-    } catch (error) {
-      console.error('Error creating plan:', error)
-      alert('Error al crear el plan')
+      if (!data) {
+        throw new Error('No se recibieron datos de la base de datos')
+      }
+
+      // Reemplazar plan temporal con el real
+      const realPlan: Plan = {
+        id: data.id,
+        title: data.title,
+        description: data.description,
+        date: data.date,
+        status: data.status,
+        image: data.image || undefined,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at
+      }
+
+      setPlans(prev => prev.map(p => p.id === tempPlan.id ? realPlan : p))
+    } catch (error: any) {
+      console.error('❌ Error creating plan:', error)
+      // Revertir actualización optimista
+      setPlans(prev => prev.filter(p => p.id !== tempPlan.id))
+      const errorMessage = error?.message || error?.toString() || 'Error desconocido'
+      alert(`Error al crear el plan: ${errorMessage}. Se ha revertido.`)
     }
   }
 
   const handleEditPlan = async () => {
     if (!editingPlan) return
 
+    // Guardar valores antes de limpiar el formulario
+    const planId = editingPlan.id
+    const planTitle = planForm.title
+    const planDescription = planForm.description
+    const planStatus = planForm.status
+    // Usar fecha del formulario si existe, sino mantener la fecha del plan o usar la actual
+    const planDate = planForm.date || editingPlan.date || new Date().toISOString().split('T')[0]
+    const tempImageUrl = planImage || editingPlan.image || null
+    const originalPlan = plans.find(p => p.id === planId)
+
+    // ACTUALIZACIÓN OPTIMISTA: Actualizar plan inmediatamente
+    const tempPlan: Plan = {
+      ...editingPlan,
+      title: planTitle,
+      description: planDescription,
+      status: planStatus,
+      date: planDate,
+      image: tempImageUrl,
+      updatedAt: new Date().toISOString()
+    }
+
+    setPlans(prev => prev.map(p => p.id === planId ? tempPlan : p))
+
+    // Cerrar modal y limpiar formulario inmediatamente
+    setShowEditModal(false)
+    setEditingPlan(null)
+    resetForm()
+
+    // Subir imagen y actualizar en BD en segundo plano
     try {
+      let imageUrl = tempImageUrl
+
+      // Si hay un archivo nuevo, subirlo a Supabase Storage
+      if (planImageFile) {
+        try {
+          const uploadResult = await uploadPublicFile('plan-images', planImageFile, `plans/${Date.now()}/`)
+          if (uploadResult && uploadResult.url) {
+            imageUrl = uploadResult.url
+          }
+        } catch (uploadError) {
+          console.error('Error uploading image:', uploadError)
+          // Mantener la imagen anterior si falla la subida
+          imageUrl = editingPlan.image || null
+        }
+      }
+
       const planData = {
-        title: planForm.title,
-        description: planForm.description,
-        status: planForm.status,
-        image: planImage || null
+        title: planTitle,
+        description: planDescription,
+        status: planStatus,
+        date: planDate,
+        image: imageUrl
       }
 
       const { data, error } = await supabase
         .from('plans')
         .update(planData)
-        .eq('id', editingPlan.id)
+        .eq('id', planId)
         .select()
         .single()
 
       if (error) {
-        console.error('Error updating plan:', error)
-        alert('Error al actualizar el plan')
-        return
+        throw error
       }
 
-      setShowEditModal(false)
-      setEditingPlan(null)
-      resetForm()
-      await loadPlans() // Recargar planes
-    } catch (error) {
-      console.error('Error updating plan:', error)
-      alert('Error al actualizar el plan')
+      if (!data) {
+        throw new Error('No se recibieron datos de la base de datos')
+      }
+
+      // Actualizar con los datos reales de la BD
+      const realPlan: Plan = {
+        id: data.id,
+        title: data.title,
+        description: data.description,
+        date: data.date,
+        status: data.status,
+        image: data.image || undefined,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at
+      }
+
+      setPlans(prev => prev.map(p => p.id === planId ? realPlan : p))
+    } catch (error: any) {
+      console.error('❌ Error updating plan:', error)
+      // Revertir actualización optimista
+      if (originalPlan) {
+        setPlans(prev => prev.map(p => p.id === planId ? originalPlan : p))
+      }
+      const errorMessage = error?.message || error?.toString() || 'Error desconocido'
+      alert(`Error al actualizar el plan: ${errorMessage}. Se ha revertido.`)
     }
   }
 
   const handleDeletePlan = async (planId: string) => {
-    if (confirm('¿Estás seguro de que quieres eliminar este plan?')) {
-      try {
-        const { error } = await supabase
-          .from('plans')
-          .delete()
-          .eq('id', planId)
+    if (!confirm('¿Estás seguro de que quieres eliminar este plan?')) {
+      return
+    }
 
-        if (error) {
-          console.error('Error deleting plan:', error)
-          alert('Error al eliminar el plan')
-          return
-        }
+    // Guardar el plan antes de eliminarlo para poder revertir si hay error
+    const planToDelete = plans.find(p => p.id.toString() === planId)
 
-        await loadPlans() // Recargar planes
-      } catch (error) {
-        console.error('Error deleting plan:', error)
-        alert('Error al eliminar el plan')
+    // ACTUALIZACIÓN OPTIMISTA: Eliminar plan inmediatamente
+    setPlans(prev => prev.filter(p => p.id.toString() !== planId))
+
+    // Eliminar de la BD en segundo plano
+    try {
+      const { error } = await supabase
+        .from('plans')
+        .delete()
+        .eq('id', planId)
+
+      if (error) {
+        throw error
       }
+    } catch (error: any) {
+      console.error('❌ Error deleting plan:', error)
+      // Revertir actualización optimista
+      if (planToDelete) {
+        setPlans(prev => {
+          // Verificar si el plan ya no está en el estado antes de agregarlo de nuevo
+          const exists = prev.find(p => p.id === planToDelete.id)
+          if (!exists) {
+            return [...prev, planToDelete]
+          }
+          return prev
+        })
+      }
+      const errorMessage = error?.message || error?.toString() || 'Error desconocido'
+      alert(`Error al eliminar el plan: ${errorMessage}. Se ha revertido.`)
     }
   }
 
@@ -446,9 +585,11 @@ export function PlanesSection() {
     setPlanForm({
       title: plan.title,
       description: plan.description,
-      status: plan.status
+      status: plan.status,
+      date: plan.date || ''
     })
     setPlanImage(plan.image || '')
+    setPlanImageFile(null) // Limpiar archivo al editar
     setShowEditModal(true)
   }
 
@@ -499,8 +640,18 @@ export function PlanesSection() {
   }
 
   const getPlansForDate = (date: Date) => {
-    // Ya no hay campo date, retornar array vacío
-    return []
+    if (!date) return []
+    
+    // Formatear la fecha a YYYY-MM-DD para comparar
+    const dateString = date.toISOString().split('T')[0]
+    
+    // Filtrar planes que coincidan con esta fecha
+    return plans.filter(plan => {
+      if (!plan.date) return false
+      // Comparar solo la parte de fecha (YYYY-MM-DD)
+      const planDate = plan.date.split('T')[0] // Por si viene con hora
+      return planDate === dateString
+    })
   }
 
 
@@ -863,6 +1014,7 @@ export function PlanesSection() {
             setForm={setPlanForm}
             image={planImage}
             setImage={setPlanImage}
+            setImageFile={setPlanImageFile}
             onSubmit={handleCreatePlan}
             onCancel={() => {
               setShowCreateModal(false)
@@ -894,6 +1046,7 @@ export function PlanesSection() {
             setForm={setPlanForm}
             image={planImage}
             setImage={setPlanImage}
+            setImageFile={setPlanImageFile}
             onSubmit={handleEditPlan}
             onCancel={() => {
               setShowEditModal(false)
@@ -1460,6 +1613,7 @@ interface PlanFormProps {
   setForm: (form: any) => void
   image: string
   setImage: (image: string) => void
+  setImageFile: (file: File | null) => void
   onSubmit: () => void
   onCancel: () => void
   statuses: any[]
@@ -1470,6 +1624,7 @@ function PlanForm({
   setForm,
   image,
   setImage,
+  setImageFile,
   onSubmit,
   onCancel,
   statuses
@@ -1527,6 +1682,21 @@ function PlanForm({
         />
       </div>
 
+      {/* Fecha opcional para el calendario */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Fecha (opcional)
+        </label>
+        <Input
+          type="date"
+          value={form.date}
+          onChange={(e) => setForm({ ...form, date: e.target.value })}
+          className="w-full"
+        />
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Si seleccionas una fecha, el plan aparecerá en el calendario
+        </p>
+      </div>
 
       {/* Image Upload */}
       <div>
@@ -1545,7 +1715,10 @@ function PlanForm({
                 type="button"
                 size="sm"
                 variant="outline"
-                onClick={() => setImage('')}
+                onClick={() => {
+                  setImage('')
+                  setImageFile(null)
+                }}
                 className="absolute top-2 right-2 bg-white/80 hover:bg-white"
               >
                 <X className="h-4 w-4" />
@@ -1553,7 +1726,10 @@ function PlanForm({
             </div>
           )}
           <FileUpload
-            onFileSelect={(file, dataUrl) => setImage(dataUrl)}
+            onFileSelect={(file, dataUrl) => {
+              setImage(dataUrl)
+              setImageFile(file)
+            }}
             accept="image/*"
             placeholder="Subir imagen del plan"
             className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-pink-400 cursor-pointer"

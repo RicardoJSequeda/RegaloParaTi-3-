@@ -7,13 +7,13 @@ export interface GlobalSong {
   id: string
   title: string
   artist: string
-  album: string
+  album?: string
   duration: string
   cover: string
   dedication: string
   isFavorite: boolean
-  genre: string
-  year: string
+  genre?: string
+  year?: string
   plays: number
   fileName: string
   audioUrl: string
