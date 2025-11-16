@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -392,14 +393,15 @@ export function MensajesSection() {
     }
   }
 
-  return (
-    <section className="relative mx-auto flex w-full max-w-6xl flex-col gap-4 overflow-x-hidden px-3 pb-20 pt-3 sm:gap-6 sm:px-4 sm:pb-6 sm:pt-4 md:gap-8 md:px-6" style={{ paddingTop: 'max(env(safe-area-inset-top), 0.75rem)' }}>
+  const sectionContent = (
+    <section className="relative mx-auto flex w-full max-w-6xl flex-col gap-4 overflow-x-hidden px-0 pb-20 pt-3 sm:gap-6 sm:px-4 sm:pb-6 sm:pt-4 md:gap-8 md:px-6" style={{ paddingTop: 'max(env(safe-area-inset-top), 0.75rem)', minWidth: 0, contain: 'layout style', willChange: 'auto' }}>
       {/* UX: Header optimizado para móvil con tipografía escalable desde 320px */}
       <motion.div 
-        className="flex flex-col items-center gap-1.5 text-center sm:gap-2 md:gap-3"
+        className="flex flex-col items-center gap-1.5 text-center w-full px-3 sm:gap-2 md:gap-3"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
+        style={{ minWidth: 0, maxWidth: '100%' }}
       >
         <Badge
           aria-hidden="true"
@@ -408,45 +410,47 @@ export function MensajesSection() {
         >
           Nuestros Pensamientos
         </Badge>
-        <h1 className="w-full text-wrap text-[1.5rem] font-extrabold leading-[1.2] tracking-tight text-gray-900 dark:text-white sm:text-[1.75rem] md:text-3xl lg:text-4xl">
+        <h1 className="w-full max-w-full text-wrap text-[1.5rem] font-extrabold leading-[1.2] tracking-tight text-gray-900 dark:text-white px-0 sm:text-[1.75rem] md:text-3xl lg:text-4xl">
           Mensajes Especiales
         </h1>
-        <p className="w-full max-w-2xl px-1 text-[12px] leading-[1.5] text-gray-600 dark:text-gray-300 sm:text-sm sm:leading-5 md:text-base md:leading-6 lg:text-lg">
+        <p className="w-full max-w-2xl text-[12px] leading-[1.5] text-gray-600 dark:text-gray-300 px-0 sm:text-sm sm:leading-5 md:text-base md:leading-6 lg:text-lg">
           Comparte tus pensamientos, deseos y sentimientos más profundos.
         </p>
       </motion.div>
 
       {/* UX: Estadísticas con scroll horizontal táctil optimizado para móvil */}
       <motion.div 
-        className="flex w-full overflow-x-auto gap-2 pb-2 px-1 scrollbar-hide sm:gap-3 sm:px-0 sm:pb-0 sm:overflow-visible sm:flex-wrap sm:justify-center"
+        className="flex w-full overflow-x-auto gap-1.5 pb-2 px-3 scrollbar-hide sm:gap-3 sm:px-0 sm:pb-0 sm:overflow-visible sm:flex-wrap sm:justify-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
+        style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}
       >
-        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-lg p-2 flex-shrink-0 min-w-[90px] transition-all duration-200 active:scale-95 sm:rounded-xl sm:p-2.5 sm:min-w-[100px]">
-          <div className="text-lg font-bold text-pink-600 dark:text-pink-400 sm:text-xl">{totalMessages}</div>
-          <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-0.5 sm:text-[11px]">Total</div>
+        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-lg p-3 flex-shrink-0 min-w-[80px] transition-all duration-200 active:scale-95 sm:rounded-xl sm:p-2.5 sm:min-w-[100px]" style={{ contain: 'layout style', willChange: 'auto' }}>
+          <div className="text-xl font-bold text-pink-600 dark:text-pink-400 sm:text-xl tabular-nums">{totalMessages}</div>
+          <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-1 sm:text-[11px]">Total</div>
         </div>
-        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-lg p-2 flex-shrink-0 min-w-[90px] transition-all duration-200 active:scale-95 sm:rounded-xl sm:p-2.5 sm:min-w-[100px]">
-          <div className="text-lg font-bold text-blue-600 dark:text-blue-400 sm:text-xl">{unreadMessages}</div>
-          <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-0.5 sm:text-[11px]">Sin leer</div>
+        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-lg p-3 flex-shrink-0 min-w-[80px] transition-all duration-200 active:scale-95 sm:rounded-xl sm:p-2.5 sm:min-w-[100px]" style={{ contain: 'layout style', willChange: 'auto' }}>
+          <div className="text-xl font-bold text-blue-600 dark:text-blue-400 sm:text-xl tabular-nums">{unreadMessages}</div>
+          <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-1 sm:text-[11px]">Sin leer</div>
         </div>
-        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-lg p-2 flex-shrink-0 min-w-[90px] transition-all duration-200 active:scale-95 sm:rounded-xl sm:p-2.5 sm:min-w-[100px]">
-          <div className="text-lg font-bold text-green-600 dark:text-green-400 sm:text-xl">{readMessages}</div>
-          <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-0.5 sm:text-[11px]">Leídos</div>
+        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-lg p-3 flex-shrink-0 min-w-[80px] transition-all duration-200 active:scale-95 sm:rounded-xl sm:p-2.5 sm:min-w-[100px]" style={{ contain: 'layout style', willChange: 'auto' }}>
+          <div className="text-xl font-bold text-green-600 dark:text-green-400 sm:text-xl tabular-nums">{readMessages}</div>
+          <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-1 sm:text-[11px]">Leídos</div>
         </div>
-        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-lg p-2 flex-shrink-0 min-w-[90px] transition-all duration-200 active:scale-95 sm:rounded-xl sm:p-2.5 sm:min-w-[100px]">
-          <div className="text-lg font-bold text-purple-600 dark:text-purple-400 sm:text-xl">{favoriteMessages}</div>
-          <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-0.5 sm:text-[11px]">Favoritos</div>
+        <div className="stats-card bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-0 rounded-lg p-3 flex-shrink-0 min-w-[80px] transition-all duration-200 active:scale-95 sm:rounded-xl sm:p-2.5 sm:min-w-[100px]" style={{ contain: 'layout style', willChange: 'auto' }}>
+          <div className="text-xl font-bold text-purple-600 dark:text-purple-400 sm:text-xl tabular-nums">{favoriteMessages}</div>
+          <div className="text-[10px] text-gray-600 dark:text-gray-400 mt-1 sm:text-[11px]">Favoritos</div>
         </div>
       </motion.div>
 
       {/* UX: Búsqueda y filtros optimizados para móvil con input táctil */}
       <motion.div 
-        className="flex w-full flex-col gap-2.5 sm:gap-3 md:gap-4"
+        className="flex w-full flex-col gap-2.5 px-3 sm:gap-3 md:gap-4 sm:px-0"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
+        style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}
       >
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-gray-400 dark:text-gray-500 sm:left-4 sm:h-4 sm:w-4" aria-hidden="true" />
@@ -481,7 +485,7 @@ export function MensajesSection() {
             </p>
           </motion.div>
         ) : (
-          <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:gap-6 lg:grid-cols-3">
+          <div className="grid w-full grid-cols-1 gap-3 px-3 sm:grid-cols-2 sm:gap-4 md:gap-6 lg:grid-cols-3 sm:px-0" style={{ minWidth: 0, maxWidth: '100%', contain: 'layout style', willChange: 'auto' }}>
             {filteredMessages.map((message, index) => {
               const category = categories.find(c => c.name === message.category)
               const Icon = category?.icon || Heart
@@ -503,13 +507,13 @@ export function MensajesSection() {
                     aria-label={`Mensaje: ${message.title}. ${message.isRead ? 'Leído' : 'No leído'}. ${message.isFavorite ? 'Favorito' : ''}`}
                     onKeyDown={(e) => e.key === 'Enter' && markAsRead(message.id)}
                   >
-                    <CardContent className="p-3 sm:p-4 md:p-5 lg:p-6">
-                      <div className="flex justify-between items-start mb-2.5 gap-1.5 sm:mb-3 sm:gap-2">
+                    <CardContent className="p-4 sm:p-4 md:p-5 lg:p-6" style={{ contain: 'layout style', willChange: 'auto' }}>
+                      <div className="flex justify-between items-start mb-3 gap-2 sm:mb-3 sm:gap-2">
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-[15px] text-gray-900 dark:text-white mb-1 truncate sm:text-base sm:mb-1.5 md:text-lg lg:text-xl">
+                          <h3 className="font-semibold text-[15px] text-gray-900 dark:text-white mb-1.5 truncate sm:text-base sm:mb-1.5 md:text-lg lg:text-xl">
                             {message.title}
                           </h3>
-                          <div className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400 sm:text-xs md:text-sm sm:gap-1.5">
+                          <div className="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400 sm:text-xs md:text-sm sm:gap-1.5">
                             <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
                             <span>{message.date}</span>
                           </div>
@@ -520,7 +524,7 @@ export function MensajesSection() {
                             variant="ghost" 
                             size="sm" 
                             onClick={(e) => toggleFavorite(message.id, e)} 
-                            className={`h-10 w-10 p-0 rounded-full transition-all duration-200 active:scale-95 min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0 touch-target ${
+                            className={`h-9 w-9 p-0 rounded-full transition-all duration-200 active:scale-95 min-h-[36px] min-w-[36px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0 touch-target ${
                               message.isFavorite 
                                 ? 'text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-900/20' 
                                 : 'text-gray-400 hover:text-red-500 hover:bg-gray-50 dark:hover:bg-gray-700'
@@ -533,7 +537,7 @@ export function MensajesSection() {
                             variant="ghost" 
                             size="sm" 
                             onClick={(e) => openEditModal(message, e)} 
-                            className="h-10 w-10 p-0 rounded-full text-blue-500 hover:text-blue-600 hover:bg-blue-50 active:scale-95 dark:hover:bg-blue-900/20 transition-all duration-200 min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0 touch-target"
+                            className="h-9 w-9 p-0 rounded-full text-blue-500 hover:text-blue-600 hover:bg-blue-50 active:scale-95 dark:hover:bg-blue-900/20 transition-all duration-200 min-h-[36px] min-w-[36px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0 touch-target"
                             aria-label="Editar mensaje"
                           >
                             <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -542,7 +546,7 @@ export function MensajesSection() {
                             variant="ghost" 
                             size="sm" 
                             onClick={(e) => deleteMessage(message.id, e)} 
-                            className="h-10 w-10 p-0 rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 active:scale-95 dark:hover:bg-red-900/20 transition-all duration-200 min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0 touch-target"
+                            className="h-9 w-9 p-0 rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 active:scale-95 dark:hover:bg-red-900/20 transition-all duration-200 min-h-[36px] min-w-[36px] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0 touch-target"
                             aria-label="Eliminar mensaje"
                           >
                             <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -550,7 +554,7 @@ export function MensajesSection() {
                         </div>
                       </div>
                       <div 
-                        className="mb-2.5 sm:mb-3 cursor-pointer"
+                        className="mb-3 sm:mb-3 cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation()
                           setViewingMessage(message)
@@ -558,12 +562,12 @@ export function MensajesSection() {
                           markAsRead(message.id)
                         }}
                       >
-                        <p className="text-[12px] text-gray-600 dark:text-gray-300 line-clamp-4 leading-relaxed sm:text-sm md:text-base">
+                        <p className="text-[13px] text-gray-600 dark:text-gray-300 line-clamp-4 leading-relaxed sm:text-sm md:text-base" style={{ lineHeight: '1.6' }}>
                           {message.content}
                         </p>
                         {message.content.length > 200 && (
                           <button
-                            className="text-[11px] text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 font-medium mt-1 sm:text-xs md:text-sm"
+                            className="text-[12px] text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 font-medium mt-1.5 sm:text-xs md:text-sm"
                             onClick={(e) => {
                               e.stopPropagation()
                               setViewingMessage(message)
@@ -611,23 +615,6 @@ export function MensajesSection() {
           </div>
         )}
       </AnimatePresence>
-
-      {/* UX: FAB optimizado para móvil con tamaño táctil mínimo (56x56px) */}
-      <motion.button
-        variants={fabVariants}
-        initial="hidden"
-        animate="visible"
-        whileTap="tap"
-        onClick={() => setIsWriteModalOpen(true)}
-        className="fixed z-40 bg-pink-500 hover:bg-pink-600 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-pink-300 dark:focus:ring-pink-700 h-14 w-14 bottom-4 right-4 sm:h-16 sm:w-16 sm:bottom-6 sm:right-6"
-        aria-label="Escribir nuevo mensaje"
-        style={{ 
-          bottom: 'max(env(safe-area-inset-bottom), 1rem)',
-          right: 'max(env(safe-area-inset-right), 1rem)'
-        }}
-      >
-        <Edit3 className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" />
-      </motion.button>
 
       {/* Toast de éxito */}
       <AnimatePresence>
@@ -1103,6 +1090,35 @@ export function MensajesSection() {
           </div>
         </DialogContent>
       </Dialog>
+
     </section>
+  )
+
+  // FAB renderizado en un Portal para asegurar que esté siempre visible
+  const fabButton = (
+    <motion.button
+      variants={fabVariants}
+      initial="hidden"
+      animate="visible"
+      whileTap="tap"
+      onClick={() => setIsWriteModalOpen(true)}
+      className="fixed bg-pink-500 hover:bg-pink-600 text-white rounded-full shadow-xl hover:shadow-2xl flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-pink-300 dark:focus:ring-pink-700 h-14 w-14 bottom-4 right-4 sm:h-16 sm:w-16 sm:bottom-6 sm:right-6"
+      aria-label="Escribir nuevo mensaje"
+      style={{ 
+        position: 'fixed',
+        bottom: 'max(env(safe-area-inset-bottom), 1rem)',
+        right: 'max(env(safe-area-inset-right), 1rem)',
+        zIndex: 9999
+      }}
+    >
+      <Edit3 className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" />
+    </motion.button>
+  )
+
+  return (
+    <>
+      {sectionContent}
+      {typeof window !== 'undefined' && createPortal(fabButton, document.body)}
+    </>
   )
 }
