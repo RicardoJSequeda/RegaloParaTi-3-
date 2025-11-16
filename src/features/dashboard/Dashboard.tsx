@@ -41,11 +41,8 @@ export function Dashboard({ onLogout, onToggleDarkMode, isDarkMode }: DashboardP
     [preferences.showFloatingHearts, preferences.floatingHeartsInDarkMode, isDarkMode]
   )
 
-  // Memoizar padding del contenedor
-  const containerPadding = useMemo(() => 
-    activeSection === 'inicio' ? 'p-2 sm:p-3 md:p-4' : 'p-3 sm:p-4 md:p-6',
-    [activeSection]
-  )
+  // Memoizar padding del contenedor - padding simétrico para centrado perfecto
+  const containerPadding = 'p-3 sm:p-4 md:p-6'
 
   return (
     <div className="min-h-screen bg-background flex">
