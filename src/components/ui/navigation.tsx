@@ -13,11 +13,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Heart, Menu, Home, Image, MessageCircle, Music, Settings, LogOut, User } from 'lucide-react'
+import { Heart, Menu, Home, Image, MessageCircle, Music, Bell, LogOut, User } from 'lucide-react'
 import { NavigationItem, Section } from '@/types'
 import { useRouter } from 'next/navigation'
-import ConfigurationModal from '@/components/ui/configuration-modal'
-import { useState, useCallback, useMemo, memo } from 'react'
+import { useState, useCallback, useMemo, memo, useEffect } from 'react'
+import { useNotifications } from '@/hooks/useNotifications'
+import { notificationService } from '@/services/notification-service'
 
 interface NavigationProps {
   navigationItems: NavigationItem[]
@@ -46,7 +47,13 @@ export function Navigation({
   isDarkMode
 }: NavigationProps) {
   const router = useRouter()
-  const [showConfig, setShowConfig] = useState(false as boolean)
+  const { requestPermission, permission, isSupported } = useNotifications()
+  const [notificationStatus, setNotificationStatus] = useState<NotificationPermission>(permission)
+
+  // Actualizar estado cuando cambie el permiso
+  useEffect(() => {
+    setNotificationStatus(permission)
+  }, [permission])
 
   // Memoizar handlers para prevenir re-renders
   const handleSectionClick = useCallback((sectionId: Section) => {
@@ -58,9 +65,36 @@ export function Navigation({
     onSidebarOpenChange(false)
   }, [onSectionChange, onSidebarOpenChange])
 
-  const handleConfigClick = useCallback(() => {
-    setShowConfig(true)
-  }, [])
+  const handleNotificationClick = useCallback(async () => {
+    if (!isSupported) {
+      alert('Las notificaciones no están soportadas en este navegador')
+      return
+    }
+
+    if (permission === 'granted') {
+      // Ya tiene permisos, mostrar mensaje
+      alert('Las notificaciones ya están activadas. Recibirás notificaciones cuando haya eventos importantes.')
+      return
+    }
+
+    if (permission === 'denied') {
+      // Permisos denegados, mostrar instrucciones
+      alert('Los permisos de notificación fueron denegados. Por favor, habilítalos manualmente en la configuración de tu navegador.')
+      return
+    }
+
+    // Solicitar permisos
+    const granted = await requestPermission()
+    if (granted) {
+      setNotificationStatus('granted')
+      // Iniciar el servicio de notificaciones
+      notificationService.start()
+      alert('¡Notificaciones activadas! Recibirás notificaciones cuando haya eventos importantes.')
+    } else {
+      setNotificationStatus('denied')
+      alert('Los permisos de notificación fueron denegados.')
+    }
+  }, [isSupported, permission, requestPermission])
 
   // Memoizar items de navegación para desktop
   const desktopNavItems = useMemo(() => 
@@ -119,7 +153,6 @@ export function Navigation({
   )
   return (
     <>
-      <ConfigurationModal open={showConfig} onOpenChange={setShowConfig} />
       {/* Sidebar Desktop */}
       <div className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0">
         <div className="flex flex-col flex-grow bg-background border-r border-border pt-5 pb-4 overflow-y-auto">
@@ -176,10 +209,6 @@ export function Navigation({
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Perfil</span>
-                </DropdownMenuItem>
                 <DropdownMenuItem onClick={onToggleDarkMode}>
                   {isDarkMode ? (
                     <>
@@ -193,9 +222,11 @@ export function Navigation({
                     </>
                   )}
                 </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleConfigClick}>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Configuración</span>
+                    <DropdownMenuItem onClick={handleNotificationClick}>
+                      <Bell className="mr-2 h-4 w-4" />
+                      <span>
+                        {notificationStatus === 'granted' ? 'Notificaciones ✓' : 'Activar Notificaciones'}
+                      </span>
                     </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={onLogout} className="text-destructive">
@@ -274,10 +305,6 @@ export function Navigation({
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Perfil</span>
-                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={onToggleDarkMode}>
                       {isDarkMode ? (
                         <>
@@ -291,9 +318,11 @@ export function Navigation({
                         </>
                       )}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleConfigClick}>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Configuración</span>
+                    <DropdownMenuItem onClick={handleNotificationClick}>
+                      <Bell className="mr-2 h-4 w-4" />
+                      <span>
+                        {notificationStatus === 'granted' ? 'Notificaciones ✓' : 'Activar Notificaciones'}
+                      </span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={onLogout} className="text-destructive">
